@@ -1,0 +1,21 @@
+name: Update ForexFactory News
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Update tiap 30 menit
+  workflow_dispatch:      # Bisa dijalanin manual
+jobs:
+  update-news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch Data
+        run: |
+          curl -s -A "Mozilla/5.0" "https://nfs.faireconomy.media/ff_calendar_thisweek.json" -o news.json
+          curl -s -A "Mozilla/5.0" "https://nfs.faireconomy.media/ff_calendar_nextweek.json" -o news_next.json
+      - name: Commit & Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add news.json news_next.json
+          git commit -m "Auto-update news [skip ci]" || exit 0
+          git push
