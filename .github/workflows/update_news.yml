@@ -1,10 +1,10 @@
 name: Update ForexFactory News
 on:
-permissions:
-  contents: write
   schedule:
     - cron: '*/30 * * * *' # Update tiap 30 menit
   workflow_dispatch:      # Bisa dijalanin manual
+permissions:
+  contents: write
 jobs:
   update-news:
     runs-on: ubuntu-latest
