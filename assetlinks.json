@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.desatura.twa",
+        "sha256_cert_fingerprints": ["51:14:2E:12:79:82:CC:EE:61:A4:0C:4F:3F:57:C5:A8:0A:5F:18:26:37:33:4F:F4:01:A4:BD:17:87:E0:20:1C"]
+      }
+    }]
