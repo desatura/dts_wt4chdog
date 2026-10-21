@@ -3050,6 +3050,35 @@ window.playAlertSound = function() {
     os_.start(now + i*0.12); os_.stop(now + i*0.12 + 0.30);
   });
 };
+// ═══ AUTO SYNC OANDA DARI GITHUB JSON ═══
+async function pollOandaJson(){
+  try {
+    const r = await fetch('./oanda.json?t=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) return;
+    const d = await r.json();
+    if(!d || !d.mid) return;
 
+    const currentMid = curMid();
+    if(currentMid === null) return;
+
+    // Hitung selisih harga OANDA vs Chart (PAXG)
+    const targetOff = d.mid - currentMid;
+    const gap = targetOff - S.off;
+
+    // Hanya geser jika selisih lebih dari 0.15 untuk mencegah chart goyang
+    if (Math.abs(gap) > 0.15) {
+      const adj = Math.abs(gap) > 3 ? gap : gap * 0.3;
+      S.off += adj;
+      shiftAll(adj);
+      if (typeof showBasis === 'function') showBasis('OANDA ' + d.mid.toFixed(2) + ' (auto)');
+    }
+  } catch(e) {
+    // Abaikan jika oanda.json belum siap
+  }
+}
+
+// Jalankan otomatis tiap 30 detik
+setInterval(pollOandaJson, 30000);
+setTimeout(pollOandaJson, 2000);
 </script>
 </body></html>
