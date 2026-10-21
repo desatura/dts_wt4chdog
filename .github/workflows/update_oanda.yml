@@ -1,0 +1,45 @@
+name: Update OANDA Price
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # Jalan tiap 5 menit
+  workflow_dispatch:         # Bisa dijalankan manual
+
+jobs:
+  fetch-oanda:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Fetch OANDA API
+        env:
+          OANDA_API_KEY: ${{ secrets.OANDA_API_KEY }}
+          OANDA_ACCOUNT_ID: ${{ secrets.OANDA_ACCOUNT_ID }}
+          OANDA_INSTRUMENT: ${{ secrets.OANDA_INSTRUMENT }}
+        run: |
+          URL="https://api-fxpractice.oanda.com/v3/accounts/${OANDA_ACCOUNT_ID}/pricing?instruments=${OANDA_INSTRUMENT}"
+          curl -s -H "Authorization: Bearer ${OANDA_API_KEY}" "$URL" -o raw_oanda.json
+          
+          python3 -c "
+import json, sys
+try:
+    with open('raw_oanda.json') as f:
+        d = json.load(f)
+    p = d['prices'][0]
+    bid = float(p['bids'][0]['price'])
+    ask = float(p['asks'][0]['price'])
+    mid = (bid + ask) / 2
+    out = {'mid': round(mid, 4), 'bid': round(bid, 4), 'ask': round(ask, 4), 't': p['time']}
+    with open('oanda.json', 'w') as f:
+        json.dump(out, f)
+except Exception as e:
+    sys.exit(1)
+          "
+          rm -f raw_oanda.json
+      
+      - name: Commit oanda.json
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add oanda.json
+          git commit -m "Update OANDA price [skip ci]" || exit 0
+          git push
