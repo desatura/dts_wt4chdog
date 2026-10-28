@@ -1,4 +1,5 @@
                                           # DTS WATCHDOG
+                                      Compact Trading System
                                      http://t.me/aldodesatura
 
 
