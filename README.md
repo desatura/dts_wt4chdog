@@ -1,9 +1,9 @@
                                           # DTS WATCHDOG
                                         We'll Be Back Soon
                                   
-Just Sit Down And Relax
-                                      Compact Trading System
-                                     http://t.me/aldodesatura
+Please Sit Down And Relax While The System Is Maintenance & Update
+Compact Trading System generate by
+http://t.me/aldodesatura
 
 
                                                .-==-.
