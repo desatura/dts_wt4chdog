@@ -1,6 +1,6 @@
                                           # DTS WATCHDOG
                                         We'll Be Back Soon
-                                   Please Sit Down And Relax 
+                                    Please Sit Down And Relax 
                                        While The System Is 
                                       Maintenance & Update 
                                      Compact Trading System 
