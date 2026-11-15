@@ -1,0 +1,1669 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NYAI SND WEB (Sederhana) · Institutional Supply &amp; Demand — MSS · BOS · CHoCH</title>
+<style>
+:root{--bg:#f4f6fa;--panel:#fff;--alt:#f8fafc;--bd:#d6dce6;--mut:#6b7280;--g:#00a85a;--r:#dc2626;--y:#d97706;--c:#0891b2;--ink:#111827;--acc:#2563eb}
+@media (prefers-color-scheme:dark){:root{--bg:#0b0f17;--panel:#131a26;--alt:#0f1520;--bd:#243049;--mut:#8b96ab;--g:#22e08a;--r:#ff6b6b;--y:#fbbf24;--c:#22d3ee;--ink:#e5e9f2;--acc:#3b82f6}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+header{position:sticky;top:0;z-index:6;background:var(--panel);border-bottom:1px solid var(--bd);padding:8px 12px 10px;box-shadow:0 1px 6px rgba(15,23,42,.06)}
+.hrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:15px;letter-spacing:.3px}
+.spacer{flex:1}
+.ico{width:34px;height:34px;border:1px solid var(--bd);border-radius:9px;background:var(--alt);color:var(--ink);font-size:15px;cursor:pointer;flex:0 0 34px;line-height:1}
+.ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.ctl input,.ctl select{padding:7px 9px;border:1px solid var(--bd);border-radius:8px;background:var(--alt);color:var(--ink);font-size:13px;min-width:0}
+#go{padding:8px 16px;border:0;border-radius:8px;background:var(--acc);color:#fff;font-weight:700;cursor:pointer;font-size:13.5px}
+#go.stop{background:var(--r)}
+#adv{display:none;margin-top:8px;border-top:1px dashed var(--bd);padding-top:10px}
+#adv.on{display:block}
+.asec{margin:0 0 12px}
+.asec>b{display:block;font-size:11.5px;color:var(--mut);letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase}
+#g2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+#g2 label{font-size:12px;color:var(--mut);display:flex;flex-direction:column;gap:3px}
+#g2 input,#g2 select,#adv select,#adv input{width:100%}
+#adv input[type=checkbox]{width:auto}
+#oanda{display:none;grid-template-columns:110px 1fr 1fr;gap:6px;align-items:center}
+.tgl{display:flex;flex-wrap:wrap;gap:6px}
+.pill{position:relative;cursor:pointer}
+.pill input{position:absolute;opacity:0;width:0;height:0}
+.pill span{display:inline-block;padding:6px 11px;border:1px solid var(--bd);border-radius:999px;background:var(--alt);color:var(--mut);font-size:12.5px;user-select:none}
+.pill input:checked+span{background:var(--acc);border-color:var(--acc);color:#fff}
+.tb{padding:6px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--alt);color:var(--ink);cursor:pointer;font-size:12.5px}
+.hint{font-size:11.5px;color:var(--mut);margin:4px 0}
+.run-badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.35px;border:1px solid var(--bd);white-space:nowrap}
+.run-badge.running{background:#dcfce7;color:#166534;border-color:#86efac}
+.run-badge.connecting{background:#fef3c7;color:#92400e;border-color:#fcd34d}
+.run-badge.stopped{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+.run-badge.stale{background:#ffedd5;color:#9a3412;border-color:#fdba74}
+main{max-width:620px;margin:0 auto;padding:12px 12px 60px}
+.card{background:var(--panel);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.mono{font-family:ui-monospace,Menlo,monospace}
+.g{color:var(--g)}.r{color:var(--r)}.y{color:var(--y)}.m{color:var(--mut)}.c{color:var(--c)}
+.sm{font-size:11.5px}
+.dirpill{font-weight:800;font-size:12px;padding:4px 12px;border-radius:999px;border:1px solid currentColor;letter-spacing:.2px;white-space:nowrap}
+.dirpill.g{background:rgba(34,197,94,.13)}.dirpill.r{background:rgba(239,68,68,.12)}.dirpill.m{background:rgba(127,127,127,.08)}
+.px{font-size:34px;font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:-.5px;line-height:1.05}
+.tfs{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 0}
+.tfp{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border:1px solid var(--bd);border-radius:999px;background:var(--alt);font-size:12px;font-variant-numeric:tabular-nums}
+.tfp em{font-style:normal;color:var(--mut);font-weight:600}
+.sstrip{margin-top:9px;border:1px solid var(--bd);border-radius:10px;padding:7px 10px;background:var(--alt);font-size:12px}
+.sec{border-top:1px solid var(--bd);margin-top:10px;padding-top:9px}
+.sigbox{border:1.5px solid var(--g);border-radius:12px;padding:9px 11px;margin-top:10px;background:rgba(34,197,94,.07)}
+.sigbox.sell{border-color:var(--r);background:rgba(239,68,68,.07)}
+.sigbox.wait{border-color:var(--y);background:rgba(245,158,11,.08)}
+@keyframes pglow{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.45)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+.sigbox.live{animation:pglow 1.8s infinite}
+@media (prefers-reduced-motion:reduce){.sigbox.live{animation:none}}
+.pdbar{position:relative;height:7px;border-radius:4px;margin:7px 0 3px;background:linear-gradient(90deg,var(--r),var(--bd) 50%,var(--g))}
+.pdbar i{position:absolute;top:-3px;width:5px;height:13px;margin-left:-2.5px;border-radius:3px;background:var(--ink);box-shadow:0 0 0 2px var(--panel)}
+.scanline{display:flex;align-items:center;gap:7px;margin-top:10px;padding:6px 2px 2px;border-top:1px dashed var(--bd);font-size:11px;color:var(--mut)}
+.radar{width:14px;height:14px;flex:0 0 14px;border:1px solid var(--c);border-radius:50%;position:relative;overflow:hidden;background:repeating-radial-gradient(circle,transparent 0 4px,rgba(8,145,178,.18) 5px 5.5px)}
+.radar:after{content:"";position:absolute;width:50%;height:50%;left:50%;top:0;transform-origin:0 100%;background:linear-gradient(45deg,transparent 45%,var(--c));animation:radarsweep 1.5s linear infinite}
+@keyframes radarsweep{to{transform:rotate(360deg)}}
+.poi{border:1px solid var(--bd);border-left:4px solid var(--mut);border-radius:10px;padding:6px 10px;margin:6px 0;background:var(--alt)}
+.poi.s-conf{border-color:var(--g);background:rgba(34,197,94,.10)}
+.poi.s-touch{border-color:var(--y);background:rgba(245,158,11,.10)}
+.poi.s-near{border-color:var(--c);background:rgba(6,182,212,.08)}
+.poi .pt{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pside{font-weight:700;font-size:11px;padding:1px 8px;border:1px solid currentColor;border-radius:999px}
+.pmeta{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:4px;font-size:11.5px;color:var(--mut)}
+.ok{color:var(--g);font-weight:700}.no{color:var(--r);font-weight:700}.wr{color:var(--y);font-weight:700}
+.chips{display:flex;gap:6px;margin-bottom:10px}
+.chip{flex:1;text-align:center;background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:7px 2px;font-size:11px;color:var(--mut)}
+.chip b{display:block;font-size:13.5px;color:var(--ink)}
+/* heatmap harga: densitas sentuhan level + overlay zona SND */
+.hmap{margin-top:6px}
+.hrow2{display:flex;align-items:center;gap:6px;height:13px;margin:1px 0}
+.hpx{width:72px;text-align:right;font-size:10.5px;color:var(--mut);flex:0 0 72px;font-variant-numeric:tabular-nums}
+.hcell{flex:1;height:100%;border-radius:3px;background:var(--alt);position:relative;overflow:hidden}
+.hcell i{position:absolute;inset:0;display:block;border-radius:2px}
+.hpct{width:26px;font-size:10px;color:var(--mut);flex:0 0 26px;text-align:right;font-variant-numeric:tabular-nums}
+.hnow{width:52px;font-size:10px;font-weight:800;color:var(--y);flex:0 0 52px;white-space:nowrap}
+.hrow2.now .hpx{color:var(--ink);font-weight:800}
+.hrow2.now .hcell{box-shadow:0 0 0 1.5px var(--y) inset}
+.hleg{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:7px;font-size:10.5px;color:var(--mut)}
+.hleg s{display:inline-block;width:10px;height:10px;border-radius:3px;text-decoration:none;vertical-align:-1px;margin-right:3px}
+/* heatmap likuiditas (orderbook/DOM) */
+.domcv{width:100%;height:auto;display:block;border:1px solid var(--bd);border-radius:8px;background:var(--alt)}
+.domst{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;font-size:11.5px;font-variant-numeric:tabular-nums}
+.jr{font-size:11.5px;line-height:1.5;border-top:1px dashed var(--bd);padding:4px 0;font-family:ui-monospace,Menlo,monospace}
+.jr:first-child{border-top:0}
+.jr .t{color:var(--mut)}
+details.jrn{padding:10px 14px}details.jrn summary{cursor:pointer;font-weight:700}
+#err{color:var(--r);font-size:11.5px;margin-top:4px;min-height:1em}
+#srcst{font-size:11.5px;color:var(--mut)}
+.hwrap{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;z-index:20;padding:14px;overflow-y:auto}
+.hwrap.on{display:block}
+.hcard{background:var(--panel);border:1px solid var(--bd);border-radius:16px;max-width:660px;margin:0 auto;overflow:hidden}
+.hhead{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;background:var(--panel);border-bottom:1px solid var(--bd);padding:12px 14px;font-size:15px;z-index:2}
+.hbody{padding:2px 16px 16px;font-size:13px}
+.hsec{border-top:1px dashed var(--bd);padding:12px 0}
+.hsec:first-child{border-top:0}
+.hsec h3{margin:0 0 6px;font-size:13.5px}
+.hsec p{margin:6px 0}
+.hsec ol,.hsec ul{margin:6px 0;padding-left:20px}
+.hsec li{margin:5px 0}
+.ktab{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px}
+.ktab td{border-top:1px dashed var(--bd);padding:6px 4px;vertical-align:top}
+.ktab tr:first-child td{border-top:0}
+.ktab td:first-child{white-space:nowrap;font-weight:700;width:150px}
+.close{width:32px;height:32px;border:1px solid var(--bd);border-radius:8px;background:var(--alt);color:var(--ink);cursor:pointer;font-size:14px}
+/* jadwal adzan (waktu sholat) — panel di dalam pengaturan ⚙ */
+#prayerCard{background:var(--alt);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;margin-top:8px}
+.prgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px}
+.prc{background:var(--alt);border:1px solid var(--bd);border-radius:8px;padding:5px 2px;text-align:center;font-size:10.5px;color:var(--mut);line-height:1.35}
+.prc b{display:block;font-size:11.5px;color:var(--ink);font-variant-numeric:tabular-nums}
+.prc.on{border-color:var(--acc);background:rgba(37,99,235,.10)}
+.prc.on span,.prc.on b{color:var(--acc)}
+.prnext{font-size:13.5px}
+/* ===== tata letak rapi v3 ===== */
+main{max-width:720px}
+.hero .sym{font-size:12.5px;font-weight:800;letter-spacing:.3px;color:var(--mut)}
+.tfb{font-size:10px;font-weight:800;padding:1px 7px;border-radius:6px;background:var(--acc);color:#fff;margin-left:4px;vertical-align:1px}
+.hero .px{font-size:38px}
+.pills{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.kv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:11px}
+.kv div{background:var(--alt);border:1px solid var(--bd);border-radius:10px;padding:6px 3px;text-align:center;font-size:10.5px;color:var(--mut);min-width:0}
+.kv b{display:block;font-size:13px;color:var(--ink);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.sec2{padding:11px 14px}
+details.sec2>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px}
+details.sec2>summary::-webkit-details-marker{display:none}
+details.sec2>summary .sub{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--mut);text-align:right}
+details.sec2>summary:after{content:"▾";color:var(--mut);font-size:12px}
+details.sec2:not([open])>summary:after{content:"▸"}
+details.sec2>.bd{margin-top:9px}
+.emhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.emtag{font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;border:1px solid currentColor}
+.ldr{position:relative;height:240px;margin:12px 0 6px;border-left:2px solid var(--bd)}
+.ldr .zb{position:absolute;left:0;right:0;border-radius:3px}
+.ldr .ln{position:absolute;left:0;right:0;height:0;border-top:1.5px solid}
+.ldr .ln.dsh{border-top-style:dashed}
+.ldr .lb{position:absolute;right:0;transform:translateY(-50%);font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px;background:var(--panel);border:1px solid currentColor;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ldr .zl{position:absolute;left:6px;font-size:10.5px;font-weight:700;opacity:.9}
+.lvt{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin-top:6px;font-size:12px}
+.lvt div{display:flex;justify-content:space-between;gap:6px;border-bottom:1px dashed var(--bd);padding:3px 0}
+.lvt span{color:var(--mut)}
+.lvt b{font-variant-numeric:tabular-nums}
+.ckl{display:flex;flex-direction:column;gap:3px;margin-top:9px;font-size:12px}
+.ckl div{display:flex;gap:7px;align-items:baseline}
+.ckl i{font-style:normal;width:16px;flex:0 0 16px;text-align:center;font-weight:800}
+/* early trend LTF */
+.etbox{margin-top:9px;border:1px solid var(--bd);border-radius:10px;padding:8px 10px;background:var(--alt);font-size:12px}
+.etbox.up{border-color:var(--g);background:rgba(34,197,94,.07)}.etbox.dn{border-color:var(--r);background:rgba(239,68,68,.07)}
+.etr{display:grid;grid-template-columns:122px 34px 1fr;gap:6px;align-items:baseline;border-top:1px dashed var(--bd);padding:3px 0;font-size:11.5px}
+.etr .n{font-weight:700}
+.ltfb{font-size:10px;font-weight:800;padding:1px 7px;border-radius:999px;border:1px solid var(--c);color:var(--c);margin-left:6px}
+#ticker{display:flex;gap:6px;overflow-x:auto;margin-top:6px;scrollbar-width:none}#ticker::-webkit-scrollbar{display:none}
+.nw{flex:0 0 auto;max-width:200px;padding:4px 8px;border:1px solid var(--bd);border-left:3px solid var(--mut);border-radius:6px;background:var(--alt);font-size:11px;line-height:1.35}
+.nw.nh{border-left-color:var(--r)}.nw.nm{border-left-color:var(--y)}
+.nw .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nw .s{display:flex;justify-content:space-between;gap:10px;color:var(--mut)}
+.nxai{margin:-4px 0 10px;font-size:12px;padding:7px 10px;border-radius:10px;background:var(--panel);border:1px dashed var(--bd)}
+#nxCfg .g2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
+#nxCfg input[type=text],#nxCfg input[type=password],#nxCfg textarea{width:100%;padding:7px 9px;border:1px solid var(--bd);border-radius:8px;background:var(--alt);color:var(--ink);font-size:13px}
+#nxCfg textarea{min-height:80px;font-family:inherit;margin-top:6px}#nxCfg h4{margin:10px 0 4px;font-size:12px;color:var(--mut)}#nxSt{font-size:11.5px;min-height:1em;margin-top:6px}
+@media(max-width:480px){#nxCfg .g2{grid-template-columns:1fr}}
+</style></head><body>
+<header>
+ <div class="hrow">
+  <span class="brand">NYAI SND</span>
+  <span id="runBadge" class="run-badge stopped">STOPPED</span>
+  <span class="spacer"></span>
+  <button id="helpBtn" class="ico jsHelp" title="Bantuan & aturan main">❔</button>
+  <button id="cfgBtn" class="ico" title="Pengaturan (parameter EA & koneksi)">⚙</button>
+ </div>
+ <div class="ctl">
+  <select id="src" title="Sumber data — sama dengan bridge: OANDA Worker (PREMIUM), Binance/Mirror, Bybit, Sim"><option value="oanda" selected>PREMIUM · OANDA</option><option value="binance">BINANCE / MIRROR</option><option value="bybit">BYBIT</option><option value="sim">SIMULASI</option></select>
+  <input id="symSearch" placeholder="cari pair..." size="8" style="width:92px" title="Filter pair / instrumen"/><select id="symDd" style="max-width:150px" title="Pilih pair"></select>
+  <select id="tf" title="Timeframe chart = _Period pada EA"><option value="m1">M1</option><option value="m5">M5</option><option value="m15" selected>M15</option><option value="m30">M30</option><option value="h1">H1</option><option value="h4">H4</option></select>
+  <button id="go">▶ Mulai</button>
+ </div>
+ <div id="ticker"></div>
+ <input id="sym" list="dlSym" value="BTCUSDT" size="9" style="display:none"/><input id="ins" list="dlIns" value="XAU_USD" size="8" style="display:none"/><datalist id="dlSym"></datalist><datalist id="dlIns"></datalist>
+ <div id="adv">
+  <div class="asec"><b>🎯 Mesin sinyal (input EA)</b>
+   <div class="tgl">
+    <label class="pill" title="Wajib searah BOS / tren (InpUseBOSFilter)"><input type="checkbox" id="bos" checked/><span>⚡ Filter BOS</span></label>
+    <label class="pill" title="Bunyi saat status entry berubah jadi VALID"><input type="checkbox" id="snd" checked/><span>🔔 Alert</span></label>
+    <label class="pill" title="Ucapkan arah entry saat sinyal valid"><input type="checkbox" id="voice" checked/><span>🗣️ Suara</span></label>
+    <label class="pill" title="Early Trend LTF: deteksi gejala awal tren (micro CHoCH/MSS, HL/LH, EMA cross, displacement, squeeze breakout, rejection di zona). Bila aktif DAN Filter BOS aktif: gejala awal yang kuat boleh mendahului filter tren 10-vs-10 (yang lambat), dan gejala awal berlawanan yang kuat menahan sinyal. Ini tambahan di luar EA asli."><input type="checkbox" id="early" checked/><span>🧠 Early Trend</span></label>
+    <label class="pill" title="Alarm + suara saat ada berita ekonomi (T-5 menit), semua level impact. Sinyal entry dibisukan ±10 menit sekitar berita USD High"><input type="checkbox" id="newsOn" checked/><span>📰 Berita</span></label>
+   </div>
+   <div id="g2">
+    <label>Skor minimum zona (InpMinScore)<input id="pMin" type="number" step="1" min="0" max="95" value="45"/></label>
+    <label>Risk:Reward (InpRiskReward)<input id="pRR" type="number" step="0.1" min="0.5" value="2.0"/></label>
+    <label>Lot referensi (InpLotSize)<input id="pLot" type="number" step="0.01" min="0.01" value="0.01"/></label>
+    <label>Periode ATR (InpATRPeriod)<input id="pAtr" type="number" step="1" min="2" max="100" value="14"/></label>
+    <label>Bar analisis (InpLookbackBars)<input id="pLb" type="number" step="10" min="40" max="500" value="200"/></label>
+    <label>Skor Early Trend min (10-95)<input id="pEt" type="number" step="5" min="10" max="95" value="40"/></label>
+   </div>
+   <div class="hint">SL/TP selalu dari tepi zona + 10 point & TP sesuai RR (persis EA). Input "Fallback SL pips" di EA hanya cadangan, jadi tidak ada di sini.</div>
+  </div>
+  <div class="asec"><b>🕌 Jadwal adzan (waktu sholat)</b>
+   <div class="tgl">
+    <label class="pill" title="Bunyi adzan diputar otomatis pada waktu Subuh, Dzuhur, Ashar, Maghrib, dan Isya sesuai jadwal sholat hari ini — HANYA bila waktunya tiba selagi halaman terbuka. Menyalakan toggle ini TIDAK langsung membunyikan adzan; halaman yang dibuka/di-refresh setelah waktu sholat lewat juga tidak memutar ulang. Tes manual: tombol ▶ Tes bunyi"><input type="checkbox" id="adzanJadwal" checked/><span>🔊 Bunyi adzan saat waktu sholat</span></label>
+   </div>
+   <div class="ctl" style="margin-top:6px">
+    <input id="prCity" placeholder="Kota (mis. Bandung)" size="12" title="Opsional — dipakai lebih dulu bila diisi"/><input id="prCountry" placeholder="Negara (Indonesia)" size="12" title="Negara untuk kota di atas; kosong = Indonesia"/>
+    <input id="prLat" placeholder="Latitude" size="8" title="Opsional: koordinat manual (lebih akurat dari kota)"/><input id="prLon" placeholder="Longitude" size="8" title="Opsional: koordinat manual"/>
+    <select id="prMethod" title="Metode perhitungan waktu sholat"><option value="20" selected>KEMENAG RI</option><option value="2">Muslim World League</option><option value="3">Umm al-Qura (Mekkah)</option><option value="4">Egyptian Authority</option><option value="8">Singapore</option><option value="15">JAKIM (Malaysia)</option><option value="11">Diyanet (Turki)</option></select>
+   </div>
+   <div id="prayerCard">
+    <div class="row"><b>🕌 Jadwal Adzan</b><span id="prLoc" class="m sm" style="text-align:right">mendeteksi lokasi…</span></div>
+    <div id="prNext" class="prnext mono" style="margin-top:4px">memuat jadwal…</div>
+    <div id="prTimes" class="prgrid"></div>
+    <div class="row" style="margin-top:7px;align-items:flex-start;gap:8px"><span id="prMeta" class="m sm" style="flex:1">Metode <b>KEMENAG RI</b> — klik halaman sekali agar audio diizinkan browser.</span><span style="flex:0 0 auto;display:flex;gap:6px"><button class="tb" id="prTest" title="Coba bunyi adzan">▶ Tes bunyi</button><button class="tb" id="prRef" title="Muat ulang jadwal">🔄</button></span></div>
+   </div>
+   <div class="hint">Kota/koordinat kosong → lokasi otomatis dari IP; gagal → Jakarta (perkiraan). Waktu dihitung API Aladhan — kalau beda 1-2 menit dari jadwal masjid setempat, ikuti jadwal masjid. Bunyi mematuhi aturan autoplay browser: klik halaman sekali agar audio diizinkan.</div>
+  </div>
+  <div class="asec" id="nxCfg"><b>🤖 AI &amp; 📣 Broadcast sinyal</b>
+   <h4>AI Analisa (API milik kamu)</h4>
+   <div class="tgl"><label class="pill" title="AI memberi opini ENTRY/TUNGGU/SKIP pada tiap setup. Hanya opini tambahan — Entry/SL/TP tetap dari mesin SND"><input type="checkbox" id="nxAiOn"/><span>Aktifkan AI</span></label>
+   <label class="pill" title="Broadcast SIAP/VALID hanya dikirim bila AI menjawab ENTRY (hasil TP/SL tetap dikirim)"><input type="checkbox" id="nxAiGate"/><span>Broadcast hanya jika AI = ENTRY</span></label></div>
+   <div class="g2"><input type="text" id="nxUrl" placeholder="Base URL, mis. https://api.openai.com/v1"/><input type="text" id="nxModel" placeholder="Model, mis. gpt-4o-mini"/></div>
+   <input type="password" id="nxKey" placeholder="API key (disimpan hanya di browser ini)"/>
+   <textarea id="nxPrompt" placeholder="Prompt kamu: aturan, gaya analisa, syarat entry, manajemen risiko…"></textarea>
+   <div class="hint">Format OpenAI-compatible (OpenAI, OpenRouter, Groq, DeepSeek, Ollama, dll). URL berisi “anthropic.com” otomatis memakai format Claude. AI hanya memberi opini tambahan.</div>
+   <h4>Broadcast ke medsos</h4>
+   <div class="g2"><input type="text" id="nxTgTok" placeholder="Telegram bot token"/><input type="text" id="nxTgChat" placeholder="Telegram chat/channel ID (@channel)"/></div>
+   <div class="g2"><input type="text" id="nxDc" placeholder="Discord webhook URL"/><input type="text" id="nxWh" placeholder="Webhook lain (WA gateway/Slack/Make/n8n)"/></div>
+   <div class="tgl"><label class="pill"><input type="checkbox" id="nxBSiap"/><span>⏳ Siap-siap</span></label><label class="pill"><input type="checkbox" id="nxBValid"/><span>✅ Entry valid</span></label><label class="pill"><input type="checkbox" id="nxBHasil"/><span>🎯 TP / SL</span></label></div>
+   <div class="tgl" style="margin-top:6px"><button class="tb" id="nxSave">💾 Simpan</button><button class="tb" id="nxTestAi">Tes AI</button><button class="tb" id="nxTestBc">Tes Broadcast</button></div>
+   <div id="nxSt" class="m"></div>
+   <div class="hint">⚠ Key &amp; token tersimpan di browser (localStorage). Pakai bot/key khusus dan jangan bagikan file ini setelah diisi. Sinyal = alat bantu, bukan nasihat keuangan.</div>
+  </div>
+  <div class="asec"><b>🔌 Koneksi data</b>
+   <div class="ctl" style="margin-top:0"><select id="host" title="Host orderflow/kline"><option value="auto">Binance → Mirror (auto)</option><option value="binance">Binance dulu</option><option value="mirror">Mirror dulu</option></select>
+   <label title="Pilih &amp; verifikasi pair Binance otomatis dari instrumen OANDA"><input type="checkbox" id="auto" checked/>Auto pair</label><button id="reload" class="tb" title="Muat ulang daftar pair">🔄 Daftar pair</button></div>
+   <div class="ctl" id="oanda"><select id="env"><option value="practice">practice</option><option value="live">live</option></select>
+    <input id="acc" placeholder="OANDA Account ID (opsional)" size="14"/><input id="tok" placeholder="OANDA API token (opsional)" type="password" size="18"/></div>
+   <div class="hint">Tanpa token: harga live via Cloudflare Worker (XAU_USD dll), candle via pair Binance pengganti (bridge). Dengan Account ID + token lengkap: candle langsung dari API OANDA.</div>
+  </div>
+  <div id="srcst">Status: <b>STOPPED</b></div>
+  <div id="err"></div>
+ </div>
+</header>
+<div id="newspop" style="display:none;position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:9;width:min(92vw,420px);background:var(--panel);border:2px solid var(--r);border-radius:10px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.35)"><div class="row"><b id="npTitle" class="r"></b><button id="npClose" style="border:1px solid var(--bd);background:var(--alt);color:var(--ink);border-radius:6px;padding:2px 8px">✕</button></div><div id="npMeta" style="margin-top:4px"></div><div id="npCd" class="y mono" style="margin-top:4px;font-weight:600"></div></div>
+<main><div id="out">
+ <div class="card">
+  <b>Selamat datang di NYAI SND — versi sederhana</b>
+  <div class="m" style="margin-top:6px">1. Pilih sumber data, pair/instrumen, dan timeframe di atas. 2. Tekan <b>▶ Mulai</b>. 3. Sinyal tampil di kartu utama saat harga masuk zona SND yang lolos semua aturan.</div>
+  <div class="m" style="margin-top:6px">Belum hafal istilahnya? Semua <b>aturan main</b>, penjelasan <b>MSS · BOS · CHoCH</b>, dan kamus istilah ada di menu bantuan.</div>
+  <div style="margin-top:8px"><button class="tb jsHelp">❔ Buka aturan main</button></div>
+ </div>
+</div></main>
+<div id="helpWrap" class="hwrap">
+ <div class="hcard">
+  <div class="hhead"><b>❔ Bantuan &amp; Aturan Main</b><button class="close" id="helpX" title="Tutup">✕</button></div>
+  <div class="hbody">
+   <div class="hsec">
+    <h3>🚀 Mulai cepat (4 langkah)</h3>
+    <ol>
+     <li>Pilih <b>sumber data</b>: PREMIUM · OANDA (default), BINANCE/MIRROR, BYBIT, atau <b>SIMULASI</b> untuk demo tanpa internet.</li>
+     <li>Cari &amp; pilih <b>pair/instrumen</b> (contoh XAU_USD, BTCUSDT), lalu pilih <b>timeframe</b> (default M15).</li>
+     <li>Tekan <b>▶ Mulai</b>. Harga live &amp; candle terhubung otomatis — tanpa token pun jalan (via Cloudflare Worker &amp; API publik Binance).</li>
+     <li>Pantau kartu utama. Kalau muncul <b>“SINYAL VALID”</b>, catat Entry, SL, dan TP — angkanya dihitung persis seperti EA MT5.</li>
+    </ol>
+   </div>
+   <div class="hsec">
+    <h3>📜 Aturan main (urutan kerja mesin — sama seperti EA)</h3>
+    <ol>
+     <li><b>Bar baru</b> — analisa hanya jalan sekali per bar timeframe, bukan tiap detik (gerbang OnTick EA).</li>
+     <li><b>ATR</b> — volatilitas dihitung metode Wilder (default 14 bar).</li>
+     <li><b>Filter tren (BOS sederhana)</b> — 10 bar terakhir dibanding 10 bar sebelumnya: high &amp; low lebih tinggi = NAIK, lebih rendah = TURUN, selain itu SIDEWAYS.</li>
+     <li><b>Zona SND</b> — candle displacement (badan &gt; 0.8×ATR) menandai zona: naik → <b>Demand</b>, turun → <b>Supply</b>. Skor = 55 + (badan/ATR)×12, maksimal 95.</li>
+     <li><b>POI</b> — zona dianggap menarik jika harga menyentuhnya (batas ±0.35×ATR) dan skornya ≥ skor minimum (default 45).</li>
+     <li><b>Pemicu entry</b> — POI berskor tertinggi yang lolos filter tren: BUY hanya saat NAIK, SELL hanya saat TURUN (bisa dimatikan di ⚙ → Filter BOS).</li>
+     <li><b>SL &amp; TP</b> — SL di tepi zona ± 10 point; TP = jarak SL × RR (default 1:2). SL pips manual tidak dipakai (hanya cadangan di EA).</li>
+     <li><b>Satu posisi</b> — selama posisi virtual berjalan, sinyal baru DITAHAN sampai TP/SL tersentuh.</li>
+     <li><b>Pantauan</b> — TP/SL dicek dengan harga live, sama seperti eksekusi broker pada EA.</li>
+    </ol>
+   </div>
+   <div class="hsec">
+    <h3>🧠 MSS · BOS · CHoCH (COC) — apa artinya di sini</h3>
+    <p>Istilah struktur pasar gaya Smart Money Concept. Panel <b>“STRUKTUR SWING”</b> di kartu utama menampilkannya langsung dari candle (bersifat informasi):</p>
+    <ul>
+     <li><b>BOS — Break of Structure</b>: harga menembus swing high/low <b>searah tren</b> → tren berlanjut. Contoh: saat bullish, candle close di atas swing high terakhir = <b>BOS ↑</b>.</li>
+     <li><b>CHoCH / COC — Change of Character</b>: harga <b>pertama kali</b> menembus struktur <b>berlawanan</b> arah tren → peringatan dini pembalikan. Saat bullish lalu close di bawah swing low = <b>CHoCH ↓</b>.</li>
+     <li><b>MSS — Market Structure Shift</b>: CHoCH yang ditarik <b>candle displacement</b> (badan &gt; 0.8×ATR) → pergeseran struktur yang kuat. Ditampilkan sebagai <b>MSS ↑/↓</b> di panel.</li>
+     <li><b>Hubungan dengan sinyal</b>: keputusan entry TETAP memakai filter tren 10-vs-10 bar milik EA (lihat “Filter tren EA”). Panel MSS/CHoCH membantu menilai kualitas tren — misal tren NAIK tapi baru saja CHoCH ↓, ekstra hati-hati.</li>
+     <li><b>🧠 Early Trend (LTF)</b>: skor −100…+100 dari 6 komponen — micro-struktur (CHoCH/MSS/BOS pivot 1-bar), urutan swing (HL/LH = tanda paling dini), EMA 8/21, momentum displacement, squeeze→breakout, dan pin-bar rejection di zona SND. Gejala dianggap valid bila skor ≥ ambang (default 40) dan ≥3 komponen sepakat. Bila toggle <b>🧠 Early Trend</b> + Filter BOS aktif, gejala awal yang valid boleh <b>mendahului</b> filter tren 10-vs-10 yang lambat (BUY di Demand saat tren EA masih SIDEWAYS/TURUN, dst), dan gejala berlawanan yang kuat (ambang+20) <b>menahan</b> sinyal. Ini tambahan di luar EA asli; matikan toggle untuk perilaku 1:1 EA.</li>
+    </ul>
+   </div>
+   <div class="hsec">
+    <h3>📖 Kamus istilah</h3>
+    <table class="ktab">
+     <tr><td>SND / Supply-Demand</td><td>Zona harga tempat institusi diperkirakan memasang order; Supply = area jual (resisten), Demand = area beli (support).</td></tr>
+     <tr><td>Displacement</td><td>Candle besar &amp; agresif — tanda keputusan institusi; syaratnya badan candle &gt; 0.8×ATR.</td></tr>
+     <tr><td>ATR</td><td>Rata-rata jangkauan gerak harga per bar; dipakai untuk ukuran ambang displacement.</td></tr>
+     <tr><td>POI</td><td>Point of Interest — zona yang sedang relevan karena disentuh harga &amp; skornya cukup.</td></tr>
+     <tr><td>Skor zona</td><td>Ukuran kekuatan zona: makin besar badan candle dibanding ATR, makin tinggi skor (55–95).</td></tr>
+     <tr><td>Heatmap</td><td>Peta panas level harga dari candle yang dimuat: warna menunjukkan seberapa sering level disentuh. Area panas = konsolidasi/equilibrium; area dingin = imbalance (harga melewatinya cepat — cocok dicocokkan dengan zona SND di sekitarnya).</td></tr>
+     <tr><td>Orderbook / DOM</td><td>Depth of Market — daftar order beli (bid) &amp; jual (ask) yang masih menunggu di buku pasar. Dinding likuiditas tebal sering menahan atau menembus harga; dipakai sebagai konfirmasi tambahan di sekitar zona SND.</td></tr>
+     <tr><td>Adzan (alert sinyal)</td><td>Bunyi panggilan adzan yang diputar sebagai ALARM saat sinyal trading VALID (menggantikan beep) — waktunya mengikuti SINYAL, BUKAN jadwal sholat. Sumber mp3 online; jika gagal dimuat, halaman otomatis memutar melodi pengganti agar alert tetap terdengar.</td></tr>
+     <tr><td>Jadwal adzan (waktu sholat)</td><td>Panel “🕌 Jadwal Adzan” di dalam pengaturan (⚙ → Jadwal adzan): waktu Imsak, Subuh, Terbit, Dzuhur, Ashar, Maghrib, dan Isya hari ini menurut lokasi (kota/koordinat manual di ⚙, atau otomatis dari IP) dengan metode resmi KEMENAG RI via API Aladhan. Ada hitung mundur menuju waktu sholat berikutnya; bila toggle “🔊 Bunyi adzan saat waktu sholat” aktif (⚙ → Jadwal adzan), bunyi adzan diputar TEPAT pada waktunya.</td></tr>
+     <tr><td>RR (Risk:Reward)</td><td>Perbandingan risiko (jarak SL) vs target (TP). RR 1:2 artinya target dua kali jarak SL.</td></tr>
+     <tr><td>Point</td><td>Satuan terkecil harga ala MT5 (XAU/BTC: 0.01; pair JPY &amp; crypto menengah: 0.001; forex 5-digit: 0.00001). SL diberi buffer 10 point.</td></tr>
+     <tr><td>Lot referensi</td><td>Ukuran lot untuk label P/L posisi virtual; tidak mengirim order nyata.</td></tr>
+     <tr><td>TF (timeframe)</td><td>Periode candle yang dianalisa (M1–H4), sama dengan _Period di EA.</td></tr>
+     <tr><td>Worker OANDA</td><td>Jembatan harga gratis (Cloudflare Worker) agar XAU_USD dkk tetap live tanpa token.</td></tr>
+    </table>
+   </div>
+   <div class="hsec">
+    <h3>🧭 Cara baca layar</h3>
+    <ul>
+     <li><b>Harga besar + pill tren</b> — harga live dan arah tren menurut filter EA.</li>
+     <li><b>STRUKTUR SWING</b> — status BOS/CHoCH/MSS terakhir + status filter BOS EA.</li>
+     <li><b>Heatmap harga</b> — peta panas level harga: makin merah/panas = sering disentuh (equilibrium), transparan/biru = jarang dilewati cepat (imbalance); tepi/tint hijau = zona Demand, merah = Supply; garis kuning + “◀ harga” = posisi harga sekarang.</li>
+     <li><b>Heatmap likuiditas (orderbook)</b> — papan DOM ala Bookmap: baris = level harga, kolom = waktu (paling kanan = sekarang); sel hijau = order beli (bid) yang menunggu, merah = order jual (ask); makin terang = likuiditas makin tebal (dinding). Di bawahnya: total bid/ask, rasio imbalance, dan dinding terbesar. Sumber: depth Binance/Mirror (termasuk pair bridge OANDA), orderbook Bybit, atau data sintetis di mode SIMULASI.</li>
+     <li><b>Kotak sinyal</b> — POSISI berjalan / SINYAL VALID / MENUNGGU SETUP beserta alasannya.</li>
+     <li><b>Bunyi alert</b> — saat muncul “SINYAL VALID”, halaman berbunyi: <b>🕌 Adzan (sinyal)</b> (mp3 adzan online; bila jaringan memblokir, otomatis nada melodi) atau <b>🔔 beep</b> bila Adzan dimatikan. Toggle ini bunyinya mengikuti SINYAL TRADING, bukan jadwal sholat. <b>🗣️ Suara</b> mengucapkan arah entry. Menyalakan/mematikan toggle TIDAK membunyikan adzan langsung — coba bunyinya lewat tombol <b>“▶ Tes bunyi”</b> di ⚙ → Jadwal adzan.</li>
+     <li><b>🕌 Jadwal Adzan</b> — panel jadwal sholat hari ini di <b>⚙ → Jadwal adzan</b> (Imsak, Subuh, Terbit, Dzuhur, Ashar, Maghrib, Isya) menurut lokasi Anda dengan metode resmi <b>KEMENAG RI</b>, plus hitung mundur menuju waktu sholat berikutnya. Aktifkan <b>“🔊 Bunyi adzan saat waktu sholat”</b> agar bunyi adzan diputar TEPAT pada waktunya — Subuh, Dzuhur, Ashar, Maghrib, Isya. Ada tombol “▶ Tes bunyi” di panel untuk mencoba.</li>
+     <li><b>Zona SND</b> — daftar zona terbaru; hijau = harga di dalam zona, kuning = dekat zona, biru = masih jauh; skor &amp; ceklis BOS tampil per zona.</li>
+     <li><b>Jurnal</b> — catatan sinyal &amp; TP/SL seperti log Experts di MT5.</li>
+    </ul>
+   </div>
+   <div class="hsec">
+    <h3>⚠️ Catatan penting</h3>
+    <ul>
+     <li>Halaman ini <b>hanya sinyal virtual</b> — tidak mengirim order ke broker mana pun. Eksekusi nyata tetap lewat EA di MT5.</li>
+     <li>Bukan saran finansial. Semua keputusan &amp; risiko trading sepenuhnya milik pengguna.</li>
+     <li>Data memakai API publik (Binance/Bybit/Worker) sehingga bisa tertunda atau dibatasi jaringan.</li>
+     <li>Waktu sholat dihitung via API Aladhan (metode KEMENAG RI) dan lokasi dideteksi dari IP — keduanya layanan online. Bila gagal, panel jadwal menampilkan perkiraan Jakarta; isi kota/koordinat di bawahnya untuk hasil pasti. Bunyi otomatis hanya berbunyi bila tab terbuka &amp; browser mengizinkan audio.</li>
+     <li>Pengaturan tersimpan otomatis di browser (token OANDA tidak disimpan).</li>
+    </ul>
+   </div>
+  </div>
+ </div>
+</div>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   NYAI INSTITUTIONAL SND — VERSI WEB SEDERHANA (replikasi NYAI_Institutional_SND_EA.mq5)
+   Mesin analisa = port 1:1 dari EA (TIDAK diubah):
+   OnTick bar baru → ATR(14) → DetectTrend (BOS) → scan zona SND
+   (displacement > 0.8×ATR, skor 55+ratio×12, maks 95) → filter POI
+   (harga di zona ±0.35×ATR, skor ≥ InpMinScore) → sinyal skor tertinggi
+   → SL tepi zona ±10 point → TP RR 1:InpRiskReward → 1 posisi pada satu waktu.
+   Tambahan v2 (tidak menyentuh logika sinyal):
+   - Panel STRUKTUR SWING: BOS / CHoCH(COC) / MSS dari swing high-low (informasi)
+   - HEATMAP 1 harga: densitas sentuhan level + overlay zona SND (informasi)
+   - HEATMAP 2 likuiditas: orderbook/DOM real-time ala Bookmap (informasi)
+   - Alert ADZAN saat sinyal valid (mp3 online, fallback nada melodi WebAudio)
+   - JADWAL ADZAN harian (API Aladhan, metode KEMENAG RI): panel waktu sholat di ⚙
+     Imsak-Isya menurut lokasi + bunyi adzan otomatis pada waktu sholat — fitur
+     TERPISAH dari alert sinyal di atas (yang itu mengikuti sinyal trading)
+   - Modal Bantuan "Aturan Main" (❔)
+   - Tombol Mulai/Berhenti, pengaturan dikelompokkan
+   ═══════════════════════════════════════════════════════════════════════════ */
+function $(id){ return document.getElementById(id); }
+function logErr(t){ var e = $('err'); if (e){ e.textContent = t; } if (t && window.console) console.log('[NYAI]', t); }
+var S = { running:false, gen:0, live:null, liveT:0, priceHost:'', restHost:'', flowHost:'',
+  cs:null, csT:0, lastBar:0, zones:[], poi:[], sig:null, pos:null, posHist:[], journal:[], struct:null,
+  cfg:{ src:'oanda', sym:'BTCUSDT', ins:'XAU_USD', tf:'m15', env:'practice', acc:'', tok:'', host:'auto', auto:true },
+  P:{ lot:0.01, rr:2.0, minScore:45, atrP:14, lb:200, bos:true, et:true, etMin:40 },
+  binList:null, oaIns:null, sim:null, lastAl:{ key:'', t:0 }, dom:{ snaps:[], lo:null, hi:null, last:0, host:'' } };
+var IVM = { m1:{ nm:'M1', b:'1m', o:'M1', bb:'1', ok:'1', ms:60000 }, m5:{ nm:'M5', b:'5m', o:'M5', bb:'5', ok:'5', ms:300000 }, m15:{ nm:'M15', b:'15m', o:'M15', bb:'15', ok:'15', ms:900000 },
+  m30:{ nm:'M30', b:'30m', o:'M30', bb:'30', ok:'30', ms:1800000 }, h1:{ nm:'H1', b:'1h', o:'H1', bb:'60', ok:'60', ms:3600000 }, h4:{ nm:'H4', b:'4h', o:'H4', bb:'240', ok:'240', ms:14400000 } };
+var NM = { m1:'M1', m5:'M5', m15:'M15', m30:'M30', h1:'H1', h4:'H4' };
+var TF_ORDER = ['m1','m5','m15','m30','h1','h4'];
+
+/* ── format harga: digit menyesuaikan besaran harga (setara _Digits MT5) ── */
+function decOf(px){ return px >= 1000 ? 2 : px >= 20 ? 3 : 5; }
+function fx(v){ return isFinite(v) ? (+v).toFixed(decOf(v)) : '--'; }
+function agoTxt(t){ var s = Math.floor((Date.now() - t) / 1000); return s < 5 ? 'baru saja' : s < 60 ? s + ' dtk lalu' : Math.floor(s / 60) + ' mnt lalu'; }
+function livePx(){ return (S.live != null && Date.now() - S.liveT < 20000) ? S.live : null; }
+/* _Point: besaran 1 point per instrumen (buffer SL 10 point seperti EA).
+   Aproksimasi: XAU/BTC/ETH ≥1000 → 0.01, pair JPY & crypto menengah → 0.001, forex 5-digit → 0.00001 */
+function pointSize(px){ return px >= 1000 ? 0.01 : px >= 20 ? 0.001 : 0.00001; }
+
+/* ═══ KONEKSI #1: Binance / Mirror — persis bridge (REST failover + WS aggTrade) ═══ */
+var WS_H = { binance: ['stream.binance.com:9443', 'stream.binance.com:443'], mirror: ['data-stream.binance.vision'] };
+var REST_H = { binance: ['https://api.binance.com', 'https://api1.binance.com', 'https://api2.binance.com'], mirror: ['https://data-api.binance.vision'] };
+function hostOrder(map){ var h = S.cfg.host, o = h === 'mirror' ? ['mirror', 'binance'] : ['binance', 'mirror']; return map[o[0]].concat(map[o[1]]); }
+function tFetch(u, ms, o){ return Promise.race([fetch(u, Object.assign({ cache: 'no-store' }, o || {})), new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout ' + ms + 'ms')); }, ms); })]); }
+async function binRest(path){
+  var hs = hostOrder(REST_H), last = 'jaringan';
+  for (var i = 0; i < hs.length; i++){
+    try { var r = await tFetch(hs[i] + path, 6500); if (r.ok){ S.restHost = hs[i].replace('https://', ''); return r; } last = hs[i] + ' HTTP ' + r.status; }
+    catch (e) { last = hs[i] + ': ' + e.message; }
+  }
+  throw new Error('Binance/Mirror gagal (' + last + ')');
+}
+function startBinanceWS(){
+  try { if (S.ws){ S.ws.onclose = null; S.ws.close(); } } catch (e) {}
+  var P = String(S.cfg.sym || '').toUpperCase(), p = P.toLowerCase(), hosts = hostOrder(WS_H), gen = S.gen;
+  var h = { dead: false, ws: null, idx: 0, fail: 0, last: Date.now(), lastAgg: 0,
+    close: function(){ h.dead = true; clearInterval(h.wd); clearInterval(h.rt); try { if (h.ws){ h.ws.onclose = null; h.ws.onmessage = null; h.ws.close(); } } catch (e) {} } };
+  S.ws = h;
+  function alive(){ return !h.dead && S.ws === h && gen === S.gen && S.cfg.src !== 'sim'; }
+  function next(){ if (!alive()) return; h.fail++; h.idx++; var w = Math.min(15000, 1000 * Math.pow(1.6, Math.min(h.fail, 6))); logErr('WS putus, coba ' + hosts[h.idx % hosts.length] + ' dalam ' + Math.round(w / 1000) + 's'); setTimeout(open, w); }
+  function open(){
+    if (!alive()) return;
+    var host = hosts[h.idx % hosts.length], ws;
+    try { ws = new WebSocket('wss://' + host + '/stream?streams=' + p + '@aggTrade'); } catch (e) { next(); return; }
+    h.ws = ws; var opened = false, to = setTimeout(function(){ if (!opened){ try { ws.close(); } catch (e) {} } }, 6000);
+    ws.onopen = function(){ opened = true; clearTimeout(to); h.fail = 0; h.last = Date.now(); S.flowHost = 'WS ' + host; };
+    ws.onmessage = function(ev){
+      h.last = Date.now(); S.flowHost = 'WS ' + host;
+      try { var m = JSON.parse(ev.data), d = m.data; if (d && d.p > 0){ S.live = +d.p; S.liveT = Date.now(); S.priceHost = 'Binance WS'; if (+d.a > h.lastAgg) h.lastAgg = +d.a; } } catch (e) {}
+    };
+    ws.onclose = function(){ clearTimeout(to); if (h.ws === ws) next(); };
+    ws.onerror = function(){ try { ws.close(); } catch (e) {} };
+  }
+  h.wd = setInterval(function(){ if (alive() && Date.now() - h.last > 8000 && h.ws && h.ws.readyState === 1){ try { h.ws.close(); } catch (e) {} } }, 3000);
+  h.rt = setInterval(async function(){   /* WS diam → REST aggTrades (Binance → Mirror → Bybit) */
+    if (!alive() || Date.now() - h.last < 6000) return;
+    var hs = hostOrder(REST_H);
+    for (var i = 0; i < hs.length; i++){
+      try { var r = await tFetch(hs[i] + '/api/v3/aggTrades?symbol=' + P + '&limit=5', 4000); if (!r.ok) continue;
+        var L = await r.json(); if (L && L.length){ S.live = +L[L.length - 1].p; S.liveT = Date.now(); S.priceHost = 'REST ' + hs[i].replace('https://', ''); h.last = Date.now(); return; } } catch (e) {}
+    }
+    try { var q = altQ(P); if (q){ var rb = await tFetch('https://api.bybit.com/v5/market/tickers?category=spot&symbol=' + q.bb, 4000);
+      if (rb.ok){ var a = ((await rb.json()).result.list || [])[0]; if (a && +a.lastPrice > 0){ S.live = +a.lastPrice; S.liveT = Date.now(); S.priceHost = 'REST Bybit'; h.last = Date.now(); } } } } catch (e) {}
+  }, 2500);
+  open();
+}
+/* ═══ KONEKSI #2: Bybit v5 public (WS publicTrade/tickers + REST ticker & kline) ═══ */
+function altQ(sym){ var m = String(sym || '').toUpperCase().match(/^([A-Z0-9]+)(USDT|USDC|USD)$/); return m ? { bb: m[1] + m[2], ok: m[1] + '-' + m[2] } : null; }
+async function pollBybitPrice(){
+  if (S.cfg.src !== 'bybit') return;
+  try {
+    var q = altQ(S.cfg.sym); if (!q) throw new Error('Format pair Bybit tidak valid');
+    var r = await tFetch('https://api.bybit.com/v5/market/tickers?category=spot&symbol=' + q.bb, 5000);
+    if (!r.ok) throw new Error('Bybit ticker HTTP ' + r.status);
+    var j = await r.json(), a = j && j.result && j.result.list && j.result.list[0], p = a && +a.lastPrice;
+    if (!(p > 0)) throw new Error('Harga Bybit kosong');
+    S.live = p; S.liveT = Date.now(); S.priceHost = 'Bybit REST';
+  } catch (e){ logErr('Bybit price: ' + e.message); }
+}
+function startBybitWS(){
+  try { if (S.ws && S.ws.close) S.ws.close(); } catch (e) {}
+  var sym = String(S.cfg.sym || '').toUpperCase(), gen = S.gen;
+  if (!/^[A-Z0-9]{5,30}$/.test(sym)){ logErr('Pair Bybit tidak valid: ' + sym); return; }
+  var ws, dead = false, retry = null;
+  var h = { close: function(){ dead = true; clearTimeout(retry); try { if (ws) ws.close(); } catch (e){} } };
+  S.ws = h; S.flowHost = 'Bybit WS connecting';
+  function open(){
+    if (dead || gen !== S.gen || S.cfg.src !== 'bybit') return;
+    try { ws = new WebSocket('wss://stream.bybit.com/v5/public/spot'); } catch (e){ retry = setTimeout(open, 2500); return; }
+    ws.onopen = function(){
+      if (dead || gen !== S.gen) return;
+      S.flowHost = 'Bybit WS';
+      ws.send(JSON.stringify({ op: 'subscribe', args: ['publicTrade.' + sym, 'tickers.' + sym] }));
+    };
+    ws.onmessage = function(ev){
+      if (dead || gen !== S.gen) return;
+      try {
+        var m = JSON.parse(ev.data), d = m.data || [];
+        if (m.topic && m.topic.indexOf('publicTrade.') === 0){
+          (Array.isArray(d) ? d : [d]).forEach(function(x){ if (+x.p > 0){ S.live = +x.p; S.liveT = Date.now(); S.priceHost = 'Bybit WS'; } });
+        } else if (m.topic && m.topic.indexOf('tickers.') === 0){
+          var px = +(d.lastPrice || d.lp || 0); if (px > 0){ S.live = px; S.liveT = Date.now(); S.priceHost = 'Bybit WS'; }
+        }
+      } catch (e) {}
+    };
+    ws.onclose = function(){ if (!dead && gen === S.gen){ S.flowHost = 'Bybit reconnecting'; retry = setTimeout(open, 2500); } };
+    ws.onerror = function(){ try { ws.close(); } catch (e){} };
+  }
+  open();
+}
+async function bybitKlines(sym, iv, limit){
+  var q = altQ(sym), m = IVM[iv]; if (!q || !m) return null;
+  var r = await tFetch('https://api.bybit.com/v5/market/kline?category=spot&symbol=' + q.bb + '&interval=' + m.ok + '&limit=' + limit, 6500);
+  if (!r.ok) throw new Error('Bybit kline HTTP ' + r.status);
+  var L = (await r.json()).result.list;
+  if (!L || !L.length) return null;
+  return L.slice().reverse().map(function(x){ return { t: +x[0], o: +x[1], h: +x[2], l: +x[3], c: +x[4], v: +x[5] || 0 }; });
+}
+
+/* ═══ KONEKSI #3: OANDA — Worker quote (tanpa kredensial) + API candle (dengan kredensial) ═══ */
+var OANDA_WORKER = 'https://dts-oanda-worker.hanjakal.workers.dev/';
+async function workerFetch(u, ms){   /* langsung dulu; diblokir origin → proxy server-side */
+  var r = null, err = '';
+  try { r = await tFetch(u, ms); } catch (e) { err = e.message || 'jaringan gagal'; }
+  if (r && r.ok) return r;
+  if (r && r.status !== 403) throw new Error('Worker HTTP ' + r.status);
+  var P = ['https://proxy.cors.dev/', 'https://api.codetabs.com/v1/proxy/?quest='], last = r ? 'Worker menolak origin (403)' : 'Worker tak terjangkau (' + err + ')';
+  for (var i = 0; i < P.length; i++){
+    try { var rp = await tFetch(P[i].indexOf('quest=') > 0 ? P[i] + encodeURIComponent(u) : P[i] + u, ms); if (rp.ok){ rp.viaProxy = true; return rp; } last += ' · proxy HTTP ' + rp.status; }
+    catch (e) { last += ' · proxy gagal'; }
+  }
+  throw new Error(last);
+}
+async function pollOanda(){
+  var c = S.cfg; if (c.src !== 'oanda') return;
+  if (c.tok && c.acc){
+    try {
+      var base = c.env === 'live' ? 'https://api-fxtrade.oanda.com' : 'https://api-fxpractice.oanda.com';
+      var r = await fetch(base + '/v3/accounts/' + encodeURIComponent(c.acc) + '/pricing?instruments=' + encodeURIComponent(c.ins), { headers: { Authorization: 'Bearer ' + c.tok } });
+      if (!r.ok) throw new Error(r.status); var j = await r.json(), p = j.prices && j.prices[0];
+      if (p && p.bids && p.asks){ S.live = (+p.bids[0].price + +p.asks[0].price) / 2; S.liveT = Date.now(); S.priceHost = 'OANDA API'; return; }
+    } catch (e) { logErr('OANDA API: ' + e.message + ' → pakai Worker'); }
+  }
+  try {
+    var w = await workerFetch(OANDA_WORKER + '?instrument=' + encodeURIComponent(c.ins) + '&t=' + Date.now(), 4000), d = await w.json();
+    var di = d && d.instrument ? String(d.instrument).toUpperCase().replace('/', '_') : '';
+    if (di && di !== c.ins) throw new Error('Worker mengirim ' + di + ' bukan ' + c.ins);
+    if (!di && c.ins !== 'XAU_USD') throw new Error(c.ins + ' butuh Worker V2 atau kredensial OANDA');
+    var bid = +d.bid, ask = +d.ask, mid = (bid > 0 && ask >= bid) ? (bid + ask) / 2 : +(d.mid != null ? d.mid : d.price != null ? d.price : d.close);
+    if (!(mid > 0)) throw new Error('harga Worker tidak valid');
+    S.live = mid; S.liveT = Date.now(); S.priceHost = 'Worker' + (w.viaProxy ? '+proxy' : '');
+  } catch (e) { logErr('Worker OANDA: ' + e.message); }
+}
+async function loadOandaIns(force){
+  var c = S.cfg, acc = String(c.acc || ($('acc') && $('acc').value) || '').trim(), tok = String(c.tok || ($('tok') && $('tok').value) || '').trim(), env = c.env || 'practice';
+  var hasCred = !!(tok && acc);
+  if (!force && S.oaIns && S.oaIns.length && (S.oaInsFrom === 'API' || !hasCred)) return;
+  var list = null, from = 'bawaan';
+  if (hasCred){
+    try {
+      var base = env === 'live' ? 'https://api-fxtrade.oanda.com' : 'https://api-fxpractice.oanda.com';
+      var r = await fetch(base + '/v3/accounts/' + encodeURIComponent(acc) + '/instruments', { headers: { Authorization: 'Bearer ' + tok } });
+      if (!r.ok) throw new Error(r.status); var j = await r.json();
+      list = (j.instruments || []).map(function(x){ return x.name; }); from = 'API';
+    } catch (e) { logErr('Daftar instrumen OANDA: ' + e.message + ' → pakai daftar bawaan'); list = null; }
+  }
+  if (!list || !list.length) list = Object.keys(BRIDGE).concat(['EUR_USD', 'GBP_USD', 'USD_JPY', 'AUD_USD', 'USD_CAD', 'XAG_USD', 'NAS100_USD', 'SPX500_USD', 'DE30_EUR']);
+  S.oaIns = list.sort(); S.oaInsFrom = from;
+  fillDd(); var dl = $('dlIns'); if (dl) dl.innerHTML = S.oaIns.map(function(n){ return '<option value="' + n + '">'; }).join('');
+}
+
+/* ═══ KONEKSI #4: SIMULASI — M15 acak ber-rezim, diagregasi ke TF lebih tinggi ═══ */
+var SIM = { m15: null, px: 4100, drift: 0.0, timer: null };
+function simBuild(){
+  var n = 300 * 96 + 40, cs = [], p = 3900, t0 = Date.now() - n * 900000, drift = 0.04, i;
+  for (i = 0; i < n; i++){
+    if (i % 400 === 0) drift = (Math.random() - 0.35) * 0.18;
+    var o = p, v = 1.6 + Math.random() * 1.6, c = o + drift + (Math.random() - 0.5) * 2 * v;
+    var h = Math.max(o, c) + Math.random() * v * 0.7, l = Math.min(o, c) - Math.random() * v * 0.7;
+    cs.push({ t: t0 + i * 900000, o: o, h: h, l: l, c: c }); p = c;
+  }
+  SIM.m15 = cs; SIM.px = p;
+}
+function agg(cs, k){
+  var out = [], i, j, g;
+  for (i = cs.length % k; i + k <= cs.length; i += k){
+    g = cs.slice(i, i + k);
+    out.push({ t: g[0].t, o: g[0].o, h: Math.max.apply(null, g.map(function(x){ return x.h; })), l: Math.min.apply(null, g.map(function(x){ return x.l; })), c: g[g.length - 1].c });
+  }
+  return out;
+}
+function fetchTFSim(){
+  if (!SIM.m15) simBuild();
+  var iv = IVM[S.cfg.tf], k = Math.round(iv.ms / 900000);
+  var cs = k <= 1 ? SIM.m15.slice().reverse() : agg(SIM.m15, k).reverse();
+  return cs;
+}
+function startSimFlow(){
+  clearInterval(SIM.timer);
+  var px = SIM.px, bias = 0, step = 0;
+  SIM.timer = setInterval(function(){
+    step++; if (step % 60 === 0) bias = (Math.random() - 0.5) * 2;
+    px += (Math.random() - 0.5) * 0.35 + bias * 0.03;
+    S.live = px; S.liveT = Date.now(); S.priceHost = 'Sim';
+    if (SIM.m15 && SIM.m15.length){ SIM.m15[SIM.m15.length - 1].c = px; SIM.m15[SIM.m15.length - 1].h = Math.max(SIM.m15[SIM.m15.length - 1].h, px); SIM.m15[SIM.m15.length - 1].l = Math.min(SIM.m15[SIM.m15.length - 1].l, px); }
+  }, 250);
+}
+
+/* ═══ HEATMAP LIKUIDITAS — orderbook/DOM real-time ala Bookmap (informasi) ═══
+   Snapshot depth tiap ±2 dtk (Binance/Mirror & pair bridge OANDA, Bybit; sintetis utk Sim)
+   diagregasi ke DOM_BINS bin harga di sekitar harga tengah → papan waktu×harga:
+   sel makin terang = likuiditas resting makin tebal. Bid hijau, ask merah. */
+var DOM_BINS = 44, DOM_COLS = 40;
+function fmtQty(q){ return q >= 1e6 ? (q / 1e6).toFixed(1) + 'M' : q >= 1000 ? (q / 1000).toFixed(1) + 'k' : q >= 1 ? q.toFixed(2) : q.toFixed(3); }
+function simDom(){
+  var px = livePx() != null ? livePx() : (SIM.px || 4100), sd = SIM.dom || (SIM.dom = { b: [], a: [] }), n = 26, st = px * 0.00035, i;
+  for (i = 0; i < n; i++){
+    sd.b[i] = (sd.b[i] || 0) * 0.55 + (Math.random() < 0.1 ? 6 + Math.random() * 8 : 0.5 + Math.random() * 2.5) * 0.45;
+    sd.a[i] = (sd.a[i] || 0) * 0.55 + (Math.random() < 0.1 ? 6 + Math.random() * 8 : 0.5 + Math.random() * 2.5) * 0.45;
+  }
+  var b = [], a = [];
+  for (i = 0; i < n; i++){ b.push([px - st * (i + 1), sd.b[i] * px * 0.001]); a.push([px + st * (i + 1), sd.a[i] * px * 0.001]); }
+  return { b: b, a: a };
+}
+function domStore(bids, asks, host){
+  var bb = 0, aa = 0, i, k, mn = Infinity, xf = 0;
+  for (i = 0; i < bids.length; i++){ var pb = bids[i][0]; if (pb > bb) bb = pb; if (pb < mn) mn = pb; }
+  for (i = 0; i < asks.length; i++){ var pa = asks[i][0]; if (!aa || pa < aa) aa = pa; if (pa > xf) xf = pa; }
+  var mid = bb > 0 && aa > 0 ? (bb + aa) / 2 : livePx(); if (!(mid > 0)) return;
+  /* grid adaptif dari lebar orderbook sendiri (floor 0.04%, cap 0.5% harga) */
+  var D = S.dom, ext = Math.min(Math.max(Math.max(bb - mid, aa > 0 ? mid - aa : 0, mid - mn, xf - mid, 0) * 1.3, mid * 0.0004), mid * 0.005);
+  if (!(D.hi > D.lo) || Math.abs((D.lo + D.hi) / 2 - mid) > ext * 0.6){ D.lo = mid - ext; D.hi = mid + ext; D.snaps = []; }   /* re-center adaptif */
+  var bh = (D.hi - D.lo) / DOM_BINS, b = new Array(DOM_BINS).fill(0), a = new Array(DOM_BINS).fill(0);
+  for (i = 0; i < bids.length; i++){ var p1 = bids[i][0]; if (p1 <= D.lo || p1 >= D.hi) continue; k = Math.min(DOM_BINS - 1, Math.max(0, Math.floor((p1 - D.lo) / bh))); b[k] += bids[i][1]; }
+  for (i = 0; i < asks.length; i++){ var p2 = asks[i][0]; if (p2 <= D.lo || p2 >= D.hi) continue; k = Math.min(DOM_BINS - 1, Math.max(0, Math.floor((p2 - D.lo) / bh))); a[k] += asks[i][1]; }
+  D.snaps.push({ t: Date.now(), b: b, a: a, mid: mid });
+  if (D.snaps.length > DOM_COLS) D.snaps.shift();
+  D.host = host;
+}
+async function domTick(){
+  var c = S.cfg, now = Date.now();
+  if (!S.running || now - S.dom.last < 2000) return;
+  S.dom.last = now;
+  try {
+    if (c.src === 'sim'){ var f = simDom(); domStore(f.b, f.a, 'Sim'); return; }
+    if (c.src === 'bybit'){
+      var r = await tFetch('https://api.bybit.com/v5/market/orderbook?category=spot&symbol=' + encodeURIComponent(c.sym) + '&limit=50', 5000);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var j = await r.json(), R = j && j.result;
+      if (!R || !R.b || !R.a || !R.b.length) throw new Error('orderbook kosong');
+      domStore(R.b.map(function(x){ return [+x[0], +x[1]]; }), R.a.map(function(x){ return [+x[0], +x[1]]; }), 'Bybit REST');
+      return;
+    }
+    var r2 = await binRest('/api/v3/depth?symbol=' + encodeURIComponent(c.sym) + '&limit=500'), j2 = await r2.json();
+    domStore((j2.bids || []).map(function(x){ return [+x[0], +x[1]]; }), (j2.asks || []).map(function(x){ return [+x[0], +x[1]]; }), 'REST ' + (S.restHost || 'Binance'));
+  } catch (e) { S.dom.host = 'gagal: ' + e.message; }
+}
+
+/* ═══ CANDLE: sumber sesuai src — sama seperti loadCandles() bridge ═══ */
+async function loadCandles(limit){
+  var c = S.cfg, m = IVM[c.tf];
+  if (c.src === 'sim') return fetchTFSim();
+  if (c.src === 'oanda' && c.tok && c.acc){
+    var base = c.env === 'live' ? 'https://api-fxtrade.oanda.com' : 'https://api-fxpractice.oanda.com';
+    var r = await fetch(base + '/v3/instruments/' + encodeURIComponent(c.ins) + '/candles?price=M&granularity=' + m.o + '&count=' + limit, { headers: { Authorization: 'Bearer ' + c.tok } });
+    if (!r.ok) throw new Error('OANDA ' + r.status);
+    var j = await r.json();
+    return (j.candles || []).filter(function(x){ return x.complete !== false; }).map(function(x){ return { t: Date.parse(x.time), o: +x.mid.o, h: +x.mid.h, l: +x.mid.l, c: +x.mid.c, v: +(x.volume || 0) }; }).reverse();
+  }
+  if (c.src === 'bybit'){
+    var k = await bybitKlines(c.sym, c.tf, limit);
+    if (!k) throw new Error('Bybit tidak menyediakan pair/timeframe ini');
+    return k;
+  }
+  var kk = await (await binRest('/api/v3/klines?symbol=' + encodeURIComponent(c.sym) + '&interval=' + m.b + '&limit=' + limit)).json();
+  return kk.map(function(x){ return { t: +x[0], o: +x[1], h: +x[2], l: +x[3], c: +x[4], v: +(x[5] || 0) }; }).reverse();   /* seri: [0] = bar berjalan, urutan sama dgn CopyRates EA */
+}
+
+/* ═══ PAIR: BRIDGE OANDA↔Binance + daftar pair, persis bridge ═══ */
+var BRIDGE = { XAU_USD: ['PAXGUSDT', 'XAUTUSDT'], BTC_USD: ['BTCUSDT'], ETH_USD: ['ETHUSDT'], LTC_USD: ['LTCUSDT'], BCH_USD: ['BCHUSDT'], LINK_USD: ['LINKUSDT'], XRP_USD: ['XRPUSDT'], SOL_USD: ['SOLUSDT'], ADA_USD: ['ADAUSDT'], DOT_USD: ['DOTUSDT'] };
+var FIATS = { USD: 1, EUR: 1, GBP: 1, JPY: 1, CHF: 1, AUD: 1, CAD: 1, NZD: 1, SGD: 1, HKD: 1 };
+function candidates(ins){
+  var k = String(ins || '').toUpperCase().replace('/', '_'); if (BRIDGE[k]) return BRIDGE[k].slice();
+  var m = /^([A-Z0-9]{2,10})_USD$/.exec(k); return (m && !FIATS[m[1]]) ? [m[1] + 'USDT', m[1] + 'USDC'] : [];
+}
+async function pairOk(sym){
+  try { var j = await (await binRest('/api/v3/exchangeInfo?symbol=' + encodeURIComponent(sym))).json(); return (j.symbols || []).some(function(x){ return x.symbol === sym && x.status === 'TRADING'; }); }
+  catch (e) { return /400|tidak/.test(e.message) ? false : null; }
+}
+async function autoPair(){
+  var c = S.cfg; if (c.src !== 'oanda') return;
+  var cand = candidates(c.ins), pick = null, i, ok;
+  if (!cand.length){ logErr('Auto pair: ' + c.ins + ' tidak punya padanan Binance, candle memakai ' + c.sym); return; }
+  for (i = 0; i < cand.length && !pick; i++){ ok = await pairOk(cand[i]); if (ok === true || (ok === null && BRIDGE[c.ins])) pick = cand[i]; }
+  if (!pick){ logErr('Auto pair: ' + cand.join('/') + ' tidak aktif di Binance'); return; }
+  c.sym = pick; $('sym').value = pick;
+}
+async function loadBinancePairs(force){
+  var K = 'ny_snd_pairs_v1', L = null, dl = $('dlSym');
+  try { var raw = JSON.parse(localStorage.getItem(K) || 'null'); if (!force && raw && Date.now() - raw.ts < 864e5) L = raw.p; } catch (e) {}
+  if (!L){
+    try { var j = await (await binRest('/api/v3/exchangeInfo?permissions=SPOT')).json();
+      L = (j.symbols || []).filter(function(x){ return x.status === 'TRADING' && (x.quoteAsset === 'USDT' || x.quoteAsset === 'USDC'); }).map(function(x){ return x.symbol; }).sort();
+      try { localStorage.setItem(K, JSON.stringify({ ts: Date.now(), p: L })); } catch (e) {}
+    } catch (e) { logErr('Daftar pair Binance: ' + e.message); return; }
+  }
+  S.binList = L; fillDd();
+  if (dl) dl.innerHTML = L.map(function(p){ return '<option value="' + p + '">'; }).join('');
+}
+function fillDd(){
+  var oa = $('src').value === 'oanda', f = $('symSearch').value.trim().toUpperCase(), dd = $('symDd');
+  var L = oa ? (S.oaIns && S.oaIns.length ? S.oaIns : Object.keys(BRIDGE)) : (S.binList || []);
+  var cur = String($(oa ? 'ins' : 'sym').value || '').toUpperCase(), out = L.filter(function(x){ return !f || x.toUpperCase().indexOf(f) >= 0; });
+  if (cur && !f && out.indexOf(cur) < 0) out.unshift(cur);
+  dd.innerHTML = out.length ? out.slice(0, 400).map(function(x){ return '<option value="' + x + '">' + x + '</option>'; }).join('') : '<option value="">' + (L.length ? 'Tidak ada yang cocok' : 'Memuat… (tekan 🔄)') + '</option>';
+  if (out.indexOf(cur) >= 0) dd.value = cur;
+  $('symSearch').placeholder = oa ? 'cari instrumen (' + L.length + ')' : 'cari pair Binance...';
+  dd.disabled = $('src').value === 'sim';
+}
+function pickPair(){
+  var v = $('symDd').value; if (!v) return;
+  if ($('src').value === 'oanda'){ $('ins').value = v; var cd = candidates(v); if (cd.length && $('auto').checked) $('sym').value = cd[0]; }
+  else $('sym').value = v;
+  if (S.running) start();   /* ganti pair saat terhubung → sambung ulang otomatis */
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+   MESIN SND — PORT 1:1 DARI NYAI_Institutional_SND_EA.mq5
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* ATR Wilder = iATR MT5 (smoothing (prev*(p-1)+TR)/p, seed SMA p TR pertama) */
+function atrMT5(cs, p){
+  var n = cs.length; if (n < p + 1) return null;
+  var ch = cs.slice().reverse(), tr = [ch[0].h - ch[0].l], i;
+  for (i = 1; i < n; i++) tr.push(Math.max(ch[i].h - ch[i].l, Math.abs(ch[i].h - ch[i - 1].c), Math.abs(ch[i].l - ch[i - 1].c)));
+  var a = 0; for (i = 0; i < p; i++) a += tr[i]; a /= p;
+  for (i = p; i < n; i++) a = (a * (p - 1) + tr[i]) / p;
+  return a;
+}
+/* int DetectTrend(const MqlRates &cs[]) — persis EA */
+function detectTrend(cs){
+  var n = cs.length; if (n < 20) return 0;
+  var sumHigh = 0, sumLow = 0, ah = 0, al = 0, i;
+  for (i = 0; i < 10; i++){ sumHigh += cs[i].high != null ? cs[i].high : cs[i].h; sumLow += cs[i].low != null ? cs[i].low : cs[i].l; }
+  for (i = 10; i < 20; i++){ ah += cs[i].high != null ? cs[i].high : cs[i].h; al += cs[i].low != null ? cs[i].low : cs[i].l; }
+  if (sumHigh > ah && sumLow > al) return 1;    // Bullish
+  if (sumHigh < ah && sumLow < al) return -1;   // Bearish
+  return 0;                                     // Sideways
+}
+/* Scan zona SND — persis loop i=2..LookbackBars-2 pada EA:
+   displacement body > 0.8×ATR; bullish → Demand (lo=low, hi=max(open,close));
+   bearish → Supply (lo=min(open,close), hi=high); skor = min(95, 55 + (body/ATR)*12) */
+function scanZones(cs, atr, lb){
+  var zones = [], n = Math.min(lb, cs.length);
+  for (var i = 2; i < n - 2; i++){
+    var c = cs[i]; if (!c) break;
+    var body = Math.abs(c.c - c.o);
+    if (body > atr * 0.8){
+      var score = Math.min(95.0, 55.0 + (body / atr) * 12.0);
+      if (c.c > c.o) zones.push({ lo: c.l, hi: Math.max(c.o, c.c), side: 'BUY', score: score, why: 'base -> bullish displacement', t: c.t, i: i });
+      else if (c.c < c.o) zones.push({ lo: Math.min(c.o, c.c), hi: c.h, side: 'SELL', score: score, why: 'base -> bearish displacement', t: c.t, i: i });
+    }
+  }
+  return zones;
+}
+/* Filter POI — harga menyentuh zona ±0.35×ATR dan skor ≥ InpMinScore */
+function filterPOI(zones, px, atr, minScore){
+  return zones.filter(function(z){ return px >= z.lo - atr * 0.35 && px <= z.hi + atr * 0.35 && z.score >= minScore; });
+}
+/* Eksekusi entry — persis blok #5 EA: SL tepi zona ± 10 point, TP = RR × jarak SL */
+function planEntry(sig, px, P){
+  var pt = pointSize(px);
+  if (sig.side === 'BUY'){
+    var sl = sig.lo - 10 * pt;
+    return { side: 'BUY', entry: px, sl: sl, tp: px + (px - sl) * P.rr, rr: P.rr, score: sig.score, zone: sig, comment: 'NYAI SND BUY [Skor: ' + Math.round(sig.score) + ']' };
+  }
+  var sl2 = sig.hi + 10 * pt;
+  return { side: 'SELL', entry: px, sl: sl2, tp: px - (sl2 - px) * P.rr, rr: P.rr, score: sig.score, zone: sig, comment: 'NYAI SND SELL [Skor: ' + Math.round(sig.score) + ']' };
+}
+function jPush(txt, cls){
+  S.journal.unshift({ t: Date.now(), txt: txt, cls: cls || '' });
+  if (S.journal.length > 60) S.journal.length = 60;
+}
+/* ═══ STRUKTUR SWING (BOS / CHoCH / MSS) — hanya informasi, TIDAK mengubah sinyal EA ═══
+   Swing = pivot high/low 2 bar kiri-kanan. Break berbasis CLOSE candle:
+   - searah tren  → BOS (kelanjutan)
+   - berlawanan   → CHoCH / COC (perubahan karakter)
+   - CHoCH + candle displacement (body > 0.8×ATR) → MSS */
+function structInfo(cs, atr){
+  if (!cs || cs.length < 30 || !(atr > 0)) return null;
+  var ch = cs.slice().reverse(), n = ch.length, L = 2, R = 2, sw = [], i, j;
+  for (i = L; i + R < n; i++){
+    var isH = true, isL = true;
+    for (j = i - L; j <= i + R; j++){
+      if (j === i) continue;
+      if (ch[j].h >= ch[i].h) isH = false;
+      if (ch[j].l <= ch[i].l) isL = false;
+    }
+    if (isH) sw.push({ bi: i, px: ch[i].h, k: 'H', used: false });
+    if (isL) sw.push({ bi: i, px: ch[i].l, k: 'L', used: false });
+  }
+  var dir = 0, ev = null, evs = [], mssEv = null, est = false;
+  for (i = L + 1; i < n; i++){
+    var c = ch[i], body = Math.abs(c.c - c.o);
+    for (j = 0; j < sw.length; j++){
+      var s = sw[j];
+      if (s.used || s.bi >= i) continue;
+      if (s.k === 'H' && c.c > s.px){
+        s.used = true; ev = { type: dir < 0 ? 'CHoCH' : 'BOS', dir: 1, px: s.px, at: i, mss: body > atr * 0.8 };
+        evs.push(ev); if (ev.mss) mssEv = ev; dir = 1;
+      } else if (s.k === 'L' && c.c < s.px){
+        s.used = true; ev = { type: dir > 0 ? 'CHoCH' : 'BOS', dir: -1, px: s.px, at: i, mss: body > atr * 0.8 };
+        evs.push(ev); if (ev.mss) mssEv = ev; dir = -1;
+      }
+    }
+  }
+  /* Tanpa break sama sekali (tren lurus tanpa pullback) → estimasi arah dari net 20 bar */
+  if (!ev){
+    var net = ch[n - 1].c - ch[Math.max(0, n - 21)].c;
+    dir = net > atr * 0.5 ? 1 : net < -atr * 0.5 ? -1 : 0; est = true;
+  }
+  return { dir: dir, ev: ev, evs: evs, mssEv: mssEv, barsAgo: ev ? (n - 1 - ev.at) : null, mssAgo: mssEv ? (n - 1 - mssEv.at) : null, est: est };
+}
+/* ═══ EARLY TREND (LTF) — deteksi gejala awal tren, lebih dini dari filter 10-vs-10 EA ═══
+   Skor -100..+100 dari 6 komponen independen (candle tertutup; EMA memakai harga berjalan):
+   A micro-struktur (pivot 1-bar: CHoCH/MSS/BOS terbaru, meluruh seiring umur)  ±30
+   B urutan swing (HL/LH = tanda paling dini, HH+HL / LH+LL = konfirmasi)       ±20
+   C EMA8/EMA21: posisi harga, susunan, kemiringan, cross segar                  ±20
+   D momentum: candle displacement (>0.8×ATR) 5 bar + 3 close beruntun           ±15
+   E squeeze → breakout range 11 bar                                             ±10
+   F pin-bar rejection di zona SND (Demand ↑ / Supply ↓)                         ±15
+   Arah dianggap valid bila |skor| ≥ ambang DAN minimal 3 komponen sepakat (anti noise). */
+function emaSeries(v, p){ var k = 2 / (p + 1), e = v[0], o = [e], i; for (i = 1; i < v.length; i++){ e = v[i] * k + e * (1 - k); o.push(e); } return o; }
+function clampN(x, a, b){ return Math.max(a, Math.min(b, x)); }
+function earlyTrend(cs, atr, zones){
+  if (!cs || cs.length < 40 || !(atr > 0)) return null;
+  var ch = cs.slice(0, 150).reverse(), n = ch.length, cn = n - 1, lc = n - 2, i, j, items = [], tot = 0;
+  function add(nm, v, mx, txt){ v = clampN(v, -mx, mx); items.push({ nm: nm, v: v, mx: mx, txt: txt }); tot += v; }
+  /* A — micro struktur */
+  var piv = [], dir = 0, ev = null, k, c, s, body;
+  for (i = 1; i + 1 <= lc; i++){
+    if (ch[i].h > ch[i - 1].h && ch[i].h > ch[i + 1].h) piv.push({ bi: i, px: ch[i].h, k: 'H', used: false });
+    if (ch[i].l < ch[i - 1].l && ch[i].l < ch[i + 1].l) piv.push({ bi: i, px: ch[i].l, k: 'L', used: false });
+  }
+  for (i = 3; i <= lc; i++){
+    c = ch[i]; body = Math.abs(c.c - c.o); var hitU = false, hitD = false, evi = null;
+    for (k = 0; k < piv.length; k++){
+      s = piv[k]; if (s.used || s.bi + 1 >= i) continue;
+      if (s.k === 'H' && c.c > s.px){ s.used = true; if (!hitU){ hitU = true; evi = { type: dir < 0 ? 'CHoCH' : 'BOS', dir: 1, at: i, mss: body > atr * 0.8 }; } }
+      else if (s.k === 'L' && c.c < s.px){ s.used = true; if (!hitD){ hitD = true; evi = hitU ? evi : { type: dir > 0 ? 'CHoCH' : 'BOS', dir: -1, at: i, mss: body > atr * 0.8 }; } }
+    }
+    if (evi){ ev = evi; dir = evi.dir; }
+  }
+  var aV = 0, aT = 'tak ada break micro';
+  if (ev && lc - ev.at <= 12){
+    var ag = lc - ev.at, base = ev.type === 'CHoCH' ? (ev.mss ? 30 : 24) : 14;
+    aV = ev.dir * base * (1 - ag / 16);
+    aT = (ev.type === 'CHoCH' && ev.mss ? 'MSS' : ev.type) + (ev.dir > 0 ? ' ↑' : ' ↓') + ' · ' + ag + ' bar lalu';
+  }
+  add('Micro struktur', aV, 30, aT);
+  /* B — urutan swing (pivot 2 kiri/kanan) */
+  var hs = [], ls = [], isH, isL;
+  for (i = 2; i + 2 <= lc; i++){
+    isH = true; isL = true;
+    for (j = i - 2; j <= i + 2; j++){ if (j === i) continue; if (ch[j].h >= ch[i].h) isH = false; if (ch[j].l <= ch[i].l) isL = false; }
+    if (isH) hs.push(ch[i].h); if (isL) ls.push(ch[i].l);
+  }
+  var bV = 0, bT = 'swing belum cukup';
+  if (hs.length >= 2 && ls.length >= 2){
+    var h1 = hs[hs.length - 1], h0 = hs[hs.length - 2], l1 = ls[ls.length - 1], l0 = ls[ls.length - 2], m = atr * 0.05;
+    var hh = h1 - h0 > m, lh = h0 - h1 > m, hl = l1 - l0 > m, ll = l0 - l1 > m;
+    var u = hh && hl ? 20 : hl ? 12 : hh ? 6 : 0, d = lh && ll ? 20 : lh ? 12 : ll ? 6 : 0;
+    bV = u - d; bT = (hh ? 'HH' : lh ? 'LH' : 'H=') + ' / ' + (hl ? 'HL' : ll ? 'LL' : 'L=');
+  }
+  add('Urutan swing', bV, 20, bT);
+  /* C — EMA 8/21 */
+  var cl = ch.map(function(x){ return x.c; }), e8 = emaSeries(cl, 8), e21 = emaSeries(cl, 21), p = cl[cn];
+  var cV = (p > e21[cn] ? 4 : -4) + (e8[cn] > e21[cn] ? 4 : -4) + (p > e8[cn] ? 2 : -2) + clampN((e8[cn] - e8[cn - 4]) / atr * 6, -4, 4);
+  var cross = 0, cAge = 0, s1, s0;
+  for (i = cn; i > cn - 8 && i > 0; i--){
+    s1 = e8[i] - e21[i]; s0 = e8[i - 1] - e21[i - 1];
+    if (s1 > 0 && s0 <= 0){ cross = 1; cAge = cn - i; break; }
+    if (s1 < 0 && s0 >= 0){ cross = -1; cAge = cn - i; break; }
+  }
+  if (cross) cV += cross * 8 * (1 - cAge / 10);
+  add('EMA 8/21', cV, 20, 'EMA8 ' + (e8[cn] > e21[cn] ? '>' : '<') + ' EMA21' + (cross ? ' · cross ' + (cross > 0 ? '↑' : '↓') + ' ' + cAge + ' bar' : ''));
+  /* D — momentum / displacement */
+  var dsum = 0, dc = 0, bd;
+  for (i = lc; i > lc - 5 && i >= 0; i--){ bd = ch[i].c - ch[i].o; if (Math.abs(bd) > atr * 0.8){ dsum += bd > 0 ? 1 : -1; dc++; } }
+  var up3 = ch[lc].c > ch[lc - 1].c && ch[lc - 1].c > ch[lc - 2].c, dn3 = ch[lc].c < ch[lc - 1].c && ch[lc - 1].c < ch[lc - 2].c;
+  add('Momentum', clampN(dsum * 8, -12, 12) + (up3 ? 4 : dn3 ? -4 : 0), 15, dc + ' displacement/5 bar' + (up3 ? ' · 3 close naik' : dn3 ? ' · 3 close turun' : ''));
+  /* E — squeeze → breakout */
+  var hiR = -Infinity, loR = Infinity, rs = 0, rn = 0;
+  for (i = lc - 12; i <= lc - 2; i++){ if (ch[i].h > hiR) hiR = ch[i].h; if (ch[i].l < loR) loR = ch[i].l; }
+  for (i = lc - 12; i <= lc - 4; i++){ rs += ch[i].h - ch[i].l; rn++; }
+  var sq = rn > 0 && (rs / rn) < atr * 0.85;
+  var bo = (ch[lc].c > hiR || ch[lc - 1].c > hiR) ? 1 : (ch[lc].c < loR || ch[lc - 1].c < loR) ? -1 : 0;
+  add('Squeeze/breakout', bo * (6 + (sq ? 4 : 0)), 10, bo ? ('breakout range 11 bar ' + (bo > 0 ? '↑' : '↓') + (sq ? ' setelah squeeze' : '')) : (sq ? 'squeeze — menunggu breakout' : 'dalam range'));
+  /* F — rejection di zona */
+  var fV = 0, fT = 'tidak ada', fnd = false, z, rg, lw, uw, zAge;
+  if (zones && zones.length){
+    for (i = lc; i > lc - 3 && i >= 0 && !fnd; i--){
+      c = ch[i]; rg = c.h - c.l; if (!(rg > 0)) continue;
+      lw = (Math.min(c.o, c.c) - c.l) / rg; uw = (c.h - Math.max(c.o, c.c)) / rg; zAge = n - 1 - i;
+      for (j = 0; j < zones.length; j++){
+        z = zones[j]; if (z.score < S.P.minScore || z.i <= zAge) continue;
+        var wgt = 15 * (1 - (lc - i) * 0.25);
+        if (z.side === 'BUY' && lw >= 0.5 && c.l <= z.hi + atr * 0.35 && c.l >= z.lo - atr * 0.35 && c.c > z.lo){ fV = wgt; fT = 'pin bar tolak Demand ' + fx(z.lo) + '–' + fx(z.hi); fnd = true; break; }
+        if (z.side === 'SELL' && uw >= 0.5 && c.h >= z.lo - atr * 0.35 && c.h <= z.hi + atr * 0.35 && c.c < z.hi){ fV = -wgt; fT = 'pin bar tolak Supply ' + fx(z.lo) + '–' + fx(z.hi); fnd = true; break; }
+      }
+    }
+  }
+  add('Rejection zona', fV, 15, fT);
+  tot = clampN(tot, -100, 100);
+  var as = Math.abs(tot), thr = S.P.etMin || 40, agree = 0;
+  items.forEach(function(it){ if (it.v * tot > 0 && Math.abs(it.v) >= it.mx * 0.2) agree++; });
+  var edir = (as >= thr && agree >= 3) ? (tot > 0 ? 1 : -1) : 0;
+  var lag = detectTrend(cs);
+  var phase = edir ? (as >= 70 ? 'KUAT' : (lag === edir ? 'SEARAH TREN' : 'GEJALA AWAL')) : (as >= 20 ? 'SAMAR' : 'NETRAL');
+  return { score: tot, dir: edir, phase: phase, items: items, agree: agree, lag: lag, lead: edir !== 0 && lag !== edir };
+}
+/* Analisa per bar baru = OnTick EA (gerbang lastBarTime) */
+function runAnalysis(){
+  var cs = S.cs; if (!cs || cs.length < Math.max(21, S.P.atrP + 2)) return;
+  var atr = atrMT5(cs, S.P.atrP); if (!(atr > 0)) return;
+  var px = S.cs[0].c;                                  // rates[0].close pada EA (bar berjalan)
+  var trend = detectTrend(cs);                         // DetectTrend()
+  S.trend = trend; S.atr = atr;
+  S.struct = structInfo(cs, atr);                      // info BOS/CHoCH/MSS (tidak memengaruhi sinyal)
+  S.zones = scanZones(cs, atr, S.P.lb);                // langkah #3 EA
+  S.poi = filterPOI(S.zones, px, atr, S.P.minScore);
+  S.early = earlyTrend(cs, atr, S.zones); S.earlyT = S.csT; S.earlyOv = null; S.earlyBlk = null;   /* Early Trend LTF */   // langkah #4 EA
+  var sig = null;
+  if (S.poi.length){                                   // POI skor tertinggi
+    var best = 0; for (var m = 1; m < S.poi.length; m++) if (S.poi[m].score > S.poi[best].score) best = m;
+    var z = S.poi[best], trendOk = true;
+    if (S.P.bos){ if (z.side === 'BUY' && trend < 0) trendOk = false; if (z.side === 'SELL' && trend > 0) trendOk = false;
+      if (S.P.et && S.early && S.early.dir){        /* Early Trend: mendahului / menahan filter tren lambat */
+        var want = z.side === 'BUY' ? 1 : -1;
+        if (!trendOk && S.early.dir === want){ trendOk = true; S.earlyOv = 'gejala awal ' + (want > 0 ? 'NAIK' : 'TURUN') + ' (skor ' + Math.round(S.early.score) + ', ' + S.early.agree + '/6 komponen) mendahului filter tren EA'; }
+        else if (trendOk && S.early.dir === -want && Math.abs(S.early.score) >= Math.min(95, S.P.etMin + 20)){ trendOk = false; S.earlyBlk = true; }
+      }
+    }
+    if (trendOk && !S.pos) sig = planEntry(z, px, S.P);   // PositionsTotal()==0
+    else if (!trendOk) S.sigBlock = (S.earlyBlk ? 'Early Trend berlawanan (skor ' + Math.round(S.early.score) + '): ' : '') + 'zona skor ' + Math.round(z.score) + ' tertahan filter BOS (tren ' + (trend > 0 ? 'NAIK' : trend < 0 ? 'TURUN' : 'SIDEWAYS') + ')';
+    else S.sigBlock = 'posisi masih berjalan (PositionsTotal() == 0)';
+  } else S.sigBlock = null;
+  S.sig = sig; S.sigT = Date.now();
+  if (sig){
+    jPush('NYAI SND ' + sig.side + ' Signal Valid! Zona: ' + fx(sig.zone.lo) + ' - ' + fx(sig.zone.hi) + ' Skor: ' + Math.round(sig.score), sig.side === 'BUY' ? 'g' : 'r');
+    jPush(sig.comment + ' @ ' + fx(sig.entry) + ' · SL ' + fx(sig.sl) + ' · TP ' + fx(sig.tp) + ' (RR 1:' + sig.rr.toFixed(1) + ')', sig.side === 'BUY' ? 'g' : 'r');
+    if (S.earlyOv) jPush('🧠 Early Trend: ' + S.earlyOv, 'c');
+    S.pos = { side: sig.side, entry: sig.entry, sl: sig.sl, tp: sig.tp, t: Date.now(), comment: sig.comment, mfe: sig.entry, score: sig.score, zone: sig.zone, bc: !S.firstRun };
+    if (S.firstRun) jPush('ℹ️ Sinyal saat Mulai ditekan: alert bunyi dilewati (hanya sinyal baru setelahnya yang berbunyi).', 'm'); else alertValid(sig.side);
+    if (!S.firstRun){ try { NX.event('VALID', { side: sig.side, entry: sig.entry, sl: sig.sl, tp: sig.tp, rr: sig.rr, zone: sig.zone }); } catch (e) {} }   /* broadcast: sinyal saat Mulai ditekan tidak dikirim */
+  }
+  S.firstRun = false;
+}
+/* Pantau posisi virtual dengan harga live = trade.Buy/Sell + hitungan TP/SL broker */
+function trackPos(){
+  var P = S.pos, px = livePx(); if (!P || px == null) return;
+  P.mfe = P.side === 'BUY' ? Math.max(P.mfe, px) : Math.min(P.mfe, px);
+  var hit = P.side === 'BUY' ? (px <= P.sl ? 'SL' : px >= P.tp ? 'TP' : null) : (px >= P.sl ? 'SL' : px <= P.tp ? 'TP' : null);
+  if (hit){
+    var pl = (P.side === 'BUY' ? px - P.entry : P.entry - px);
+    jPush((hit === 'TP' ? '🎯 ' : '🛑 ') + hit + ' HIT · ' + P.side + ' @ ' + fx(px) + ' · P/L ' + (pl >= 0 ? '+' : '') + fx(pl) + ' (' + (pl >= 0 ? 'profit' : 'loss') + ' ' + S.P.lot + ' lot)', hit === 'TP' ? 'g' : 'r');
+    if (P.bc){ try { NX.event('HASIL', { side: P.side, entry: P.entry, sl: P.sl, tp: P.tp, rr: S.P.rr, state: hit + ' HIT', out: px, key: 'HASIL|' + P.t }); } catch (e) {} }
+    S.posHist.unshift({ side: P.side, entry: P.entry, sl: P.sl, tp: P.tp, out: px, hit: hit, t: P.t, end: Date.now(), score: P.score });
+    if (S.posHist.length > 20) S.posHist.length = 20;
+    S.pos = null;
+    alertValid(hit === 'TP' ? 'BUY' : 'SELL');
+  }
+}
+
+/* ═══ AUDIO & SUARA — sama seperti bridge (beep WebAudio + speechSynthesis) ═══ */
+var AC = null, SYN = window.speechSynthesis || null, VO = null;
+function unlockAudio(){
+  try { if (SYN && !unlockAudio.sp){ unlockAudio.sp = 1; var z = new SpeechSynthesisUtterance(' '); z.volume = 0; SYN.speak(z); } } catch (e) {}
+  try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) {}
+}
+function pickVoice(){
+  try { var vs = SYN.getVoices() || []; VO = vs.find(function(v){ return /id[-_]/i.test(v.lang) && /female|wanita|damayanti/i.test(v.name); }) || vs.find(function(v){ return /id[-_]/i.test(v.lang); }) || vs[0] || null; } catch (e) {}
+}
+if (SYN){ pickVoice(); try { SYN.addEventListener('voiceschanged', pickVoice); } catch (e) { SYN.onvoiceschanged = pickVoice; } }
+function sayF(t, pri){
+  try { if (!SYN) return; if (pri === 0){ try { SYN.cancel(); } catch (e) {} } var u = new SpeechSynthesisUtterance(t); u.lang = 'id-ID'; if (VO) u.voice = VO; u.rate = 1.02; SYN.speak(u); } catch (e) {}
+}
+function beep(side){
+  try {
+    unlockAudio(); if (!AC) return;
+    var f = side === 'SELL' ? [880, 660, 440] : [440, 660, 880], t0 = AC.currentTime;
+    f.forEach(function(hz, i){
+      var o = AC.createOscillator(), g = AC.createGain(); o.type = 'sine'; o.frequency.value = hz;
+      g.gain.setValueAtTime(0.0001, t0 + i * 0.18); g.gain.exponentialRampToValueAtTime(0.35, t0 + i * 0.18 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.18 + 0.16);
+      o.connect(g); g.connect(AC.destination); o.start(t0 + i * 0.18); o.stop(t0 + i * 0.18 + 0.17);
+    });
+  } catch (e) { /* audio bisa diblokir kebijakan autoplay — jangan ganggu loop analisa */ }
+}
+/* ═══ ADZAN — bunyi adzan saat sinyal valid (salah satu pilihan bunyi alert) ═══
+   Rantai sumber mp3: Wikimedia Commons (file permanen, CORS terbuka) → islamcan
+   (cadangan) → jika semua gagal dimuat (jaringan/adblock), nada melodi WebAudio.
+   play() ditolak kebijakan autoplay langsung loncat ke nada melodi (mp3 juga tak akan boleh). */
+var ADZAN_URLS = [
+  'https://upload.wikimedia.org/wikipedia/commons/7/7d/The_Adhan_-_Muslim_Call_to_Prayer_-_Aaqib_Azeez.mp3',
+  'https://www.islamcan.com/audio/adhan/azan1.mp3'
+];
+var adzanA = null;
+function playAdzan(side, idx){
+  idx = idx || 0;
+  try {
+    if (adzanA){ adzanA.onerror = null; adzanA.onplaying = null; clearTimeout(adzanA._to); try { adzanA.pause(); } catch (e) {} }
+    if (idx >= ADZAN_URLS.length){ adzanSynth(side); return; }
+    var a = new Audio(ADZAN_URLS[idx]);
+    a.volume = 1; adzanA = a;
+    var settled = false;
+    var next = function(){ if (!settled){ settled = true; clearTimeout(a._to); playAdzan(side, idx + 1); } };
+    a.onplaying = function(){ settled = true; clearTimeout(a._to); };
+    a.onerror = next;
+    a._to = setTimeout(next, 9000);   /* stall: tidak mulai dalam 9 dtk → sumber berikutnya */
+    var p = a.play();
+    if (p && p.catch) p.catch(function(){ if (!settled){ settled = true; clearTimeout(a._to); adzanSynth(side); } });
+  } catch (e) { adzanSynth(side); }
+}
+/* Fallback: melodi 6 nada naik-turun ala panggilan adzan — vibrato + harmonik oktaf (±5 dtk) */
+function adzanSynth(side){
+  try {
+    unlockAudio(); if (!AC) return;
+    var t0 = AC.currentTime + 0.05, dur = 0.9;
+    var seq = side === 'SELL' ? [233.08, 220.0, 196.0, 196.0, 174.61, 155.56] : [196.0, 220.0, 233.08, 233.08, 220.0, 196.0];
+    seq.forEach(function(f, i){
+      var st = t0 + i * dur * 0.92;
+      var o = AC.createOscillator(), o2 = AC.createOscillator(), g = AC.createGain(), lf = AC.createOscillator(), lg = AC.createGain();
+      o.type = 'triangle'; o2.type = 'sine';
+      o.frequency.value = f; o2.frequency.value = f * 2.004;
+      lf.frequency.value = 5.2; lg.gain.value = f * 0.008;
+      lf.connect(lg); lg.connect(o.frequency); lg.connect(o2.frequency);
+      g.gain.setValueAtTime(0.0001, st); g.gain.exponentialRampToValueAtTime(0.28, st + 0.18);
+      g.gain.setValueAtTime(0.24, st + dur * 0.7); g.gain.exponentialRampToValueAtTime(0.0001, st + dur);
+      o.connect(g); o2.connect(g); g.connect(AC.destination);
+      o.start(st); o2.start(st); lf.start(st);
+      o.stop(st + dur + 0.05); o2.stop(st + dur + 0.05); lf.stop(st + dur + 0.05);
+    });
+  } catch (e) { /* autoplay policy — abaikan */ }
+}
+function alertValid(side){
+  if (!$('snd') || !$('snd').checked) return;
+  try { if (newsNear()) return; } catch (e) {}   /* berita USD High ±10 mnt: tanpa alert entry */
+  var key = side + '|' + (S.cfg.sym || S.cfg.ins), now = Date.now();
+  if (key === S.lastAl.key && now - S.lastAl.t < 60000) return;
+  S.lastAl = { key: key, t: now };
+  beep(side);   /* adzan HANYA untuk jadwal sholat, bukan alert sinyal */
+  try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+  if ($('voice').checked) sayF('NYAI SND sinyal ' + (side === 'BUY' ? 'beli' : 'jual') + ' valid. Entry ' + fx(S.sig.entry) + ', stop loss ' + fx(S.sig.sl) + ', target ' + fx(S.sig.tp) + '.');
+}
+
+/* ── ALERT BERITA (disalin dari nyai-v1): kalender High/Medium, jendela T-5 menit, popup + alarm + suara wanita ── */
+var NEWS = [], NEWS_DONE = {}, NEWS_WIN = 300, NT = { alarm: null, stop: null, hide: null, cd: null };
+var NEWS_IMP = { HIGH: 1, MEDIUM: 1, LOW: 1 };   /* semua negara, semua level impact (Holiday dilewati) */
+function nEsc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function impactIndo(i){ i = String(i || 'HIGH').toUpperCase(); return i === 'HIGH' ? 'High impact' : i === 'MEDIUM' ? 'Medium impact' : 'Low impact'; }
+function whenText(d){ var m = Math.round((d.getTime() - Date.now()) / 60000); if (m <= 0) return 'sedang rilis'; if (m < 60) return m + ' menit lagi'; return Math.floor(m / 60) + ' jam ' + (m % 60) + ' menit lagi'; }
+async function fetchNews(){
+  if (!$('newsOn').checked){ NEWS = []; renderTicker(); return; }
+  var all = [], i, d, r;
+  var L = ['./news.json', './news_next.json'];                                   /* file lokal di folder yang sama, seperti nyai */
+  for (i = 0; i < L.length; i++){ try { r = await tFetch(L[i] + '?t=' + Date.now(), 6000); if (r.ok){ d = await r.json(); if (Array.isArray(d)) all = all.concat(d); } } catch (e) {} }
+  if (!all.length){                                                              /* cadangan: kalender mingguan faireconomy (langsung, lalu proxy) */
+    var W = ['https://nfs.faireconomy.media/ff_calendar_thisweek.json', 'https://nfs.faireconomy.media/ff_calendar_nextweek.json'];
+    for (i = 0; i < W.length; i++){ try { r = await workerFetch(W[i], 8000); d = await r.json(); if (Array.isArray(d)) all = all.concat(d); } catch (e) {} }
+  }
+  if (!all.length){ $('ticker').innerHTML = '<span class="r">⚠ kalender berita tidak terbaca (news.json / faireconomy)</span>'; return; }
+  NEWS = all.map(function(n){ return { title: n.title || '-', country: n.country || '-', date: new Date(n.date), impact: String(n.impact || 'Low').toUpperCase(), forecast: n.forecast || '', previous: n.previous || '' }; })
+    .filter(function(n){ return !isNaN(n.date.getTime()) && NEWS_IMP[n.impact] === 1; })
+    .sort(function(a, b){ return a.date - b.date; });
+  checkNews();
+}
+function renderTicker(){
+  var el = $('ticker'); if (!el) return; var now = Date.now();
+  var fut = NEWS.filter(function(n){ return n.date.getTime() > now - 2 * 3600 * 1000; });
+  var up = fut.filter(function(n){ return n.impact !== 'LOW'; }).concat(fut.filter(function(n){ return n.impact === 'LOW'; })).slice(0, 4).sort(function(a, b){ return a.date - b.date; });
+  if (!$('newsOn').checked){ el.innerHTML = ''; return; }
+  if (!up.length){ el.innerHTML = '<span class="m" style="font-size:11px">📰 Tidak ada berita dalam waktu dekat.</span>'; return; }
+  el.innerHTML = up.map(function(n){
+    var m = (n.date.getTime() - now) / 60000, live = m < 0, w = live ? 'LIVE' : m < 60 ? 'T-' + Math.round(m) + 'm' : m < 1440 ? 'T-' + (m / 60).toFixed(1) + 'h' : 'T-' + (m / 1440).toFixed(1) + 'd';
+    var k = n.impact === 'HIGH' ? 'nh' : n.impact === 'MEDIUM' ? 'nm' : 'nl', hm = ('0' + n.date.getHours()).slice(-2) + ':' + ('0' + n.date.getMinutes()).slice(-2);
+    return '<div class="nw ' + k + '" title="' + impactIndo(n.impact) + '"><div class="t"><b>' + nEsc(n.country) + '</b> ' + nEsc(n.title) + '</div><div class="s"><span class="mono">' + hm + '</span><b class="' + (live ? 'r' : m < 60 ? 'y' : '') + '">' + w + '</b></div></div>';
+  }).join('');
+}
+function newsNear(){ var now = Date.now(); return NEWS.some(function(n){ return n.impact === 'HIGH' && n.country === 'USD' && Math.abs(n.date.getTime() - now) <= 600000; }); }
+function newsBeep(impact){   /* High: pola lebih kuat (square 4 pulsa); Medium: sine 2 pulsa */
+  unlockAudio(); if (!AC) return; var hi = impact === 'HIGH', seq = hi ? [1000, 700, 1000, 700] : impact === 'LOW' ? [600] : [800, 800], t0 = AC.currentTime;
+  seq.forEach(function(hz, i){ var o = AC.createOscillator(), g = AC.createGain(), a = t0 + i * 0.22; o.type = hi ? 'square' : 'sine'; o.frequency.value = hz;
+    g.gain.setValueAtTime(0.0001, a); g.gain.exponentialRampToValueAtTime(hi ? 0.25 : 0.3, a + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, a + 0.2); o.connect(g); g.connect(AC.destination); o.start(a); o.stop(a + 0.21); });
+}
+function stopNewsAlarm(){ clearInterval(NT.alarm); clearTimeout(NT.stop); NT.alarm = NT.stop = null; }
+function closeNewsPop(){ $('newspop').style.display = 'none'; stopNewsAlarm(); clearTimeout(NT.hide); clearInterval(NT.cd); }
+function showNews(n){
+  var hi = n.impact === 'HIGH', lo = n.impact === 'LOW', pri = hi ? 0 : 2, cnt = 0;
+  closeNewsPop(); $('newspop').style.display = 'block';
+  $('npTitle').textContent = '⚠ ' + n.impact + ' · ' + n.country; $('npTitle').className = hi ? 'r' : lo ? 'm' : 'y';
+  $('npMeta').innerHTML = '<b>' + nEsc(n.title) + '</b><br><span class="m">Forecast:</span> ' + nEsc(n.forecast || '-') + ' &nbsp; <span class="m">Prev:</span> ' + nEsc(n.previous || '-') + '<br><span class="m">Rilis:</span> ' + n.date.toLocaleString();
+  var upd = function(){ var left = (n.date.getTime() - Date.now()) / 1000; $('npCd').textContent = left <= 0 ? '🔴 SEDANG RILIS' : '⏳ dalam ' + Math.floor(left / 60) + 'm ' + Math.floor(left % 60) + 's'; };
+  upd(); NT.cd = setInterval(upd, 1000);
+  if ($('snd').checked) newsBeep(n.impact);
+  if ($('voice').checked) sayF(impactIndo(n.impact) + '. ' + n.country + '. ' + n.title + '. ' + whenText(n.date) + '.', pri);
+  NT.alarm = setInterval(function(){
+    if ($('snd').checked) newsBeep(n.impact); cnt++;
+    if (!lo && cnt % 7 === 0 && $('voice').checked){ var left = Math.round((n.date.getTime() - Date.now()) / 60000), pre = left > 0 ? 'Tersisa ' + left + ' menit. ' : left >= -5 ? 'Sedang rilis. ' : ''; sayF(pre + impactIndo(n.impact) + '. ' + n.country + '. ' + n.title + '.', pri); }
+  }, 3000);
+  NT.stop = setTimeout(stopNewsAlarm, lo ? 6000 : 60000); NT.hide = setTimeout(closeNewsPop, 60000);
+}
+function checkNews(){
+  if (!$('newsOn').checked){ renderTicker(); return; }
+  var now = Date.now(), i;
+  for (i = 0; i < NEWS.length; i++){ var n = NEWS[i], diff = (n.date.getTime() - now) / 1000, key = n.country + '|' + n.title + '|' + n.date.getTime();
+    if (diff > 0 && diff <= NEWS_WIN && !NEWS_DONE[key]){ NEWS_DONE[key] = 1; showNews(n); break; } }
+  renderTicker();
+}
+/* ═══ RENDER — versi sederhana ═══ */
+function posBoxHtml(P, px){
+  var d = P.side === 'BUY' ? 1 : -1, c = d > 0 ? 'g' : 'r';
+  var pl = px != null ? (px - P.entry) * d : null, r = Math.abs(P.entry - P.sl) || 1e-9, prog = pl != null ? Math.max(-100, Math.min(100, (pl / r) * 100)) : 0;
+  return '<div class="sigbox live"><div class="row"><b class="' + c + '">' + (d > 0 ? '▲ POSISI BUY' : '▼ POSISI SELL') + ' @ ' + fx(P.entry) + '</b><b class="mono ' + (pl == null ? 'm' : pl >= 0 ? 'g' : 'r') + '">' + (pl == null ? '…' : (pl >= 0 ? '+' : '') + fx(pl)) + '</b></div>' +
+    '<div class="row mono" style="font-size:12.5px;margin-top:4px"><span>SL <b class="r">' + fx(P.sl) + '</b></span><span>TP <b class="g">' + fx(P.tp) + '</b></span><span class="m">' + Math.round((Date.now() - P.t) / 60000) + ' mnt</span></div>' +
+    '<div class="pdbar"><i style="left:' + (50 + prog / 2) + '%"></i></div>' +
+    '<div class="m sm">Sinyal baru DITAHAN selama posisi berjalan — lanjut otomatis setelah TP/SL kena (aturan 1 posisi, persis EA). Skor zona ' + Math.round(P.score || 0) + ' · ' + (P.zone ? P.zone.why : '') + '</div></div>';
+}
+function poiStatusHtml(){
+  var atr = S.atr, px = livePx() != null ? livePx() : (S.cs ? S.cs[0].c : null);
+  if (!S.zones.length) return '<div class="m sm">Belum ada zona — menunggu candle displacement (badan &gt; 0.8×ATR).</div>';
+  var h = S.zones.slice(0, 6).map(function(z){
+    var inZ = px != null && px >= z.lo && px <= z.hi, inBuf = !inZ && px != null && px >= z.lo - atr * 0.35 && px <= z.hi + atr * 0.35;
+    var st = inZ ? 's-conf' : inBuf ? 's-touch' : 's-near', lbl = inZ ? '● DI ZONA' : inBuf ? '● DEKAT (±0.35 ATR)' : 'di luar';
+    var bosOk = !S.P.bos || (z.side === 'BUY' ? S.trend >= 0 : S.trend <= 0);
+    var pass = z.score >= S.P.minScore;
+    return '<div class="poi ' + st + '"><div class="pt"><span><span class="pside ' + (z.side === 'BUY' ? 'g' : 'r') + '">' + z.side + '</span> <b class="mono">' + fx(z.lo) + ' – ' + fx(z.hi) + '</b></span><span class="sm ' + (inZ ? 'ok' : inBuf ? 'wr' : 'm') + '">' + lbl + '</span></div>' +
+      '<div class="pmeta"><span>Skor <b class="' + (pass ? 'ok' : 'wr') + '">' + Math.round(z.score) + '</b>' + (pass ? '' : ' (min ' + S.P.minScore + ')') + '</span><span>' + Math.round(z.i || 0) + ' bar lalu</span><span>BOS ' + (bosOk ? '<b class="ok">✓</b>' : '<b class="no">✗</b>') + '</span></div>' +
+      '<div class="m sm" style="margin-top:2px">' + z.why + '</div></div>';
+  }).join('');
+  return '<div class="m sm" style="margin-bottom:2px">' + S.zones.length + ' zona ditemukan — ' + Math.min(6, S.zones.length) + ' terbaru:</div>' + h;
+}
+function structTxt(st){
+  if (!st) return '<span class="m">menghitung swing…</span>';
+  var d = st.dir > 0 ? '<b class="g">▲ BULLISH</b>' : st.dir < 0 ? '<b class="r">▼ BEARISH</b>' : '<b class="m">◆ NETRAL</b>';
+  var e = '';
+  if (st.ev){
+    var ev = st.ev, nm = ev.type === 'CHoCH' && ev.mss ? 'MSS' : ev.type;
+    e = ' · terakhir: <b class="' + (ev.dir > 0 ? 'g' : 'r') + '">' + nm + (ev.dir > 0 ? ' ↑' : ' ↓') + '</b> @ ' + fx(ev.px) + ' <span class="m">(' + (st.barsAgo === 0 ? 'bar berjalan' : st.barsAgo + ' bar lalu') + ')</span>';
+  } else if (st.est){
+    e = ' <span class="m">— estimasi net 20 bar, belum ada break swing</span>';
+  }
+  var m = '';
+  if (st.mssEv && st.ev !== st.mssEv){
+    var mv = st.mssEv;
+    m = '<div class="m sm" style="margin-top:2px">MSS terakhir: <b class="' + (mv.dir > 0 ? 'g' : 'r') + '">MSS' + (mv.dir > 0 ? ' ↑' : ' ↓') + '</b> @ ' + fx(mv.px) + ' <span class="m">(' + (st.mssAgo === 0 ? 'bar berjalan' : st.mssAgo + ' bar lalu') + ')</span></div>';
+  }
+  return d + e + m;
+}
+/* ═══ HEATMAP HARGA — densitas sentuhan level + overlay zona SND (informasi) ═══
+   16 bin dari low terendah s/d high tertinggi candle yang dimuat.
+   Intensitas = jumlah bar yang menyentuh bin (makin panas = sering jadi arena trading,
+   bin transparan = imbalance/level dilewati cepat). Zona Demand/Supply dari S.zones
+   ditumpuk sebagai tint hijau/merah (alpha mengikuti skor zona). */
+function heatHtml(){
+  var cs = S.cs; if (!cs || cs.length < 30) return '<div class="m sm">Belum cukup candle untuk heatmap…</div>';
+  var BINS = 16, lo = Infinity, hi = -Infinity, i, j, n = Math.min(cs.length, S.P.lb + 60);   /* jendela sama dengan zona SND */
+  for (i = 0; i < n; i++){ if (cs[i].l < lo) lo = cs[i].l; if (cs[i].h > hi) hi = cs[i].h; }
+  var span = hi - lo; if (!(span > 0)) return '<div class="m sm">Range harga belum valid untuk heatmap…</div>';
+  var bh = span / BINS, cnt = new Array(BINS).fill(0);
+  for (i = 0; i < n; i++){
+    var b0 = Math.max(0, Math.floor((cs[i].l - lo) / bh)), b1 = Math.min(BINS - 1, Math.floor((cs[i].h - lo) / bh));
+    for (j = b0; j <= b1; j++) cnt[j]++;
+  }
+  var mx = Math.max.apply(null, cnt); if (!(mx > 0)) mx = 1;
+  var zD = new Array(BINS).fill(0), zS = new Array(BINS).fill(0);
+  S.zones.forEach(function(z){
+    var zb0 = Math.max(0, Math.min(BINS - 1, Math.floor((z.lo - lo) / bh))), zb1 = Math.max(0, Math.min(BINS - 1, Math.floor((z.hi - lo) / bh)));
+    var a = 0.12 + (z.score / 95) * 0.28;
+    for (var k = zb0; k <= zb1; k++){ if (z.side === 'BUY'){ if (a > zD[k]) zD[k] = a; } else if (a > zS[k]) zS[k] = a; }
+  });
+  var px = livePx() != null ? livePx() : cs[0].c, rows = '';
+  for (i = BINS - 1; i >= 0; i--){
+    var pl = lo + i * bh, ph = pl + bh, t = cnt[i] / mx;
+    var bg = heatColor(t);
+    var zc = zD[i] > 0 ? 'rgba(34,197,94,' + zD[i].toFixed(2) + ')' : zS[i] > 0 ? 'rgba(239,68,68,' + zS[i].toFixed(2) + ')' : '';
+    var inPx = px >= pl && (px < ph || (i === BINS - 1 && px <= ph));
+    rows += '<div class="hrow2' + (inPx ? ' now' : '') + '"><span class="hpx mono">' + fx(pl) + '</span>' +
+      '<span class="hcell"' + (zc ? ' style="border-left:3px solid ' + zc + '"' : '') + '><i style="background:' + bg + '"></i>' + (zc ? '<i style="background:linear-gradient(90deg,' + zc + ',transparent 70%)"></i>' : '') + '</span>' +
+      '<span class="hpct">' + Math.round(t * 100) + '</span><span class="hnow">' + (inPx ? '◀ harga' : '') + '</span></div>';
+  }
+  return '<div class="hmap">' + rows + '</div>' +
+    '<div class="hleg"><span><s style="background:hsla(215,70%,62%,.45)"></s>jarang disentuh (imbalance)</span><span><s style="background:hsla(18,92%,50%,.95)"></s>sering jadi arena (equilibrium)</span><span><s style="background:rgba(34,197,94,.7)"></s>Demand</span><span><s style="background:rgba(239,68,68,.7)"></s>Supply</span></div>';
+}
+/* Warna panas 0..1: biru dingin → kuning → oranye-merah (tanpa hijau agar tidak bentrok tint Demand) */
+function heatColor(t){
+  if (t < 0.02) return 'transparent';
+  var h, s, l, a;
+  if (t < 0.4){ var u = t / 0.4; h = 215 - 25 * u; s = 70; l = 62 - 6 * u; a = 0.18 + 0.3 * u; }
+  else if (t < 0.75){ var u2 = (t - 0.4) / 0.35; h = 48; s = 90; l = 62 - 4 * u2; a = 0.5 + 0.32 * u2; }
+  else { var u3 = (t - 0.75) / 0.25; h = 30 - 14 * u3; s = 92; l = 56 - 8 * u3; a = 0.85 + 0.15 * u3; }
+  return 'hsla(' + h.toFixed(0) + ',' + s + '%,' + l.toFixed(0) + '%,' + a.toFixed(2) + ')';
+}
+/* Papan DOM ala Bookmap: canvas harga(baris) × waktu(kolom, terbaru di kanan) + statistik */
+function domHtml(){
+  var D = S.dom, last = D.snaps.length ? D.snaps[D.snaps.length - 1] : null;
+  if (!last) return '<div class="m sm">Menyambung orderbook… <span class="m">' + (D.host || '') + '</span></div>';
+  var totB = 0, totA = 0, i, wall = null, bh = (D.hi - D.lo) / DOM_BINS;
+  for (i = 0; i < DOM_BINS; i++){
+    totB += last.b[i]; totA += last.a[i];
+    if (last.b[i] > 0 && (!wall || last.b[i] > wall.q)) wall = { s: 'b', p: D.lo + (i + 0.5) * bh, q: last.b[i] };
+    if (last.a[i] > 0 && (!wall || last.a[i] > wall.q)) wall = { s: 'a', p: D.lo + (i + 0.5) * bh, q: last.a[i] };
+  }
+  var pct = totB + totA > 0 ? Math.round(totB / (totB + totA) * 100) : 50, pc = pct >= 55 ? 'g' : pct <= 45 ? 'r' : 'm';
+  return '<canvas id="domCv" class="domcv" width="1120" height="432"></canvas>' +
+    '<div class="domst"><span>🟩 bid <b class="g">' + fmtQty(totB) + '</b></span><span>🟥 ask <b class="r">' + fmtQty(totA) + '</b></span><span>imbalance <b class="' + pc + '">' + pct + '% : ' + (100 - pct) + '%</b></span>' +
+    (wall ? '<span>dinding terbesar: <b class="' + (wall.s === 'b' ? 'g' : 'r') + '">' + (wall.s === 'b' ? 'bid' : 'ask') + ' @ ' + fx(wall.p) + ' · ' + fmtQty(wall.q) + '</b></span>' : '') +
+    '<span class="m">' + (D.host || '') + ' · ' + D.snaps.length + ' snapshot</span></div>';
+}
+function drawDom(){
+  var D = S.dom, cv = $('domCv');
+  if (!cv || !D.snaps.length || !(D.hi > D.lo)) return;
+  var W = 560, H = 216, ctx = cv.getContext('2d');
+  cv.width = W * 2; cv.height = H * 2;   /* reset + resolusi 2× biar tajam */
+  ctx.setTransform(2, 0, 0, 2, 0, 0);
+  var span = D.hi - D.lo, bh = span / DOM_BINS, mx = 0, c, k;
+  for (c = 0; c < D.snaps.length; c++) for (k = 0; k < DOM_BINS; k++){ if (D.snaps[c].b[k] > mx) mx = D.snaps[c].b[k]; if (D.snaps[c].a[k] > mx) mx = D.snaps[c].a[k]; }
+  if (!(mx > 0)) mx = 1;
+  var lab = 64, cw = (W - lab) / DOM_COLS, rh = (H - 6) / DOM_BINS, n = D.snaps.length;
+  ctx.clearRect(0, 0, W, H);
+  ctx.font = '9px ui-monospace,monospace';
+  for (c = 0; c < n; c++){
+    var x = W - (n - c) * cw;
+    for (k = 0; k < DOM_BINS; k++){
+      var y = H - 3 - (k + 1) * rh, qb = D.snaps[c].b[k] / mx, qa = D.snaps[c].a[k] / mx;
+      if (qb > 0.01){ ctx.fillStyle = 'rgba(34,197,94,' + (0.06 + 0.86 * Math.min(1, qb)).toFixed(3) + ')'; ctx.fillRect(x + 0.5, y + 0.5, Math.max(1.5, cw - 1), Math.max(1, rh - 1)); }
+      if (qa > 0.01){ ctx.fillStyle = 'rgba(239,68,68,' + (0.06 + 0.86 * Math.min(1, qa)).toFixed(3) + ')'; ctx.fillRect(x + 0.5, y + 0.5, Math.max(1.5, cw - 1), Math.max(1, rh - 1)); }
+    }
+  }
+  ctx.fillStyle = '#8b96ab'; ctx.textAlign = 'right';
+  for (k = 0; k < DOM_BINS; k += 5){ var y2 = H - 3 - (k + 0.5) * rh; ctx.fillText(fx(D.lo + k * bh), lab - 6, y2 + 3); }
+  var mid = D.snaps[n - 1].mid, ym = H - 3 - ((mid - D.lo) / span) * (H - 6);
+  if (ym > 2 && ym < H - 2){
+    ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(lab, ym); ctx.lineTo(W, ym); ctx.stroke();
+    ctx.fillStyle = '#fbbf24'; ctx.textAlign = 'left'; ctx.fillText('◀ ' + fx(mid), lab + 4, ym - 3);
+  }
+}
+function earlyHtml(){
+  var e = S.early; if (!e) return '';
+  var col = e.dir > 0 ? 'g' : e.dir < 0 ? 'r' : 'm';
+  var lbl = e.dir > 0 ? '▲ GEJALA NAIK' : e.dir < 0 ? '▼ GEJALA TURUN' : e.score >= 20 ? '△ condong naik' : e.score <= -20 ? '▽ condong turun' : '◆ netral';
+  var lagT = e.lag > 0 ? 'NAIK' : e.lag < 0 ? 'TURUN' : 'SIDEWAYS';
+  var ltf = ['m1', 'm5', 'm15'].indexOf(S.cfg.tf) >= 0;
+  var rows = e.items.map(function(it){
+    var c = it.v > 0.5 ? 'g' : it.v < -0.5 ? 'r' : 'm';
+    return '<div class="etr"><span class="n">' + it.nm + '</span><span class="mono ' + c + '">' + (it.v > 0 ? '+' : '') + Math.round(it.v) + '</span><span class="m">' + it.txt + '</span></div>';
+  }).join('');
+  var use = (S.P.et && S.P.bos) ? 'AKTIF di filter sinyal (skor ≥ ' + S.P.etMin + ' & ≥3 komponen sepakat boleh mendahului filter 10-vs-10; lawan kuat ≥ ' + Math.min(95, S.P.etMin + 20) + ' menahan sinyal).' : 'hanya informasi (aktifkan 🧠 Early Trend + Filter BOS di ⚙ untuk dipakai di sinyal).';
+  var lead = e.dir ? (e.lead ? '<b class="c">MENDAHULUI</b> filter tren EA (' + lagT + ')' : 'searah filter tren EA (' + lagT + ')') : 'filter tren EA: ' + lagT;
+  return '<div class="etbox ' + (e.dir > 0 ? 'up' : e.dir < 0 ? 'dn' : '') + '"><div class="row"><b class="sm" style="letter-spacing:.4px">🧠 EARLY TREND' + (ltf ? '<span class="ltfb">LTF</span>' : '') + '</b><span><b class="' + col + '">' + lbl + '</b> <span class="mono m">' + (e.score > 0 ? '+' : '') + Math.round(e.score) + '</span></span></div>' +
+    '<div class="pdbar"><i style="left:' + (50 + e.score / 2) + '%"></i></div>' +
+    '<div class="m sm">Fase: <b class="' + col + '">' + e.phase + '</b> · ' + e.agree + '/6 komponen sepakat · ' + lead + '</div>' +
+    '<div style="margin-top:5px">' + rows + '</div>' +
+    '<div class="m sm" style="margin-top:4px">' + use + (ltf ? '' : ' Paling peka di M1–M15; di TF lebih besar gejalanya muncul lebih lambat.') + '</div></div>';
+}
+/* ═══ ENTRY MAP — di mana entry valid? (informasi; angkanya sama dengan planEntry EA) ═══ */
+function sideOk(side){
+  var t = S.trend || 0, ok = true, via = 'filter tren EA';
+  if (!S.P.bos) return { ok: true, via: 'Filter BOS mati' };
+  if (side === 'BUY' && t < 0) ok = false;
+  if (side === 'SELL' && t > 0) ok = false;
+  if (S.P.et && S.early && S.early.dir){
+    var want = side === 'BUY' ? 1 : -1;
+    if (!ok && S.early.dir === want){ ok = true; via = 'Early Trend mendahului filter'; }
+    else if (ok && S.early.dir === -want && Math.abs(S.early.score) >= Math.min(95, S.P.etMin + 20)){ ok = false; via = 'Early Trend berlawanan kuat'; }
+  }
+  if (!ok) via = (side === 'BUY' ? 'tren turun' : 'tren naik') + ' menahan ' + side;
+  return { ok: ok, via: via };
+}
+function pickCandidate(px){
+  var atr = S.atr, best = null;
+  S.zones.forEach(function(z){
+    if (z.score < S.P.minScore) return;
+    var blo = z.lo - atr * 0.35, bhi = z.hi + atr * 0.35, d = px < blo ? blo - px : px > bhi ? px - bhi : 0, f = sideOk(z.side);
+    var rank = (f.ok ? 0 : 1e6) + d / atr * 1000 - z.score * 0.001;
+    if (!best || rank < best.rank) best = { z: z, blo: blo, bhi: bhi, d: d, f: f, rank: rank };
+  });
+  return best;
+}
+function ladderHtml(m){
+  var H = 240, vals = [m.px, m.entry, m.sl, m.tp, m.blo, m.bhi, m.zlo, m.zhi], mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals), pad = (mx - mn) * 0.07 || 1;
+  mn -= pad; mx += pad;
+  function y(p){ return (mx - p) / (mx - mn) * H; }
+  var zc = m.side === 'BUY' ? '34,197,94' : '239,68,68', h = '<div class="ldr">';
+  h += '<div class="zb" style="top:' + y(m.bhi).toFixed(1) + 'px;height:' + Math.max(2, y(m.blo) - y(m.bhi)).toFixed(1) + 'px;background:rgba(' + zc + ',.08);border:1px dashed rgba(' + zc + ',.45)"></div>';
+  h += '<div class="zb" style="top:' + y(m.zhi).toFixed(1) + 'px;height:' + Math.max(3, y(m.zlo) - y(m.zhi)).toFixed(1) + 'px;background:rgba(' + zc + ',.28);border:1px solid rgba(' + zc + ',.8)"></div>';
+  h += '<span class="zl ' + (m.side === 'BUY' ? 'g' : 'r') + '" style="top:' + (y(m.zhi) + 3).toFixed(1) + 'px">ZONA ' + (m.side === 'BUY' ? 'DEMAND' : 'SUPPLY') + '</span>';
+  var L = [
+    { p: m.tp, t: 'TP ' + fx(m.tp), c: 'var(--g)' },
+    { p: m.sl, t: 'SL ' + fx(m.sl), c: 'var(--r)' },
+    { p: m.entry, t: (m.mode === 'wait' ? 'entry jika masuk ' : 'ENTRY ') + fx(m.entry), c: 'var(--ink)', d: m.mode === 'wait' },
+    { p: m.px, t: '◀ harga ' + fx(m.px), c: 'var(--y)' }
+  ];
+  if (m.mode !== 'wait' && Math.abs(m.px - m.entry) < (mx - mn) * 0.004) L.pop();
+  L.forEach(function(o){ o.y = y(o.p); });
+  L.forEach(function(o){ h += '<div class="ln' + (o.d ? ' dsh' : '') + '" style="top:' + o.y.toFixed(1) + 'px;color:' + o.c + '"></div>'; });
+  var s = L.slice().sort(function(a, b){ return a.y - b.y; }), i;
+  for (i = 0; i < s.length; i++){ s[i].ly = s[i].y; if (i && s[i].ly - s[i - 1].ly < 19) s[i].ly = s[i - 1].ly + 19; }
+  for (i = s.length - 1; i >= 0; i--){ if (s[i].ly > H - 9) s[i].ly = H - 9; if (i < s.length - 1 && s[i + 1].ly - s[i].ly < 19) s[i].ly = s[i + 1].ly - 19; }
+  s.forEach(function(o){ h += '<span class="lb" style="top:' + Math.max(9, o.ly).toFixed(1) + 'px;color:' + o.c + '">' + o.t + '</span>'; });
+  return h + '</div>';
+}
+function entryMapHtml(cur){
+  var atr = S.atr, P = S.pos, G = S.sig, m, tag, tagc, checks = [], head = '', note = '';
+  function ck(ok, txt){ checks.push('<div><i class="' + (ok === true ? 'ok' : ok === false ? 'no' : 'wr') + '">' + (ok === true ? '✓' : ok === false ? '✗' : '…') + '</i><span>' + txt + '</span></div>'); }
+  if (P){
+    m = { side: P.side, zlo: P.zone.lo, zhi: P.zone.hi, blo: P.zone.lo - atr * 0.35, bhi: P.zone.hi + atr * 0.35, entry: P.entry, sl: P.sl, tp: P.tp, px: cur, mode: 'pos' };
+    tag = 'POSISI BERJALAN'; tagc = P.side === 'BUY' ? 'g' : 'r';
+    note = 'Entry sudah terjadi di ' + fx(P.entry) + '. Sinyal baru ditahan sampai TP/SL kena.';
+  } else if (G){
+    m = { side: G.side, zlo: G.zone.lo, zhi: G.zone.hi, blo: G.zone.lo - atr * 0.35, bhi: G.zone.hi + atr * 0.35, entry: G.entry, sl: G.sl, tp: G.tp, px: cur, mode: 'sig' };
+    tag = 'ENTRY VALID SEKARANG'; tagc = G.side === 'BUY' ? 'g' : 'r';
+    note = 'Harga berada di area zona dan semua syarat lolos — entry di harga berjalan ' + fx(G.entry) + '.';
+  } else {
+    var c = pickCandidate(cur);
+    if (!c) return '<div class="card"><div class="emhead"><b>🎯 Peta Entry</b><span class="emtag m">BELUM ADA AREA</span></div><div class="m sm" style="margin-top:6px">Belum ada zona dengan skor ≥ ' + S.P.minScore + '. Entry valid baru ada setelah muncul candle displacement (badan &gt; 0.8×ATR).</div></div>';
+    var z = c.z, pt = pointSize(cur), er = Math.min(c.bhi, Math.max(c.blo, cur)), sl = z.side === 'BUY' ? z.lo - 10 * pt : z.hi + 10 * pt, rk = Math.abs(er - sl);
+    m = { side: z.side, zlo: z.lo, zhi: z.hi, blo: c.blo, bhi: c.bhi, entry: er, sl: sl, tp: z.side === 'BUY' ? er + rk * S.P.rr : er - rk * S.P.rr, px: cur, mode: 'wait' };
+    tag = 'MENUNGGU ' + z.side; tagc = 'y';
+    var inB = c.d === 0;
+    head = '<div class="m sm" style="margin-top:6px">Entry <b class="' + (z.side === 'BUY' ? 'g' : 'r') + '">' + z.side + '</b> valid bila harga masuk <b class="mono">' + fx(c.blo) + ' – ' + fx(c.bhi) + '</b> (zona ' + fx(z.lo) + '–' + fx(z.hi) + ' ± 0.35 ATR) dan syarat di bawah lolos.</div>';
+    ck(inB, inB ? 'Harga di dalam area entry' : 'Harga di luar area — ' + (cur < c.blo ? 'naik ' : 'turun ') + fx(c.d) + ' (' + (c.d / atr).toFixed(1) + ' ATR) lagi');
+    ck(true, 'Skor zona ' + Math.round(z.score) + ' ≥ min ' + S.P.minScore);
+    ck(c.f.ok, 'Arah ' + z.side + ': ' + c.f.via);
+    ck(true, 'Tidak ada posisi virtual berjalan');
+    note = 'Garis putus-putus = perkiraan entry bila harga sudah masuk area (tepi terdekat bila belum).';
+  }
+  var risk = Math.abs(m.entry - m.sl), pl = '';
+  if (m.mode === 'pos' && cur != null){ var d = (m.side === 'BUY' ? 1 : -1) * (cur - m.entry); pl = '<div><span>P/L berjalan</span><b class="' + (d >= 0 ? 'g' : 'r') + '">' + (d >= 0 ? '+' : '') + fx(d) + '</b></div>'; }
+  var rows = '<div><span>Area zona</span><b>' + fx(m.zlo) + ' – ' + fx(m.zhi) + '</b></div><div><span>Area entry (±0.35 ATR)</span><b>' + fx(m.blo) + ' – ' + fx(m.bhi) + '</b></div>' +
+    '<div><span>Entry</span><b>' + fx(m.entry) + '</b></div><div><span>Risk (jarak SL)</span><b>' + fx(risk) + ' · ' + (risk / atr).toFixed(2) + ' ATR</b></div>' +
+    '<div><span>Stop Loss</span><b class="r">' + fx(m.sl) + '</b></div><div><span>Take Profit</span><b class="g">' + fx(m.tp) + ' · 1:' + S.P.rr.toFixed(1) + '</b></div>' + pl;
+  var warn = risk / atr < 0.15 ? '<div class="m sm wr" style="margin-top:6px">⚠ SL sangat dekat (' + (risk / atr).toFixed(2) + ' ATR) — spread/slippage bisa langsung kena SL. Zona ini tipis; hati-hati.</div>' : risk / atr > 2.2 ? '<div class="m sm wr" style="margin-top:6px">⚠ SL cukup jauh (' + (risk / atr).toFixed(1) + ' ATR) — zona lebar, pertimbangkan lot lebih kecil.</div>' : '';
+  return '<div class="card"><div class="emhead"><b>🎯 Peta Entry</b><span class="emtag ' + tagc + '">' + tag + '</span></div>' + head + ladderHtml(m) + '<div class="lvt">' + rows + '</div>' +
+    (checks.length ? '<div class="ckl">' + checks.join('') + '</div>' : '') + warn + '<div class="m sm" style="margin-top:7px">' + note + '</div>' +
+    '<div class="m sm" style="margin-top:3px">Skor min ' + S.P.minScore + ' · RR 1:' + S.P.rr.toFixed(1) + ' · Lot ref ' + S.P.lot + ' · Filter BOS ' + (S.P.bos ? 'ON' : 'OFF') + ' · Early Trend ' + (S.P.et ? 'ON' : 'OFF') + '</div></div>';
+}
+function dsec(k, title, sub, body, def){
+  S.dopen = S.dopen || {};
+  var o = S.dopen[k] === undefined ? def : S.dopen[k];
+  return '<details class="card sec2" data-k="' + k + '"' + (o ? ' open' : '') + ' ontoggle="S.dopen[this.dataset.k]=this.open"><summary><span>' + title + '</span><span class="sub">' + (sub || '') + '</span></summary><div class="bd">' + body + '</div></details>';
+}
+function render(){
+  var root = $('out'), px = livePx(), cs = S.cs;
+  if (!S.running){ return; }
+  if (!cs || !cs.length || !(S.atr > 0)){ root.innerHTML = '<div class="card m">Memuat candle ' + NM[S.cfg.tf] + ' ' + (S.cfg.src === 'oanda' ? S.cfg.ins : S.cfg.sym) + '… <span class="sm">(' + (S.priceHost || 'menghubungkan') + ')</span></div>'; return; }
+  var cur = px != null ? px : cs[0].c, trend = S.trend || 0, e = S.early;
+  var col = trend > 0 ? 'g' : trend < 0 ? 'r' : 'm', ar = trend > 0 ? '▲ NAIK' : trend < 0 ? '▼ TURUN' : '◆ SIDEWAYS';
+  var nm = S.cfg.src === 'oanda' ? S.cfg.ins : S.cfg.src === 'sim' ? 'SIMULASI' : S.cfg.sym;
+  var ep = '';
+  if (e){ var ec = e.dir > 0 ? 'g' : e.dir < 0 ? 'r' : 'm'; ep = '<span class="dirpill ' + ec + '" style="font-size:11px;padding:2px 10px">🧠 ' + (e.dir > 0 ? '▲ awal naik' : e.dir < 0 ? '▼ awal turun' : '◆ netral') + ' ' + (e.score > 0 ? '+' : '') + Math.round(e.score) + '</span>'; }
+  var h = '<div class="card hero"><div class="row"><div><div class="sym">' + nm + '<span class="tfb">' + NM[S.cfg.tf] + '</span></div><b class="px">' + fx(cur) + '</b></div>' +
+    '<div class="pills"><span class="dirpill ' + col + '">Tren EA ' + ar + '</span>' + ep + '</div></div>';
+  h += '<div class="kv"><div>ATR ' + S.P.atrP + '<b>' + fx(S.atr) + '</b></div><div>Zona<b>' + S.zones.length + '</b></div><div>POI<b class="' + (S.poi.length ? 'g' : '') + '">' + S.poi.length + '</b></div><div>Data<b>' + (S.priceHost || '—') + '</b></div></div>';
+  h += '<div class="sec">';
+  if (S.pos){
+    h += posBoxHtml(S.pos, cur);
+  } else if (S.sig){
+    var sc = S.sig.side === 'BUY' ? 'g' : 'r';
+    h += '<div class="sigbox live' + (S.sig.side === 'SELL' ? ' sell' : '') + '"><div class="row"><b class="' + sc + '">✅ SINYAL ' + S.sig.side + ' VALID</b><span class="m sm">' + agoTxt(S.sigT || Date.now()) + '</span></div>' +
+      '<div class="row mono" style="font-size:13px;margin-top:5px"><span>Entry <b>' + fx(S.sig.entry) + '</b></span><span>SL <b class="r">' + fx(S.sig.sl) + '</b></span><span>TP <b class="g">' + fx(S.sig.tp) + '</b></span></div>' +
+      '<div class="m sm" style="margin-top:4px">' + S.sig.comment + ' · posisi virtual dibuka &amp; dipantau sampai TP/SL.</div></div>';
+  } else {
+    h += '<div class="sigbox wait"><div class="row"><b class="y">⏳ MENUNGGU SETUP</b><span class="m sm">dicek ' + agoTxt(S.sigT || Date.now()) + '</span></div>' +
+      '<div class="m sm" style="margin-top:4px">' + (S.sigBlock ? S.sigBlock + '.' : 'Harga belum masuk zona SND berskor ≥ ' + S.P.minScore + '.') + '</div></div>';
+  }
+  h += '<div class="scanline"><span class="radar"></span><b>RADAR AKTIF</b><span>' + (S.pos ? 'memantau posisi sampai TP/SL' : 'memindai zona SND ' + NM[S.cfg.tf] + ' · ' + (S.flowHost || S.priceHost || 'menghubungkan')) + '</span></div>';
+  h += '</div></div>';
+  h += entryMapHtml(cur);
+  h += dsec('struct', '🧠 Struktur &amp; Early Trend', e ? (e.dir > 0 ? '▲ ' : e.dir < 0 ? '▼ ' : '◆ ') + e.phase : '', '<div class="sstrip" style="margin-top:0"><div class="row"><b class="sm" style="letter-spacing:.4px">STRUKTUR SWING</b><span class="m sm">BOS · CHoCH · MSS</span></div><div style="margin-top:3px">' + structTxt(S.struct) + '</div><div class="m sm" style="margin-top:3px">Filter tren EA (10 vs 10 bar) <b>' + (S.P.bos ? 'AKTIF' : 'NONAKTIF') + '</b> — BUY butuh tren naik, SELL butuh tren turun.</div></div>' + earlyHtml(), true);
+  h += dsec('zones', 'Zona SND terdekat', S.zones.length + ' zona', poiStatusHtml(), true);
+  if (S.posHist.length) h += dsec('hist', 'Riwayat posisi virtual', S.posHist.length + ' terakhir', S.posHist.slice(0, 6).map(function(r){
+    var c2 = r.hit === 'TP' ? 'g' : 'r';
+    return '<div class="row mono" style="font-size:11.5px;border-top:1px dashed var(--bd);padding:4px 0"><span>' + (r.side === 'BUY' ? '▲' : '▼') + ' ' + r.side + ' ' + fx(r.entry) + '</span><span class="m">→</span><span class="' + c2 + '">' + r.hit + ' @ ' + fx(r.out) + '</span><span class="m">' + new Date(r.end).toLocaleTimeString() + '</span></div>';
+  }).join(''), false);
+  h += dsec('heat1', '🌡️ Heatmap harga', Math.min(cs.length, S.P.lb + 60) + ' bar ' + NM[S.cfg.tf], heatHtml(), false);
+  h += dsec('heat2', '🌊 Heatmap likuiditas', 'orderbook', domHtml() + '<div class="hleg"><span><s style="background:rgba(34,197,94,.75)"></s>bid</span><span><s style="background:rgba(239,68,68,.75)"></s>ask</span><span><s style="background:#fbbf24"></s>harga</span><span class="m">makin terang = makin tebal</span></div>', false);
+  h += dsec('jrn', '📓 Jurnal sinyal', S.journal.length + ' catatan', S.journal.length ? S.journal.map(function(j){ return '<div class="jr"><span class="t">' + new Date(j.t).toLocaleTimeString() + '</span> <b class="' + j.cls + '">' + j.txt + '</b></div>'; }).join('') : '<div class="m sm">Belum ada sinyal sejak halaman dibuka.</div>', false);
+  h += '<div class="m sm" style="text-align:center;margin-top:10px">Aturan main &amp; kamus istilah: tekan <b>❔</b> di kanan atas.</div>';
+  root.innerHTML = h;
+  drawDom();
+}
+function updateStatus(){
+  var el = $('srcst'); if (!el) return;
+  var badge = $('runBadge'), ok = S.live != null && Date.now() - S.liveT < 20000;
+  if (badge){ var liveOK = S.running && ok; badge.textContent = !S.running ? 'STOPPED' : liveOK ? 'RUNNING' : 'CONNECTING / DATA STALE'; badge.className = 'run-badge ' + (!S.running ? 'stopped' : liveOK ? 'running' : 'stale'); }
+  if (!S.running){ el.innerHTML = 'Status: <b>STOPPED</b>'; return; }
+  var parts = ['Harga: <b>' + (S.priceHost || '—') + '</b>', 'Candle: <b>' + (S.cfg.src === 'sim' ? 'Sim' : (S.restHost || (S.cfg.src === 'bybit' ? 'Bybit' : 'OANDA API'))) + '</b>', 'Pair: <b>' + (S.cfg.src === 'oanda' ? S.cfg.ins : S.cfg.src === 'sim' ? NM[S.cfg.tf] + ' sim' : S.cfg.sym) + '</b>'];
+  el.innerHTML = parts.join(' · ') + (S.cs && S.cs.length ? ' · bar terakhir ' + agoTxt(S.cs[0].t) : '');
+}
+/* ═══ LOOP UTAMA — refetch candle + gerbang bar baru + pantau posisi (OnTick EA) ═══ */
+var loopT = null, pollT = null;
+async function refetch(){
+  var now = Date.now(), need = S.P.lb + 60;
+  var stale = !S.cs || !S.cs.length || now - S.csT > 15000;
+  if (S.cfg.src !== 'sim' && stale){
+    try { var cs = await loadCandles(need); if (cs && cs.length){ S.cs = cs; S.csT = now; } }
+    catch (e) { logErr('Candle ' + NM[S.cfg.tf] + ': ' + e.message); }
+  } else if (S.cfg.src === 'sim' && !S.cs){ S.cs = fetchTFSim(); S.csT = now; }
+}
+function cycle(){
+  try {
+    trackPos();
+    domTick();
+    if (S.cs && S.cs.length){
+      var bt = S.cs[0].t;
+      if (bt !== S.lastBar){ S.lastBar = bt; runAnalysis(); }
+      else if (S.atr && S.csT !== S.earlyT){ S.early = earlyTrend(S.cs, S.atr, S.zones); S.earlyT = S.csT; }   /* panel Early Trend ikut harga berjalan; sinyal tetap per bar */   /* gerbang bar baru = lastBarTime EA */
+    }
+    updateStatus(); render();
+  } catch (e) { logErr('cycle: ' + e.message); }
+}
+function start(){
+  var c = S.cfg; unlockAudio();
+  var rb = $('runBadge'); if (rb){ rb.textContent = 'CONNECTING…'; rb.className = 'run-badge connecting'; }
+  var gb = $('go'); gb.textContent = '⏹ Berhenti'; gb.classList.add('stop');
+  S.gen++; S.sig = null; S.pos = null; S.zones = []; S.poi = []; S.atr = null; S.trend = 0; S.lastBar = 0; S.journal = []; S.posHist = []; S.sigBlock = null; S.struct = null; S.early = null; S.earlyOv = null; S.earlyBlk = null; S.running = true; S.firstRun = true;
+  S.dom.snaps = []; S.dom.lo = null; S.dom.hi = null; S.dom.host = ''; SIM.dom = null;
+  c.src = $('src').value || 'oanda'; c.sym = $('sym').value.trim().toUpperCase(); c.ins = $('ins').value.trim().toUpperCase(); c.tf = $('tf').value;
+  c.tok = $('tok').value.trim(); c.acc = $('acc').value.trim(); c.env = $('env').value; c.host = $('host').value; c.auto = $('auto').checked;
+  S.P.lot = Math.max(0.01, +$('pLot').value || 0.01); S.P.rr = Math.max(0.5, +$('pRR').value || 2); S.P.minScore = Math.max(0, Math.min(95, +$('pMin').value || 45));
+  S.P.atrP = Math.max(2, +$('pAtr').value || 14); S.P.lb = Math.max(40, Math.min(500, +$('pLb').value || 200)); S.P.bos = $('bos').checked; S.P.et = $('early').checked; S.P.etMin = Math.max(10, Math.min(95, +$('pEt').value || 40));
+  if (c.src === 'oanda' && (!!c.tok !== !!c.acc)){ c.src = $('src').value = 'binance'; logErr('OANDA API tidak aktif: Account ID dan API token harus sama-sama terisi. Beralih ke Binance/Mirror; OANDA Worker tetap bisa untuk quote tanpa kredensial.'); }
+  try { localStorage.setItem('ny_snd_cfg', JSON.stringify({ src: c.src, sym: c.sym, ins: c.ins, tf: c.tf, acc: c.acc, env: c.env, host: c.host, auto: c.auto, p: S.P })); } catch (e) {}   /* token tidak disimpan */
+  logErr('');
+  clearInterval(loopT); clearInterval(pollT); clearInterval(SIM.timer); try { if (S.ws){ S.ws.onclose = null; S.ws.close(); } } catch (e) {}
+  var g = S.gen;
+  var ready = (c.src === 'oanda' && c.auto) ? autoPair() : Promise.resolve();
+  if (c.src === 'oanda') loadOandaIns(false);
+  ready.then(function(){ if (g !== S.gen) return; if (c.src === 'bybit') startBybitWS(); else if (c.src === 'binance') startBinanceWS(); else if (c.src === 'sim'){ if (!SIM.m15) simBuild(); startSimFlow(); S.live = SIM.px; S.liveT = Date.now(); } });
+  if (c.src === 'oanda'){ pollOanda(); pollT = setInterval(pollOanda, 2000); }
+  else if (c.src === 'bybit'){ pollBybitPrice(); pollT = setInterval(pollBybitPrice, 2000); }
+  Promise.resolve(ready).then(function(){ if (g === S.gen) return refetch(); }).then(function(){ if (g === S.gen){ S.lastBar = 0; cycle(); } });
+  loopT = setInterval(function(){ refetch(); cycle(); }, 1000);
+}
+function stopAll(){
+  S.running = false; S.gen++;
+  clearInterval(loopT); clearInterval(pollT); clearInterval(SIM.timer);
+  try { if (S.ws){ S.ws.onclose = null; S.ws.close(); } } catch (e) {}
+  var rb = $('runBadge'); rb.textContent = 'STOPPED'; rb.className = 'run-badge stopped';
+  var gb = $('go'); gb.textContent = '▶ Mulai'; gb.classList.remove('stop');
+  var el = $('srcst'); if (el) el.innerHTML = 'Status: <b>STOPPED</b>';
+  $('out').innerHTML = '<div class="card"><b>Engine berhenti.</b><div class="m" style="margin-top:4px">Tekan <b>▶ Mulai</b> untuk menyambung ulang. Pengaturan tetap tersimpan di perangkat ini.</div><div style="margin-top:8px"><button class="tb jsHelp">❔ Buka aturan main</button></div></div>';
+  logErr('');
+}
+
+/* ═══ JADWAL ADZAN — waktu sholat sesuai jadwal resmi (API Aladhan, metode KEMENAG RI) ═══
+   Ini FITUR TERPISAH dari toggle "Adzan (sinyal)" di Mesin sinyal (yang itu bunyi ALERT
+   saat sinyal trading valid — waktunya mengikuti sinyal, bukan jadwal sholat).
+   Modul ini:
+   1) Menampilkan jadwal sholat hari ini (Imsak–Isya) menurut lokasi:
+      kota/koordinat manual (⚙) → lokasi IP (ipwho.is → geojs.io) → fallback Jakarta.
+   2) Hitung mundur menuju waktu sholat berikutnya (zona waktu lokasi, bukan perangkat).
+   3) Bila toggle "Bunyi adzan saat waktu sholat" aktif: memutar bunyi adzan TEPAT pada
+      waktu Subuh / Dhuhr / Ashar / Maghrib / Isya (Imsak & Terbit tidak dibunyikan). */
+var PR = { cfg:{ on:true, method:20, city:'', country:'', lat:'', lon:'' }, tz:'Asia/Jakarta', label:'', meth:'KEMENAG RI',
+  list:null, dayKey:'', lastPlayed:'', tomorrow:null, hijri:null, busy:false, bootMin:1440 };
+var PR_ROWS = [['Imsak','Imsak'],['Fajr','Subuh'],['Sunrise','Terbit'],['Dhuhr','Dhuhr'],['Asr','Ashar'],['Maghrib','Maghrib'],['Isha','Isya']];
+var PR_SOUND = { Fajr:'Subuh', Dhuhr:'Dhuhr', Asr:'Ashar', Maghrib:'Maghrib', Isha:'Isya' };
+var PR_HIJRI = { 1:'Muharam', 2:'Safar', 3:'Rabiul Awal', 4:'Rabiul Akhir', 5:'Jumadil Awal', 6:'Jumadil Akhir', 7:'Rejab', 8:'Syaaban', 9:'Ramadhan', 10:'Syawal', 11:'Zulkaidah', 12:'Zulhijah' };
+function prSave(){ try { localStorage.setItem('ny_prayer_cfg', JSON.stringify(PR.cfg)); } catch (e) {} }
+function prLoad(){
+  try { var v = JSON.parse(localStorage.getItem('ny_prayer_cfg') || 'null'); if (v){ for (var k in PR.cfg) if (v[k] !== undefined) PR.cfg[k] = v[k]; } } catch (e) {}
+  $('adzanJadwal').checked = PR.cfg.on !== false;
+  $('prMethod').value = String(PR.cfg.method || 20);
+  $('prCity').value = PR.cfg.city || ''; $('prCountry').value = PR.cfg.country || '';
+  $('prLat').value = PR.cfg.lat || ''; $('prLon').value = PR.cfg.lon || '';
+}
+function prNow(){ try { return new Date(new Date().toLocaleString('en-US', { timeZone: PR.tz })); } catch (e) { return new Date(); } }
+function prKey(d){ return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+function prMin(hm){ var m = String(hm || '').match(/(\d{1,2}):(\d{2})/); return m ? (+m[1]) * 60 + (+m[2]) : null; }
+function prHMS(s){ s = Math.max(0, Math.floor(s)); var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+  return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + ':' + (x < 10 ? '0' : '') + x; }
+function prResolve(){
+  var city = ($('prCity').value || '').trim(), country = ($('prCountry').value || '').trim() || 'Indonesia',
+      la = parseFloat($('prLat').value), lo = parseFloat($('prLon').value);
+  if (city) return Promise.resolve({ mode: 'city', city: city, country: country, label: city + ', ' + country });
+  if (isFinite(la) && isFinite(lo)) return Promise.resolve({ mode: 'coord', lat: la, lon: lo, label: la.toFixed(3) + ', ' + lo.toFixed(3) });
+  return fetch('https://ipwho.is/').then(function(r){ return r.json(); }).then(function(d){
+    if (!d || !isFinite(+d.latitude)) throw new Error('geo-ip gagal');
+    return { mode: 'coord', lat: +d.latitude, lon: +d.longitude, label: (d.city ? d.city + ', ' : '') + (d.country || ''), tz: (d.timezone && d.timezone.id) || '' };
+  }).catch(function(){
+    return fetch('https://get.geojs.io/v1/ip/geo.json').then(function(r){ return r.json(); }).then(function(d){
+      if (!d || !isFinite(+d.latitude)) throw new Error('geo-ip gagal');
+      return { mode: 'coord', lat: +d.latitude, lon: +d.longitude, label: (d.city ? d.city + ', ' : '') + (d.country || ''), tz: d.timezone || '' };
+    });
+  }).catch(function(){
+    return { mode: 'coord', lat: -6.2, lon: 106.816666, label: 'Jakarta (default — isi kota di ⚙)', tz: 'Asia/Jakarta' };
+  });
+}
+function prFetch(day, res){
+  var ds = day.getDate() + '-' + (day.getMonth() + 1) + '-' + day.getFullYear(), url, m = PR.cfg.method || 20;
+  if (res.mode === 'city') url = 'https://api.aladhan.com/v1/timingsByCity/' + ds + '?city=' + encodeURIComponent(res.city) + '&country=' + encodeURIComponent(res.country) + '&method=' + m + '&school=0';
+  else url = 'https://api.aladhan.com/v1/timings/' + ds + '?latitude=' + res.lat + '&longitude=' + res.lon + '&method=' + m + '&school=0';
+  return fetch(url).then(function(r){ return r.json(); }).then(function(j){
+    if (!j || j.code !== 200 || !j.data || !j.data.timings) throw new Error((j && j.data) ? String(j.data) : 'respons Aladhan tak terduga');
+    return { t: j.data.timings, tz: (j.data.meta && j.data.meta.timezone) || res.tz || 'Asia/Jakarta',
+      hijri: (j.data.date && j.data.date.hijri) || null,
+      meth: (j.data.meta && j.data.meta.method && j.data.meta.method.name) || 'KEMENAG RI' };
+  });
+}
+function prRender(){
+  if (!PR.list || !$('prTimes')) return;
+  var now = prNow(), cur = now.getHours() * 60 + now.getMinutes(), i, r, next = null;
+  for (i = 0; i < PR.list.length; i++){ r = PR.list[i]; if (PR_SOUND[r.k] && r.min != null && r.min > cur){ next = r; break; } }
+  var secs = null, nm = '';
+  if (next){ nm = next.nm; secs = (next.min - cur) * 60 - now.getSeconds(); }
+  else if (PR.tomorrow != null){ nm = 'Subuh (besok)'; secs = (PR.tomorrow + 1440 - cur) * 60 - now.getSeconds(); }
+  $('prNext').innerHTML = nm ? ('⏳ Menuju <b>' + nm + '</b> · <b class="c">' + prHMS(secs) + '</b>') : 'Semua waktu sholat hari ini sudah lewat.';
+  $('prTimes').innerHTML = PR.list.map(function(p){ var on = next && next.k === p.k;
+    return '<div class="prc' + (on ? ' on' : '') + '"><span>' + p.nm + '</span><b>' + (p.hm || '—') + '</b></div>'; }).join('');
+  var hz = PR.hijri ? ' · ' + (+PR.hijri.day) + ' ' + (PR_HIJRI[+PR.hijri.month.number] || '') + ' ' + (+PR.hijri.year) + ' H' : '';
+  $('prLoc').textContent = (PR.label || '') + hz;
+  $('prMeta').innerHTML = 'Metode <b>' + PR.meth + '</b> · zona <b>' + PR.tz + '</b> · bunyi adzan otomatis saat waktu sholat bila toggle di ⚙ aktif. Klik halaman sekali agar audio diizinkan browser.';
+}
+async function prRefresh(){
+  if (PR.busy) return; PR.busy = true;
+  $('prLoc').textContent = 'memuat jadwal…'; $('prNext').textContent = '…';
+  try {
+    var res = await prResolve(), d = prNow();
+    var today = await prFetch(d, res);
+    PR.tz = today.tz; PR.label = res.label; PR.meth = today.meth; PR.hijri = today.hijri;
+    PR.list = PR_ROWS.map(function(x){ return { k: x[0], nm: x[1], hm: today.t[x[0]], min: prMin(today.t[x[0]]) }; });
+    PR.dayKey = prKey(prNow()); PR.lastPlayed = ''; PR.tomorrow = null;
+    var bnow = prNow(); PR.bootMin = bnow.getHours() * 60 + bnow.getMinutes();   /* adzan hanya utk waktu sholat yang tiba SETELAH jadwal dimuat — buka halaman setelah waktunya ≠ bunyi langsung */
+    prRender();
+    try {
+      var dm = new Date(d.getTime()); dm.setDate(dm.getDate() + 1);
+      var tm = await prFetch(dm, res);
+      PR.tomorrow = prMin(tm.t.Fajr); prRender();
+    } catch (e) { /* Fajr besok gagal diambil — hitung mundur tetap jalan tanpa lewat tengah malam */ }
+  } catch (e) {
+    PR.list = null;
+    $('prLoc').textContent = 'gagal memuat jadwal'; $('prNext').textContent = '—';
+    $('prTimes').innerHTML = '<div class="m sm">Jadwal tidak bisa diambil (cek koneksi internet / nama kota &amp; negara). Tekan 🔄 untuk mencoba lagi.</div>';
+    logErr('Jadwal adzan: ' + (e && e.message ? e.message : e));
+  }
+  PR.busy = false;
+}
+function prTick(){
+  if (!PR.list) return;
+  var now = prNow(), cur = now.getHours() * 60 + now.getMinutes(), i, r;
+  if (prKey(now) !== PR.dayKey){ prRefresh(); return; }   /* ganti hari (tengah malam) → muat jadwal baru */
+  for (i = 0; i < PR.list.length; i++){
+    r = PR.list[i];
+    if (!PR_SOUND[r.k] || r.min == null || cur < r.min) continue;
+    if (PR.lastPlayed.indexOf(r.k + '|' + PR.dayKey + ';') >= 0) continue;
+    PR.lastPlayed += r.k + '|' + PR.dayKey + ';';
+    if (cur - r.min <= 2 && r.min >= PR.bootMin && $('adzanJadwal').checked){
+      /* HANYA bunyi bila waktunya tiba SELAGI halaman terbuka (≤ 2 mnt utk toleransi timer).
+         Halaman yang dibuka/di-refresh SETELAH waktu sholat lewat TIDAK memutar ulang adzan. */
+      playAdzan('BUY');
+      jPush('🕌 Adzan ' + PR_SOUND[r.k] + ' — waktu sholat ' + r.hm + ' (' + (PR.label || '') + ')', 'c');
+      try { if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]); } catch (e) {}
+    } else if (cur - r.min <= 2){
+      jPush('🕌 Waktu ' + PR_SOUND[r.k] + ' (' + r.hm + ') ' + ($('adzanJadwal').checked ? 'terlewat — halaman baru dibuka setelah waktunya, adzan tidak diputar ulang.' : 'tiba dengan toggle bunyi adzan mati.'), 'm');
+    }
+  }
+  prRender();
+}
+function prInit(){
+  prLoad();
+  $('adzanJadwal').onchange = function(){ PR.cfg.on = this.checked; prSave(); if (this.checked) unlockAudio(); };   /* TANPA bunyi langsung — adzan hanya bunyi TEPAT pada waktu sholat; tes manual lewat tombol ▶ Tes bunyi */
+  $('prTest').onclick = function(){ unlockAudio(); beep('BUY'); jPush('🔔 Tes bunyi (beep). Adzan hanya berbunyi pada waktu sholat.', 'c'); };
+  $('prRef').onclick = function(){ prRefresh(); };
+  ['prCity', 'prCountry', 'prLat', 'prLon'].forEach(function(id){
+    $(id).onchange = function(){ PR.cfg.city = $('prCity').value.trim(); PR.cfg.country = $('prCountry').value.trim(); PR.cfg.lat = $('prLat').value.trim(); PR.cfg.lon = $('prLon').value.trim(); prSave(); prRefresh(); };
+  });
+  $('prMethod').onchange = function(){ PR.cfg.method = +this.value || 20; prSave(); prRefresh(); };
+  prRefresh();
+  setInterval(prTick, 1000);
+}
+
+/* ═══ EVENT & INIT — pola sama dengan bridge (localStorage, ?auto, auto pair) ═══ */
+window.addEventListener('DOMContentLoaded', function(){
+  function sync(){ $('oanda').style.display = ($('src').value === 'oanda') ? 'grid' : 'none'; fillDd(); if ($('src').value === 'oanda') loadOandaIns(false); }
+  try {
+    var sv = JSON.parse(localStorage.getItem('ny_snd_cfg') || 'null');
+    if (sv){
+      $('src').value = sv.src || 'oanda'; $('sym').value = sv.sym || 'BTCUSDT'; $('ins').value = sv.ins || 'XAU_USD';
+      $('tf').value = sv.tf || 'm15'; $('host').value = sv.host || 'auto'; $('auto').checked = sv.auto !== false; $('acc').value = sv.acc || ''; $('env').value = sv.env || 'practice';
+      if (sv.p){ $('pLot').value = sv.p.lot; $('pRR').value = sv.p.rr; $('pMin').value = sv.p.minScore; $('pAtr').value = sv.p.atrP; $('pLb').value = sv.p.lb; $('bos').checked = sv.p.bos !== false; $('early').checked = sv.p.et !== false; if (sv.p.etMin != null) $('pEt').value = sv.p.etMin; }
+    }
+  } catch (e) {}
+  $('src').onchange = function(){ sync(); if (S.running) start(); };
+  sync();
+  $('cfgBtn').onclick = function(){ $('adv').classList.toggle('on'); };
+  $('snd').onchange = function(){ if (this.checked){ unlockAudio(); beep('BUY'); } };
+     /* TANPA bunyi langsung — adzan (sinyal) hanya bunyi saat sinyal trading VALID; tes manual lewat tombol ▶ Tes bunyi di seksi Jadwal adzan */
+  $('voice').onchange = function(){ if (this.checked){ unlockAudio(); pickVoice(); sayF('Suara aktif. Sinyal NYAI SND valid akan diucapkan.'); } };
+  $('symSearch').oninput = fillDd; $('symDd').onchange = pickPair;
+  ['focus', 'mousedown', 'touchstart'].forEach(function(ev){ $('symDd').addEventListener(ev, function(){ if ($('src').value === 'oanda') loadOandaIns(false); }, { passive: true }); });
+  $('tf').onchange = function(){ if (S.running) start(); };
+  $('ins').onchange = function(){ var p = candidates($('ins').value); if (p.length && $('auto').checked) $('sym').value = p[0]; };
+  $('reload').onclick = function(){ S.cfg.src = $('src').value; loadBinancePairs(true); S.cfg.acc = $('acc').value.trim(); S.cfg.tok = $('tok').value.trim(); S.cfg.env = $('env').value; loadOandaIns(true); };
+  S.cfg.host = $('host').value;
+  /* Jadwal adzan: mulai deteksi lokasi + jadwal, dan buka kunci audio pada klik pertama */
+  document.addEventListener('click', function unlockOnce(){ unlockAudio(); document.removeEventListener('click', unlockOnce); });
+  prInit();
+  /* Bantuan / aturan main — delegasi agar tombol di konten dinamis juga jalan */
+  document.addEventListener('click', function(e){ var t = e.target && e.target.closest ? e.target.closest('.jsHelp') : null; if (t) $('helpWrap').classList.add('on'); });
+  $('helpX').onclick = function(){ $('helpWrap').classList.remove('on'); };
+  $('helpWrap').addEventListener('click', function(e){ if (e.target === this) this.classList.remove('on'); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') $('helpWrap').classList.remove('on'); });
+  $('npClose').onclick = closeNewsPop; $('newsOn').onchange = function(){ if (this.checked){ unlockAudio(); fetchNews(); } else { NEWS = []; closeNewsPop(); renderTicker(); } };
+  fetchNews(); setInterval(fetchNews, 30 * 60 * 1000); setInterval(checkNews, 10000);
+  loadBinancePairs(false);
+  $('go').onclick = function(){ if (S.running) stopAll(); else start(); };
+  if (/[?&]auto/.test(location.search)) start();
+});
+/* ═══ MODUL AI + BROADCAST (porting dari modul NX script heatmap; sinyal TETAP dari mesin SND) ═══
+   AI = opini tambahan (OpenAI-compatible / Claude). Broadcast = Telegram / Discord / webhook.
+   Event: SIAP (harga mendekati area entry), VALID (sinyal baru), HASIL (TP/SL kena). */
+var NX = { cfg: {}, ai: null, sent: {}, busy: {} };
+(function(){
+  var g = function(i){ return document.getElementById(i); },
+      IDS = ['nxUrl','nxModel','nxKey','nxPrompt','nxTgTok','nxTgChat','nxDc','nxWh'],
+      CK = ['nxAiOn','nxAiGate','nxBSiap','nxBValid','nxBHasil'];
+  try { NX.cfg = JSON.parse(localStorage.getItem('nx_cfg') || '{}'); } catch (e) {}
+  IDS.forEach(function(i){ if (NX.cfg[i] != null && g(i)) g(i).value = NX.cfg[i]; });
+  CK.forEach(function(i){ if (g(i)) g(i).checked = NX.cfg[i] != null ? !!NX.cfg[i] : (i !== 'nxAiOn' && i !== 'nxAiGate'); });
+  function st(t, c){ var e = g('nxSt'); if (e){ e.textContent = t; e.className = c || 'm'; } }
+  function save(){ IDS.forEach(function(i){ NX.cfg[i] = g(i).value.trim(); }); CK.forEach(function(i){ NX.cfg[i] = g(i).checked; }); try { localStorage.setItem('nx_cfg', JSON.stringify(NX.cfg)); } catch (e) {} }
+  ['nxAiOn','nxAiGate','nxBSiap','nxBValid','nxBHasil'].forEach(function(i){ g(i).onchange = save; });
+  g('nxSave').onclick = function(){ save(); st('Tersimpan ✓', 'g'); };
+  function pairName(){ return S.cfg.src === 'oanda' ? S.cfg.ins : S.cfg.src === 'sim' ? 'SIMULASI' : S.cfg.sym; }
+
+  /* ── AI: kirim snapshot setup ke API milik kamu, balasan JSON {aksi,yakin,alasan} ── */
+  NX.ask = async function(o){
+    var c = NX.cfg, url = (c.nxUrl || '').replace(/\/+$/, ''), key = c.nxKey;
+    if (!c.nxAiOn || !url || !key || !c.nxModel) return null;
+    var e = S.early, z = o.zone || {};
+    var snap = { pair: pairName(), tf: S.cfg.tf, sinyal: { kind: o.kind, side: o.side, entry: o.entry, sl: o.sl, tp: o.tp, rr: o.rr },
+      zona: { lo: z.lo, hi: z.hi, skor: z.score ? Math.round(z.score) : null }, harga: livePx() != null ? livePx() : (S.cs && S.cs[0].c), atr: S.atr,
+      tren_filter_ea: S.trend > 0 ? 'NAIK' : S.trend < 0 ? 'TURUN' : 'SIDEWAYS',
+      struktur: S.struct ? { arah: S.struct.dir, event_terakhir: S.struct.ev ? (S.struct.ev.type + (S.struct.ev.dir > 0 ? ' naik' : ' turun')) : null } : null,
+      early_trend: e ? { skor: Math.round(e.score), fase: e.phase, komponen_sepakat: e.agree } : null,
+      berita_usd_high_dekat: (function(){ try { return newsNear(); } catch (x) { return false; } })() };
+    var sys = (c.nxPrompt || 'Kamu analis trading disiplin.') + '\nBalas HANYA JSON: {"aksi":"ENTRY|TUNGGU|SKIP","yakin":0-100,"alasan":"maks 2 kalimat, bahasa Indonesia"}. Jangan memberi jaminan profit.';
+    var anth = /anthropic\.com/.test(url), res, j, txt;
+    if (anth) res = await fetch(url.replace(/\/v1$/, '') + '/v1/messages', { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: c.nxModel, max_tokens: 400, system: sys, messages: [{ role: 'user', content: JSON.stringify(snap) }] }) });
+    else res = await fetch(url + '/chat/completions', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + key }, body: JSON.stringify({ model: c.nxModel, temperature: 0.2, messages: [{ role: 'system', content: sys }, { role: 'user', content: JSON.stringify(snap) }] }) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    j = await res.json(); txt = anth ? j.content[0].text : j.choices[0].message.content;
+    var m = String(txt).match(/\{[\s\S]*\}/); if (!m) throw new Error('balasan bukan JSON');
+    var r = JSON.parse(m[0]); r.aksi = String(r.aksi || 'TUNGGU').toUpperCase(); r.yakin = Math.round(+r.yakin || 0); r.alasan = String(r.alasan || ''); r.t = Date.now(); r.side = o.side; NX.ai = r; return r;
+  };
+  g('nxTestAi').onclick = async function(){ save(); st('Menguji AI…'); try { var r = await NX.ask({ kind: 'TES', side: 'BUY', entry: 0, sl: 0, tp: 0 }); st(r ? 'AI OK: ' + r.aksi + ' ' + r.yakin + '% — ' + r.alasan : 'Isi URL, model, key & centang Aktifkan AI dulu', r ? 'g' : 'r'); } catch (e) { st('AI gagal: ' + e.message, 'r'); } };
+
+  /* ── Broadcast ── */
+  NX.msg = function(kind, o, A){
+    var ic = kind === 'VALID' ? (o.side === 'BUY' ? '🟢' : '🔴') : kind === 'SIAP' ? '⏳' : (o.state === 'TP HIT' ? '🎯' : '🛑'),
+        ttl = kind === 'VALID' ? 'ENTRY VALID' : kind === 'SIAP' ? 'SIAP-SIAP' : o.state;
+    var s = ic + ' ' + ttl + ' · ' + o.side + ' ' + pairName() + ' (' + String(S.cfg.tf || '').toUpperCase() + ')\nEntry ' + fx(o.entry) + ' | SL ' + fx(o.sl) + ' | TP ' + fx(o.tp) + (o.rr ? ' | RR 1:' + Number(o.rr).toFixed(1) : '');
+    if (kind === 'HASIL' && o.out != null){ var d = (o.side === 'BUY' ? 1 : -1) * (o.out - o.entry), rk = Math.abs(o.entry - o.sl) || 1e-9; s += '\nKeluar ' + fx(o.out) + ' | ' + (d >= 0 ? '+' : '') + fx(d) + ' (' + (d / rk >= 0 ? '+' : '') + (d / rk).toFixed(2) + 'R)'; }
+    if (kind !== 'HASIL' && S.early) s += '\nEarly Trend: ' + (S.early.dir > 0 ? 'NAIK' : S.early.dir < 0 ? 'TURUN' : 'netral') + ' (' + (S.early.score > 0 ? '+' : '') + Math.round(S.early.score) + ')';
+    if (A) s += '\n🤖 AI: ' + A.aksi + ' ' + A.yakin + '% — ' + A.alasan;
+    return s + '\n⚠ Bukan nasihat keuangan. Patuhi SL.';
+  };
+  NX.send = async function(text){
+    var c = NX.cfg, jobs = [];
+    if (c.nxTgTok && c.nxTgChat) jobs.push(fetch('https://api.telegram.org/bot' + c.nxTgTok + '/sendMessage', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: c.nxTgChat, text: text }) }));
+    if (c.nxDc) jobs.push(fetch(c.nxDc, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ content: text }) }));
+    if (c.nxWh) jobs.push(fetch(c.nxWh, { method: 'POST', mode: 'no-cors', headers: { 'content-type': 'text/plain' }, body: JSON.stringify({ text: text, content: text, message: text }) }));
+    if (!jobs.length) throw new Error('belum ada tujuan broadcast');
+    var rs = await Promise.allSettled(jobs), bad = rs.filter(function(r){ return r.status === 'rejected' || (r.value && r.value.type !== 'opaque' && !r.value.ok); }).length;
+    if (bad) throw new Error(bad + ' tujuan gagal');
+  };
+  g('nxTestBc').onclick = async function(){ save(); st('Mengirim tes…'); try { await NX.send('✅ Tes broadcast NYAI SND berhasil.'); st('Terkirim ✓', 'g'); } catch (e) { st('Gagal: ' + e.message, 'r'); } };
+  NX.event = async function(kind, o){
+    var c = NX.cfg; if (!o || !o.side || !(o.entry > 0)) return;
+    o.kind = kind;
+    var key = o.key || (kind + '|' + o.side + '|' + Number(o.entry).toFixed(4)), now = Date.now(), ttl = o.ttl || 90000;
+    if ((NX.sent[key] && now - NX.sent[key] < ttl) || NX.busy[key]) return; NX.busy[key] = 1;
+    try {
+      var want = kind === 'SIAP' ? c.nxBSiap : kind === 'VALID' ? c.nxBValid : c.nxBHasil;
+      var A = null; if (kind !== 'HASIL' && c.nxAiOn){ try { A = await NX.ask(o); } catch (e) { st('AI: ' + e.message, 'r'); } }
+      if (!want) return;
+      if (c.nxAiGate && kind !== 'HASIL' && !(A && A.aksi === 'ENTRY')) return;
+      NX.sent[key] = now; await NX.send(NX.msg(kind, o, A));
+    } catch (e) { st('Broadcast gagal: ' + e.message, 'r'); } finally { delete NX.busy[key]; }
+  };
+
+  /* ── SIAP-SIAP: ada area entry valid & harga di luar area tapi dalam 0.5 ATR ── */
+  setInterval(function(){
+    try {
+      if (!S.running || !S.atr || S.pos || S.sig || !S.cs || !S.cs.length) return;
+      var cur = livePx() != null ? livePx() : S.cs[0].c, c = pickCandidate(cur); if (!c || !c.f.ok || !(c.d > 0) || c.d > S.atr * 0.5) return;
+      var z = c.z, pt = pointSize(cur), er = Math.min(c.bhi, Math.max(c.blo, cur)), sl = z.side === 'BUY' ? z.lo - 10 * pt : z.hi + 10 * pt, rk = Math.abs(er - sl);
+      NX.event('SIAP', { side: z.side, entry: er, sl: sl, tp: z.side === 'BUY' ? er + rk * S.P.rr : er - rk * S.P.rr, rr: S.P.rr, zone: z, key: 'SIAP|' + z.side + '|' + z.lo.toFixed(4) + '|' + z.hi.toFixed(4), ttl: 30 * 60000 });
+    } catch (e) {}
+  }, 1500);
+
+  /* ── Tampilkan opini AI terakhir di bawah kartu utama ── */
+  var _render = render;
+  render = function(){ _render(); try {
+    var A = NX.ai, h = g('out') && g('out').querySelector('.hero'); if (!A || !h || Date.now() - A.t > 15 * 60000) return;
+    h.insertAdjacentHTML('afterend', '<div class="nxai">🤖 AI (' + A.side + '): <b class="' + (A.aksi === 'ENTRY' ? 'g' : A.aksi === 'SKIP' ? 'r' : 'y') + '">' + A.aksi + '</b> · ' + A.yakin + '% — ' + A.alasan.replace(/</g, '&lt;') + ' <span class="m">· ' + agoTxt(A.t) + '</span></div>');
+  } catch (e) {} };
+})();
+</script>
+</body>
+</html>
