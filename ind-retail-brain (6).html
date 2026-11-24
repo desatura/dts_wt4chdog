@@ -1,0 +1,3375 @@
+<!doctype html>
+<html lang="id" data-theme="brain">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IND·RETAIL BRAIN — XAUUSD Multi-TF (port ind-retail.py v4)</title>
+<style>
+/* ═══ TEMA ═══ */
+:root, html[data-theme="brain"]{
+  --bg:#070b07; --panel:#0c120c; --alt:#0a0f0a; --bd:#223022; --bd2:#2f422f;
+  --mut:#7d9b7d; --ink:#e9f2e9; --ink2:#b7ccb7;
+  --g:#4ade80; --r:#f87171; --y:#fbbf24; --c:#2dd4bf; --p:#c084fc; --acc:#f59e0b; --bl:#60a5fa;
+  --rad:2px; --mono:ui-monospace,Menlo,Consolas,"Courier New",monospace;
+}
+html[data-theme="dark"]{
+  --bg:#0b0f17; --panel:#131a26; --alt:#0f1520; --bd:#243049; --bd2:#33436b;
+  --mut:#8b96ab; --ink:#e5e9f2; --ink2:#b9c3d6;
+  --g:#22e08a; --r:#ff6b6b; --y:#fbbf24; --c:#22d3ee; --p:#c084fc; --acc:#3b82f6; --bl:#60a5fa;
+  --rad:10px; --mono:ui-monospace,Menlo,Consolas,monospace;
+}
+html[data-theme="light"]{
+  --bg:#f4f6fa; --panel:#fff; --alt:#f8fafc; --bd:#d6dce6; --bd2:#c3ccdd;
+  --mut:#6b7280; --ink:#111827; --ink2:#374151;
+  --g:#00a85a; --r:#dc2626; --y:#d97706; --c:#0891b2; --p:#9333ea; --acc:#2563eb; --bl:#2563eb;
+  --rad:10px; --mono:ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--acc)}
+.mono{font-family:var(--mono)}
+.m{color:var(--mut)} .sm{font-size:11.5px} .xs{font-size:10.5px}
+.g{color:var(--g)} .r{color:var(--r)} .y{color:var(--y)} .c{color:var(--c)} .p{color:var(--p)}
+.b{font-weight:700}
+
+/* ═══ HEADER ═══ */
+header{position:sticky;top:0;z-index:6;background:var(--panel);border-bottom:1px solid var(--bd);padding:6px 10px 8px;box-shadow:0 1px 0 color-mix(in srgb,var(--acc) 22%,transparent)}
+.hrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:13.5px;letter-spacing:.4px;font-family:var(--mono)}
+.brand em{color:var(--acc);font-style:normal}
+.spacer{flex:1}
+.badge{display:inline-block;padding:2px 8px;border:1px solid var(--bd);border-radius:999px;font-size:9.5px;font-weight:800;letter-spacing:.3px;color:var(--mut);white-space:nowrap}
+.badge.on{color:var(--g);border-color:var(--g)}
+.badge.err{color:var(--r);border-color:var(--r)}
+.ctl{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:end;margin-top:6px}
+.ctl label{display:flex;flex-direction:column;gap:2px;font-size:9px;color:var(--mut);letter-spacing:.2px;text-transform:uppercase}
+.ctl select,.ctl input[type=text]{padding:5px 8px;border:1px solid var(--bd);border-radius:var(--rad);background:var(--alt);color:var(--ink);font-size:12px;min-width:0}
+.chk{flex-direction:row!important;align-items:center;gap:5px!important;text-transform:none!important;font-size:11px!important;color:var(--ink)!important;padding-bottom:5px;white-space:nowrap}
+.chk input[type=checkbox]{width:13px;height:13px;accent-color:var(--acc);margin:0;flex:0 0 auto}
+button{font:inherit}
+#go{padding:7px 14px;border:0;border-radius:var(--rad);background:var(--acc);color:#0b0f07;font-weight:800;cursor:pointer;font-size:12.5px;letter-spacing:.3px}
+#go:disabled{opacity:.55;cursor:wait}
+#go.stop{background:var(--r);color:#fff}
+.tb{padding:5px 9px;border:1px solid var(--bd);border-radius:var(--rad);background:var(--alt);color:var(--ink);cursor:pointer;font-size:11.5px;white-space:nowrap}
+.tb.on{background:color-mix(in srgb,var(--acc) 18%,transparent);border-color:var(--acc);font-weight:700}
+.ico{width:28px;height:28px;padding:0;border:1px solid var(--bd);border-radius:var(--rad);background:var(--alt);color:var(--ink);font-size:13px;cursor:pointer;line-height:1;position:relative}
+.ico.want::after{content:"";position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--acc);border:2px solid var(--panel)}
+#fileInfo{margin-top:5px;font-size:10.5px;color:var(--mut);font-family:var(--mono)}
+
+/* ═══ LAYOUT ═══ */
+main{max-width:1120px;margin:0 auto;padding:12px 12px 70px}
+.card{background:var(--panel);border:1px solid var(--bd);border-radius:var(--rad);padding:12px 14px;margin-bottom:10px}
+.card h3{margin:0 0 8px;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--mut);font-family:var(--mono)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:10px}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:4px 8px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+th{color:var(--mut);font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;font-family:var(--mono)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+
+/* ═══ HERO ═══ */
+.hero{display:flex;gap:16px;flex-wrap:wrap;align-items:center;border-top:2px solid var(--acc)}
+.hero-l{min-width:220px}
+.px{font-size:clamp(28px,6vw,42px);font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:-.5px;line-height:1.02;font-family:var(--mono)}
+.hero-r{flex:1;min-width:260px}
+.vlabel{display:inline-block;font-size:clamp(17px,4vw,26px);font-weight:800;letter-spacing:1.5px;padding:4px 16px;border:2px solid;border-radius:var(--rad);font-family:var(--mono)}
+.vlabel.BULL{color:var(--g);border-color:var(--g);background:color-mix(in srgb,var(--g) 10%,transparent)}
+.vlabel.BEAR{color:var(--r);border-color:var(--r);background:color-mix(in srgb,var(--r) 10%,transparent)}
+.vlabel.MIXED{color:var(--y);border-color:var(--y);background:color-mix(in srgb,var(--y) 10%,transparent)}
+.famstrip{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.famchip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--bd);border-radius:var(--rad);background:var(--alt);font-size:11.5px;font-family:var(--mono)}
+.famchip b{font-size:13px}
+.famchip .fp{width:7px;height:7px;border-radius:1px}
+
+/* ═══ PIPELINE ═══ */
+#brainPipe{display:flex;align-items:center;gap:6px;margin:0 0 10px;padding:7px 10px;border:1px solid var(--bd);background:var(--alt);font:600 10.5px var(--mono);letter-spacing:.6px;color:var(--mut);overflow-x:auto;white-space:nowrap;border-radius:var(--rad)}
+#brainPipe span{padding:2px 8px;border:1px solid var(--bd);color:var(--mut);border-radius:var(--rad)}
+#brainPipe span.done{color:var(--g);border-color:var(--g)}
+#brainPipe span.on{color:#0b0f07;background:var(--y);border-color:var(--y)}
+#brainPipe i{color:var(--bd);font-style:normal}
+
+/* ═══ CHART ═══ */
+.chbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.chbar .sy{font-weight:800;font-size:14px;font-family:var(--mono)}
+.chbar .tf{color:var(--acc);font-weight:800;font-family:var(--mono);margin-left:6px}
+#chWrap{position:relative;border:1px solid var(--bd);border-radius:var(--rad);background:var(--alt);overflow:hidden}
+#ch{display:block;width:100%;height:clamp(280px,48vh,470px);touch-action:none;cursor:crosshair}
+#chInfo{margin-top:6px;font-size:11px;color:var(--mut);font-family:var(--mono);min-height:16px;overflow-x:auto;white-space:nowrap}
+#chLegend{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:4px;font-size:10.5px;color:var(--mut)}
+#chLegend i{display:inline-block;width:10px;height:3px;margin-right:4px;vertical-align:middle;border-radius:1px}
+
+/* ═══ CHIP / KONTEN ═══ */
+.chip{display:inline-block;padding:1px 8px;border:1px solid;border-radius:var(--rad);font-size:10.5px;font-weight:700;letter-spacing:.3px}
+.chip.ok{color:var(--g);border-color:var(--g)}
+.chip.wr{color:var(--y);border-color:var(--y)}
+.chip.no{color:var(--r);border-color:var(--r)}
+.chip.nu{color:var(--mut);border-color:var(--bd)}
+.chip.in{color:var(--c);border-color:var(--c)}
+.patrow{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;padding:5px 0;border-bottom:1px dashed var(--bd)}
+.patrow:last-child{border-bottom:0}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:2.5px 0;font-size:12.5px}
+.kv b{font-family:var(--mono);font-variant-numeric:tabular-nums}
+details.sec{border-top:1px dashed var(--bd);margin-top:8px;padding-top:6px}
+details.sec summary{cursor:pointer;font-weight:700;font-size:12px;color:var(--mut);list-style:none}
+details.sec summary::before{content:"▸ "}
+details.sec[open] summary::before{content:"▾ "}
+.warnbox{border-left:3px solid var(--y);background:color-mix(in srgb,var(--y) 7%,transparent);padding:6px 10px;margin:4px 0;font-size:12px;border-radius:var(--rad)}
+.notebox{border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 7%,transparent);padding:6px 10px;margin:4px 0;font-size:12px;border-radius:var(--rad)}
+.full{font-family:var(--mono);font-size:11px;white-space:pre-wrap;overflow-x:auto;color:var(--ink2);line-height:1.6}
+footer{margin-top:16px;font-size:11px;color:var(--mut);line-height:1.6}
+
+/* ═══ MODAL HELP ═══ */
+#helpWrap{position:fixed;inset:0;z-index:20;display:none;background:rgba(0,0,0,.55);padding:16px}
+#helpWrap.on{display:flex;align-items:flex-start;justify-content:center}
+#helpBox{background:var(--panel);border:1px solid var(--bd2);border-radius:var(--rad);max-width:680px;width:100%;max-height:86vh;overflow-y:auto;padding:16px 18px;margin-top:4vh}
+#helpBox h2{margin:0 0 6px;font-size:16px}
+#helpBox h4{margin:14px 0 4px;font-size:12.5px;color:var(--acc)}
+#helpBox p,#helpBox li{font-size:12.5px;line-height:1.6}
+#helpBox ul{margin:4px 0;padding-left:20px}
+/* ═══ OANDA PANEL & BERITA ═══ */
+.oa-panel{display:flex;flex-wrap:wrap;gap:6px;align-items:end;margin-top:6px;padding:8px 10px;border:1px dashed var(--bd2);border-radius:var(--rad);background:var(--alt)}
+.oa-panel label{display:flex;flex-direction:column;gap:2px;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.3px}
+.oa-panel input:not([type=checkbox]),.oa-panel select{padding:6px 8px;border:1px solid var(--bd);border-radius:var(--rad);background:var(--panel);color:var(--ink);font-size:12px;font-family:var(--mono);min-width:110px}
+.oa-panel input[type=checkbox]{width:13px;height:13px;accent-color:var(--acc);margin:0;align-self:flex-start}
+#oaWorker{min-width:230px}
+/* ═══ DRAWER ⚙ PENGATURAN (pola DTS Watchdog) ═══ */
+#adv{display:none;margin-top:8px;border-top:1px dashed var(--bd);padding-top:10px}
+#adv.on{display:block}
+.asec{margin:0 0 12px}
+.asec>b{display:block;font-size:11.5px;color:var(--mut);letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase}
+.asec h4{margin:10px 0 4px;font-size:12px;color:var(--mut)}
+#sg2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:6px}
+#sg2 label{font-size:11px;color:var(--mut);display:flex;flex-direction:column;gap:3px}
+#sg2 input{width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--rad);background:var(--alt);color:var(--ink);font-size:12px;font-family:var(--mono)}
+#adv .pill,#adv input[type=checkbox]{width:auto}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--bd);border-radius:var(--rad);background:var(--alt);font-size:12px;cursor:pointer;user-select:none}
+.pill input{accent-color:var(--acc)}
+.tgl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.hint{font-size:11px;color:var(--mut);line-height:1.5;margin-top:6px}
+/* ═══ KARTU SINYAL ═══ */
+#sigCard{border-color:color-mix(in srgb,var(--acc) 45%,var(--bd))}
+.sigbox{margin-top:8px;border:1px solid var(--bd);border-radius:var(--rad);background:var(--alt);overflow:hidden}
+.sigbox[data-side="BUY"]{border-color:color-mix(in srgb,var(--g) 55%,var(--bd))}
+.sigbox[data-side="SELL"]{border-color:color-mix(in srgb,var(--r) 55%,var(--bd))}
+.sigrow{display:flex;justify-content:space-between;gap:10px;padding:5.5px 12px;border-bottom:1px dashed var(--bd);font-size:13px}
+.sigrow:last-child{border-bottom:0}
+.sigrow span{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+.sigrow b{font-family:var(--mono);font-variant-numeric:tabular-nums}
+#ticker{display:flex;gap:5px;overflow-x:auto;margin-top:5px;scrollbar-width:thin;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}
+#ticker:empty{margin:0;-webkit-mask-image:none;mask-image:none}
+.nw{flex:0 0 auto;display:flex;flex-direction:column;gap:1px;padding:4px 8px;border:1px solid var(--bd);border-radius:var(--rad);background:var(--alt);font-size:10.5px;min-width:140px}
+.nw .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;font-weight:600}
+.nw .s{display:flex;justify-content:space-between;gap:8px;font-size:9.5px}
+.nw.nh{border-color:var(--r)} .nw.nm{border-color:var(--y)} .nw.nl{border-color:var(--bd)}
+#newspop{display:none;position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:9;width:min(92vw,420px);background:var(--panel);border:2px solid var(--r);border-radius:var(--rad);padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+@media(max-width:640px){
+  .hero{flex-direction:column;align-items:stretch}
+  .hero-l,.hero-r{min-width:0}
+  .ctl{gap:6px 5px}
+  .ctl select,.ctl input[type=text]{padding:4px 7px;font-size:11.5px;max-width:44vw}
+  .ctl label{font-size:8.5px;gap:1px}
+  .chk{font-size:10.5px!important;padding-bottom:4px}
+  #go{padding:6px 12px;font-size:12px}
+  .tb{padding:4px 8px;font-size:11px}
+  .ico{width:26px;height:26px;font-size:12px}
+  .brand{font-size:12.5px}
+  .badge{font-size:9px;padding:2px 7px}
+  header{padding:5px 8px 7px}
+  td,th{padding:3px 6px}
+  .oa-panel{flex-direction:column;align-items:stretch}
+  .oa-panel input:not([type=checkbox]),.oa-panel select{min-width:0;width:100%}
+  #oaWorker{flex:auto}
+  #sg2{grid-template-columns:1fr 1fr}
+  .tgl .pill{flex:1 1 auto}
+  .sigrow{padding:5px 8px;font-size:12.5px}
+}
+@media(max-width:400px){
+  .ctl label{font-size:8px}
+  .ctl select,.ctl input[type=text]{font-size:11px;max-width:42vw}
+  #sg2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="hrow">
+  <span class="brand">🧠 IND·RETAIL <em>BRAIN</em></span>
+  <span class="badge" id="srcBadge">SIAGA</span>
+  <span class="spacer"></span>
+  <select id="themeSel" class="tb" title="Tema tampilan">
+    <option value="brain">🧠 Second Brain</option>
+    <option value="dark">🌙 Gelap</option>
+    <option value="light">☀️ Terang</option>
+  </select>
+  <button class="ico" id="helpBtn" title="Bantuan & cara pakai">?</button>
+  <button class="ico" id="cfgBtn" title="Pengaturan (koneksi OANDA & mesin sinyal)">⚙</button>
+ </div>
+ <div class="ctl">
+  <label>Sumber data
+   <select id="src" title="Tingkat sumber data — detail tiap tier di bantuan (?)">
+    <option value="oanda_api" selected>ELITE · OANDA API</option>
+    <option value="oanda_worker">PREMIUM · OANDA Worker</option>
+    <option value="oanda">REGULER · OANDA + Binance</option>
+    <option value="binance">BINANCE (live)</option>
+    <option value="demo">DEMO (sintetis)</option>
+    <option value="file">FILE ind-*.json</option>
+   </select>
+  </label>
+  <label>Set MTF
+   <select id="mtf">
+    <option value="M15,H1,H4" selected>Intraday · M15+H1+H4</option>
+    <option value="M5,M15,M30">Scalp · M5+M15+M30</option>
+    <option value="H1,H4,D1">Swing · H1+H4+D1</option>
+    <option value="M15">Solo · M15</option>
+    <option value="M5,M15,M30,H1,H4,D1">Semua · M5–D1</option>
+   </select>
+  </label>
+  <label>TF aktif <select id="tf"></select></label>
+  <label class="chk"><input type="checkbox" id="live"> sertakan bar berjalan</label>
+  <label class="chk"><input type="checkbox" id="auto"> auto-refresh 60s</label>
+  <button id="go">▶ Jalankan Analisa</button>
+  <button class="tb" id="fileBtn" title="Muat ind-M15.json / ind-H1.json / ind-D1.json / ind-params.json">📂 Muat file JSON</button>
+  <input type="file" id="files" multiple accept=".json,application/json" style="display:none">
+ </div>
+ <div id="fileInfo"></div>
+ <div id="adv">
+  <div class="asec"><b>🔌 Koneksi OANDA</b>
+   <div class="oa-panel" id="oaPanel" style="display:flex">
+    <label>API token <input id="oaTok" type="password" placeholder="kosong = pakai Worker" autocomplete="off"></label>
+    <label>Account ID <input id="oaAcc" placeholder="opsional" autocomplete="off"></label>
+    <label>Env <select id="oaEnv"><option value="practice">Practice</option><option value="live">Live</option></select></label>
+    <label>Instrumen <input id="oaIns" value="XAU_USD" autocomplete="off"></label>
+    <label>Worker URL <input id="oaWorker" value="https://dts-oanda-worker.hanjakal.workers.dev/" autocomplete="off"></label>
+    <label class="chk"><input type="checkbox" id="newsOn" checked> berita</label>
+    <label class="chk"><input type="checkbox" id="newsSnd"> suara popup</label>
+    <button id="oaSave" class="tb" title="Simpan koneksi ke localStorage">💾 Simpan koneksi</button>
+   </div>
+   <div class="hint">Pilih tier di header: <b>ELITE · OANDA API</b> = REST v3 candle asli (wajib token + Account ID di sini), <b>PREMIUM · OANDA Worker</b> = tanpa kredensial, candle asli bila Worker V2 menyediakan, <b>REGULER · OANDA + Binance</b> = candle Binance XAU/PAXG di-bridge ke level harga OANDA. Setiap tier otomatis turun ke jalur berikutnya bila gagal — jalur yang benar-benar dipakai tampil di badge. Kalender berita: news.json lokal → faireconomy (ForexFactory). Koneksi disimpan di browser ini (localStorage <span class="mono">irb_oa</span>). Harga bid/ask <b>berdetak tiap 5 detik</b> lewat quote Worker begitu tier OANDA dijalankan.</div>
+  </div>
+  <div class="asec"><b>🎯 Mesin sinyal (Entry / SL / TP)</b>
+   <div class="tgl">
+    <label class="pill" title="Zona harus searah bias struktur (BOS/CHoCH)"><input type="checkbox" id="sgTrend" checked><span>⚡ Filter struktur</span></label>
+    <label class="pill" title="Zona tidak boleh melawan voting total (≥2/5)"><input type="checkbox" id="sgVotes" checked><span>🗳️ Filter voting</span></label>
+    <label class="pill" title="Bunyi + suara saat muncul sinyal VALID baru"><input type="checkbox" id="sgSnd" checked><span>🔔 Alert + suara</span></label>
+   </div>
+   <div id="sg2">
+    <label>Risk:Reward gate<input id="sgRR" type="number" step="0.1" min="0.5" value="2.0"></label>
+    <label>Lot referensi<input id="sgLot" type="number" step="0.01" min="0.01" value="0.01"></label>
+   </div>
+   <div class="tgl" style="margin-top:6px"><button class="tb" id="sgSave">💾 Simpan</button><span class="sm m" id="sgSt"></span></div>
+   <div class="hint">Zona entry = FVG belum mitigasi / swing terdekat (dari engine), harus searah konteks. SL = balik zona ± 0.3×ATR (paling protektif), TP = RR × jarak SL — angka dihitung di kartu SINYAL. Halaman <b>tidak mengirim order ke broker</b>; ini alat bantu, bukan nasihat keuangan. Pengaturan disimpan di browser ini (localStorage <span class="mono">irb_sig</span>).</div>
+  </div>
+ </div>
+ <div id="ticker"></div>
+</header>
+
+<main>
+ <div class="card hero">
+  <div class="hero-l">
+   <div class="px" id="price">—</div>
+   <div class="sm m" id="priceMeta">Tekan <b>▶ Jalankan Analisa</b> untuk memulai.</div>
+  </div>
+  <div class="hero-r">
+   <span class="vlabel" id="voteLabel" style="color:var(--mut);border-color:var(--bd)">—</span>
+   <div class="famstrip" id="famStrip"></div>
+  </div>
+ </div>
+
+ <div class="card" id="sigCard">
+  <h3>Sinyal · Entry / SL / TP</h3>
+  <div id="sigBody"><div class="sm m">Tekan <b>▶ Jalankan Analisa</b> — mesin mencari zona FVG/swing searah konteks, lalu menghitung Entry, SL &amp; TP. Atur RR/lot/filter di <b>⚙</b>.</div></div>
+ </div>
+
+ <div id="brainPipe" aria-hidden="true">
+  <span data-st="data">DATA</span><i>→</i>
+  <span data-st="level">LEVEL</span><i>→</i>
+  <span data-st="struktur">STRUKTUR</span><i>→</i>
+  <span data-st="regime">REGIME</span><i>→</i>
+  <span data-st="candle">CANDLE</span><i>→</i>
+  <span data-st="voting">VOTING</span><i>→</i>
+  <span data-st="sinyal">SINYAL</span>
+ </div>
+
+ <div class="card">
+  <div class="chbar">
+   <span class="sy">XAUUSD<span class="tf" id="chTf">M15</span></span>
+   <span class="sm m">candle tutup · overlay level kunci</span>
+   <span class="spacer"></span>
+   <button class="tb on" id="ovMA" title="EMA 20/50/200">MA</button>
+   <button class="tb on" id="ovLvl" title="PDH/PDL · POC/VAH/VAL · VWAP · Pivot">LEVEL</button>
+   <button class="tb on" id="ovStr" title="BOS/CHoCH · swing · FVG · dealing range">STRUKTUR</button>
+   <button class="tb" id="chZoomOut" title="Perbanyak bar terlihat">−</button>
+   <button class="tb" id="chZoomIn" title="Kurangi bar terlihat">+</button>
+   <button class="tb" id="chReset" title="Kembali ke tampilan awal">⟲</button>
+  </div>
+  <div id="chWrap"><canvas id="ch"></canvas></div>
+  <div id="chInfo">geser = pan · scroll/± = zoom · hover = detail bar</div>
+  <div id="chLegend"></div>
+ </div>
+
+ <div class="card" id="mtfCard" style="display:none">
+  <h3>Ringkasan Multi-Timeframe</h3>
+  <div class="tw"><table id="mtfTbl"></table></div>
+  <div class="sm m" id="mtfNote" style="margin-top:6px"></div>
+ </div>
+
+ <div class="grid2" id="cards">
+  <div class="card"><h3>Regime Pasar</h3><div id="regimeBody"></div></div>
+  <div class="card"><h3>Keluarga · Tren</h3><div id="trendBody"></div></div>
+  <div class="card"><h3>Keluarga · Momentum</h3><div id="momBody"></div></div>
+  <div class="card"><h3>Keluarga · Volume (proxy)</h3><div id="volBody"></div></div>
+  <div class="card"><h3>Keluarga · Struktur (SMC)</h3><div id="structBody"></div></div>
+  <div class="card"><h3>Keluarga · Lokasi</h3><div id="locBody"></div></div>
+  <div class="card"><h3>Level Kunci &amp; Pivot</h3><div id="lvlBody"></div></div>
+  <div class="card"><h3>VWAP &amp; Opening Range</h3><div id="orbBody"></div></div>
+  <div class="card"><h3>Volume Profile</h3><div id="vpBody"></div></div>
+  <div class="card"><h3>CVD / Delta</h3><div id="cvdBody"></div></div>
+  <div class="card"><h3>Pola Candle (bar tutup terakhir)</h3><div id="candleBody"></div></div>
+  <div class="card"><h3>Breakout → Retest</h3><div id="retestBody"></div></div>
+ </div>
+
+ <div class="card">
+  <details class="sec" id="fullCard" style="border-top:0;margin-top:0;padding-top:0">
+   <summary>Detail mentah per lapis (setara <span class="mono">--full</span>)</summary>
+   <div class="full" id="fullBody" style="margin-top:8px"></div>
+  </details>
+ </div>
+
+ <div class="card" id="newsCard"><h3>Berita &amp; Kalender Ekonomi</h3>
+  <div class="row"><span class="sm m" id="newsSrc">sumber: —</span><span class="spacer"></span><button class="tb" id="newsBtn">⟳ Muat ulang berita</button></div>
+  <div class="tw"><table id="newsTbl"></table></div>
+  <div class="sm m" style="margin-top:6px">popup + suara otomatis saat event High/Medium ≤ 5 menit · HIGH USD ±10 menit ditandai di atas.</div>
+ </div>
+
+ <div class="card" id="warnCard" style="display:none"><h3>Catatan &amp; Peringatan</h3><div id="warnBody"></div></div>
+
+ <footer>
+  <b>IND·RETAIL BRAIN</b> — port 1:1 engine <span class="mono">ind-retail.py v4</span> (perpustakaan indikator retail XAUUSD) ke browser + mesin sinyal Entry/SL/TP lapisan presentasi (gaya DTS Watchdog).
+  Halaman ini <b>tidak mengirim order ke broker</b>; sinyal = alat bantu, bukan nasihat keuangan. Volume OANDA = tick volume (proxy).
+  Delta/CVD asli memakai taker-buy volume Binance (tersedia otomatis saat sumber BINANCE); tanpa itu CVD hanya estimasi
+  (posisi close × volume). Parameter kalibrasi <span class="mono">ind-validate.py</span> dimuat dari <span class="mono">ind-params.json</span> bila diunggah.
+  Sumber OANDA memakai REST v3 (API token, practice/live) atau Worker quote tanpa kredensial dengan proxy CORS; kalender berita dari
+  news.json lokal atau faireconomy/ForexFactory. Data Binance/PAXG basisnya bisa berbeda dari OANDA XAUUSD — spread &amp; jam sesi tidak identik.
+ </footer>
+</main>
+
+<div id="newspop">
+ <div class="row"><b id="npTitle" class="r">—</b><button id="npClose" class="tb">✕</button></div>
+ <div id="npMeta" style="margin-top:4px"></div>
+ <div id="npCd" class="y mono b" style="margin-top:4px"></div>
+</div>
+
+<div id="helpWrap">
+ <div id="helpBox">
+  <div class="row"><h2>🧠 Bantuan — IND·RETAIL BRAIN</h2><button class="ico" id="helpClose">✕</button></div>
+  <p>Analisa multi-timeframe XAUUSD memakai engine hasil port <b>ind-retail.py v4</b>: 100+ indikator diringkas lewat
+  <b>voting 5 keluarga</b> (tren, momentum, volume, struktur, lokasi) — 1 keluarga = 1 suara, bukan 1 indikator = 1 suara.</p>
+  <h4>Sumber data</h4>
+  <ul>
+   <li><b>DEMO</b> — data sintetis, jalan tanpa internet.</li>
+   <li><b>BINANCE</b> — klines langsung dari API publik Binance (XAUUSDT futures → PAXGUSDT spot, 7 host fallback), delta taker-buy ASLI.</li>
+   <li><b>ELITE · OANDA API</b> — REST v3 langsung ke server OANDA (practice/live): candle asli semua TF + tick volume. Wajib <b>API token + Account ID</b> (isi di ⚙ → Koneksi OANDA). Token kosong → otomatis turun ke jalur Worker.</li>
+   <li><b>PREMIUM · OANDA Worker</b> — tanpa kredensial, paling gampang: candle asli OANDA bila Worker V2 menyediakan (<span class="mono">candles=1</span>), selalu ada quote bid/ask live.</li>
+   <li><b>REGULER · OANDA + Binance</b> — candle Binance XAUUSDT/PAXGUSDT di-<i>despike</i> (buang wick hantu), buang candle weekend (jam tutup OANDA untuk logam), lalu digeser Δ ke level harga OANDA live dari Worker. Bentuk candle = Binance, level harga = OANDA.</li>
+   <li><b>BINANCE</b> — klines langsung dari API publik Binance (XAUUSDT futures → PAXGUSDT spot, 7 host fallback), delta taker-buy ASLI. Basis bisa beda dari OANDA XAUUSD.</li>
+   <li><b>FILE</b> — unggah <span class="mono">ind-*.json</span> hasil export OANDA.</li>
+   <li><b>DEMO</b> — data sintetis, jalan tanpa internet.</li>
+  </ul>
+  <p>Setiap tier OANDA otomatis <b>turun jalur bila gagal</b> (API → Worker → bridge); jalur yang benar-benar dipakai tampil di badge (mis. <span class="mono">PREMIUM · OK · Worker+proxy</span>). Begitu tier OANDA berjalan, <b>harga bid/ask berdetak tiap 5 detik</b> di pita atas &amp; angka harga besar (hijau saat naik, merah saat turun) — analisa penuh tetap tiap 60 detik atau tiap kali ditekan ▶.</p>
+  <h4>Cara pakai</h4>
+  <ul>
+   <li>Pilih <b>Sumber data</b>: DEMO (data sintetis, jalan tanpa internet), BINANCE (menarik klines langsung dari API publik Binance), atau FILE (unggah <span class="mono">ind-*.json</span> hasil export OANDA).</li>
+   <li>Pilih <b>Set MTF</b> lalu tekan <b>▶ Jalankan Analisa</b>. Semua TF pada set dianalisa; tabel MTF merangkum semuanya.</li>
+   <li>Kartu detail mengikuti <b>TF aktif</b>. Chart bisa di-pan (geser), zoom (tombol ± / scroll), dan hover untuk detail bar.</li>
+   <li><b>Auto-refresh 60s</b> berlaku untuk sumber BINANCE dan OANDA.</li>
+   <li>Centang <b>bar berjalan</b> = setara flag <span class="mono">--live</span> (default: hanya bar yang sudah tutup).</li>
+  </ul>
+  <h4>Format file</h4>
+  <ul>
+   <li><span class="mono">ind-M15.json</span>, <span class="mono">ind-H1.json</span>, dst — candle OANDA <span class="mono">{"candles":[{t,o,h,l,c,v}]}</span> (urutan bebas, dideteksi otomatis).</li>
+   <li><span class="mono">ind-D1.json</span> — candle harian untuk PDH/PDL/PWH/PWL/PMH/PML &amp; pivot yang akurat.</li>
+   <li><span class="mono">ind-params.json</span> — hasil kalibrasi <span class="mono">ind-validate.py</span> (ambang candle &amp; regime per TF, dimuat otomatis per TF).</li>
+  </ul>
+  <h4>Cara membaca</h4>
+  <ul>
+   <li><b>Voting total</b> +3 s/d +5 = BULL, −3 s/d −5 = BEAR, selain itu MIXED. Ini <b>ringkasan, bukan sinyal entry</b>.</li>
+   <li><b>Kartu SINYAL · Entry/SL/TP</b> — inilah jawaban entry-nya. Mesin mengambil zona FVG belum mitigasi / swing terdekat dari engine, wajib searah <b>bias struktur</b> (BOS/CHoCH) dan tidak melawan <b>voting total</b> (≥2/5), lalu menghitung: <b>Entry</b> = harga pasar saat itu, <b>SL</b> = balik zona ± 0.3×ATR (level paling protektif), <b>TP</b> = RR × jarak SL. Status: ✅ VALID / ⏳ MENUNGGU (dengan alasan). Atur RR gate, lot, dan filter di <b>⚙</b>.</li>
+   <li><b>Regime</b>: TREND/RANGE/TRANSISI lewat ADX/CHOP/ER (mode fixed atau adaptive terkalibrasi).</li>
+   <li><b>Struktur</b>: BOS/CHoCH, sweep likuiditas, EQH/EQL, FVG, displacement, premium/discount.</li>
+   <li><b>Pola candle</b> dinilai dengan konteks: gerak sebelumnya + kedekatan level → chip <i>valid / lemah / tanpa konteks</i>.</li>
+   <li>Tanda <b>*</b> pada volume: tick volume OANDA adalah proxy, bukan volume transaksi nyata.</li>
+  </ul>
+  <h4>Batasan</h4>
+  <ul>
+   <li>Butuh ≥ 300 bar per TF agar EMA200/Ichimoku/persentil akurat; peringatan muncul otomatis bila kurang.</li>
+   <li>Sesi &amp; hari trading mengikuti aturan 17:00 New York (DST dihitung otomatis).</li>
+   <li>Terminologi &amp; ambang identik dengan script Python — apa yang dihitung Python, dihitung halaman ini.</li>
+  </ul>
+ </div>
+</div>
+
+<script>
+// engine.js — port 1:1 dari ind-retail (3).py (v4) ke JavaScript.
+// Semua rumus, ambang, dan urutan logika mengikuti file Python aslinya.
+// Dipakai oleh halaman HTML "XAUUSD Retail Brain" (tema Second Brain).
+'use strict';
+
+// ---------- util dasar ----------
+const closes = cs => cs.map(c => c.c);
+const highs = cs => cs.map(c => c.h);
+const lows = cs => cs.map(c => c.l);
+const opens = cs => cs.map(c => c.o);
+const vols = cs => cs.map(c => c.v || 0);
+const tp = cs => cs.map(c => (c.h + c.l + c.c) / 3);
+const med = cs => cs.map(c => (c.h + c.l) / 2);
+const hlc3 = tp;
+function last(x, k = 1) { // nilai non-null ke-k dari belakang
+  let c = 0;
+  for (let i = x.length - 1; i >= 0; i--) { if (x[i] !== null && x[i] !== undefined) { c++; if (c === k) return x[i]; } }
+  return null;
+}
+function sign(x, eps = 0) { return x > eps ? 1 : (x < -eps ? -1 : 0); }
+function pctRank(series, n = 200) {
+  const w = series.slice(-n).filter(x => x !== null && x !== undefined);
+  const cur = last(series);
+  if (!w.length || cur === null || cur === undefined) return null;
+  return 100.0 * w.filter(x => x <= cur).length / w.length;
+}
+
+// ---------- 1. MOVING AVERAGE ----------
+function sma(vals, n) {
+  const out = new Array(vals.length).fill(null);
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n - 1) continue;
+    const w = vals.slice(i - n + 1, i + 1);
+    if (w.some(v => v === null || v === undefined)) continue;
+    out[i] = w.reduce((a, b) => a + b, 0) / n;
+  }
+  return out;
+}
+function wma(vals, n) {
+  const out = new Array(vals.length).fill(null);
+  const wsum = n * (n + 1) / 2;
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n - 1) continue;
+    const w = vals.slice(i - n + 1, i + 1);
+    if (w.some(v => v === null || v === undefined)) continue;
+    let s = 0;
+    for (let j = 0; j < n; j++) s += vals[i - j] * (n - j);
+    out[i] = s / wsum;
+  }
+  return out;
+}
+function hma(vals, n) {
+  const a = wma(vals, Math.floor(n / 2)), b = wma(vals, n);
+  const diff = a.map((x, i) => (x === null || b[i] === null) ? null : 2 * x - b[i]);
+  return wma(diff, Math.round(Math.sqrt(n)));
+}
+function ema(vals, n) {
+  const out = new Array(vals.length).fill(null);
+  const k = 2 / (n + 1); let prev = null; const buf = [];
+  for (let i = 0; i < vals.length; i++) {
+    const v = vals[i]; if (v === null || v === undefined) continue;
+    if (prev === null) {
+      buf.push(v);
+      if (buf.length === n) { prev = buf.reduce((a, b) => a + b, 0) / n; out[i] = prev; }
+    } else { prev = v * k + prev * (1 - k); out[i] = prev; }
+  }
+  return out;
+}
+function rma(vals, n) {
+  const out = new Array(vals.length).fill(null);
+  let prev = null; const buf = [];
+  for (let i = 0; i < vals.length; i++) {
+    const v = vals[i]; if (v === null || v === undefined) continue;
+    if (prev === null) {
+      buf.push(v);
+      if (buf.length === n) { prev = buf.reduce((a, b) => a + b, 0) / n; out[i] = prev; }
+    } else { prev = (prev * (n - 1) + v) / n; out[i] = prev; }
+  }
+  return out;
+}
+function kama(vals, n = 10, fast = 2, slow = 30) {
+  const out = new Array(vals.length).fill(null);
+  const ef = 2 / (fast + 1), es = 2 / (slow + 1);
+  let prev = null;
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n) continue;
+    const v = vals[i];
+    const ch = Math.abs(v - vals[i - n]);
+    let vol = 0;
+    for (let j = i - n + 1; j <= i; j++) vol += Math.abs(vals[j] - vals[j - 1]);
+    const er = vol ? ch / vol : 0;
+    const sc = Math.pow(er * (ef - es) + es, 2);
+    prev = (prev === null) ? v : prev + sc * (v - prev);
+    out[i] = prev;
+  }
+  return out;
+}
+function dema(vals, n) {
+  const e1 = ema(vals, n), e2 = ema(e1, n);
+  return e1.map((a, i) => (a === null || e2[i] === null) ? null : 2 * a - e2[i]);
+}
+function tema(vals, n) {
+  const e1 = ema(vals, n), e2 = ema(e1, n), e3 = ema(e2, n);
+  return e1.map((a, i) => (a === null || e2[i] === null || e3[i] === null) ? null : 3 * a - 3 * e2[i] + e3[i]);
+}
+function alma(vals, n = 9, off = 0.85, sig = 6) {
+  const out = new Array(vals.length).fill(null);
+  const m = off * (n - 1), s = n / sig;
+  const ws = []; for (let i = 0; i < n; i++) ws.push(Math.exp(-((i - m) ** 2) / (2 * s * s)));
+  const wsum = ws.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n - 1) continue;
+    let s2 = 0;
+    for (let j = 0; j < n; j++) s2 += vals[i - j] * ws[j];
+    out[i] = s2 / wsum;
+  }
+  return out;
+}
+function vwma(vals, vols_, n) {
+  const out = new Array(vals.length).fill(null);
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n - 1) continue;
+    const vs = vols_.slice(i - n + 1, i + 1), ps = vals.slice(i - n + 1, i + 1);
+    const tot = vs.reduce((a, b) => a + b, 0);
+    out[i] = tot ? ps.reduce((acc, p, j) => acc + p * vs[j], 0) / tot : null;
+  }
+  return out;
+}
+
+// ---------- 2. OSCILLATOR ----------
+function rsi(vals, n = 14) {
+  const out = new Array(vals.length).fill(null);
+  if (vals.length <= n) return out;
+  const gains = [], losses = [];
+  for (let i = 1; i < vals.length; i++) {
+    gains.push(Math.max(vals[i] - vals[i - 1], 0));
+    losses.push(Math.max(vals[i - 1] - vals[i], 0));
+  }
+  let ag = gains.slice(0, n).reduce((a, b) => a + b, 0) / n;
+  let al = losses.slice(0, n).reduce((a, b) => a + b, 0) / n;
+  for (let i = n; i < vals.length; i++) {
+    if (i > n) { ag = (ag * (n - 1) + gains[i - 1]) / n; al = (al * (n - 1) + losses[i - 1]) / n; }
+    if (al === 0) out[i] = 100.0;
+    else { const rs = ag / al; out[i] = 100 - 100 / (1 + rs); }
+  }
+  return out;
+}
+function stoch(cs, n = 14, sk = 3, sd = 3) {
+  const hs = highs(cs), ls = lows(cs), cl = closes(cs);
+  const k = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n - 1) continue;
+    const hh = Math.max(...hs.slice(i - n + 1, i + 1)), ll = Math.min(...ls.slice(i - n + 1, i + 1));
+    k[i] = hh !== ll ? 100 * (cl[i] - ll) / (hh - ll) : 50.0;
+  }
+  return [sma(k, sk), sma(sma(k, sk), sd)];
+}
+function macd(vals, fast = 12, slow = 26, sig = 9) {
+  const ef = ema(vals, fast), es = ema(vals, slow);
+  const line = ef.map((a, i) => (a === null || es[i] === null) ? null : a - es[i]);
+  const sigl = ema(line, sig);
+  const hist = line.map((a, i) => (a === null || sigl[i] === null) ? null : a - sigl[i]);
+  return [line, sigl, hist];
+}
+function cci(cs, n = 20) {
+  const t = tp(cs), m = sma(t, n);
+  const out = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (m[i] === null) continue;
+    let md = 0;
+    for (let j = i - n + 1; j <= i; j++) md += Math.abs(t[j] - m[i]);
+    md /= n;
+    out[i] = md ? (t[i] - m[i]) / (0.015 * md) : 0.0;
+  }
+  return out;
+}
+function bb(vals, n = 30, mult = 2.0) {
+  const mid = sma(vals, n);
+  const up = new Array(vals.length).fill(null), lo = new Array(vals.length).fill(null);
+  const pctb = new Array(vals.length).fill(null), bw = new Array(vals.length).fill(null);
+  for (let i = 0; i < vals.length; i++) {
+    if (mid[i] === null) continue;
+    let sd = 0;
+    for (let j = i - n + 1; j <= i; j++) sd += (vals[j] - mid[i]) ** 2;
+    sd = Math.sqrt(sd / n);
+    up[i] = mid[i] + mult * sd; lo[i] = mid[i] - mult * sd;
+    pctb[i] = up[i] !== lo[i] ? (vals[i] - lo[i]) / (up[i] - lo[i]) : 0.5;
+    bw[i] = mid[i] ? (up[i] - lo[i]) / mid[i] * 100 : 0;
+  }
+  return [up, mid, lo, pctb, bw];
+}
+function keltner(cs, n = 20, mult = 2.0) {
+  const e = ema(tp(cs), n), a = atr(cs, 10)[0];
+  const up = e.map((x, i) => (x === null || a[i] === null) ? null : x + mult * a[i]);
+  const lo = e.map((x, i) => (x === null || a[i] === null) ? null : x - mult * a[i]);
+  return [up, e, lo];
+}
+function donchian(cs, n = 20) {
+  const hs = highs(cs), ls = lows(cs);
+  const up = new Array(cs.length).fill(null), lo = new Array(cs.length).fill(null), mid = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n - 1) continue;
+    up[i] = Math.max(...hs.slice(i - n + 1, i + 1)); lo[i] = Math.min(...ls.slice(i - n + 1, i + 1));
+    mid[i] = (up[i] + lo[i]) / 2;
+  }
+  return [up, mid, lo];
+}
+function aroon(cs, n = 14) {
+  const hs = highs(cs), ls = lows(cs);
+  const up = new Array(cs.length).fill(null), dn = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n) continue;
+    const wh = hs.slice(i - n + 1, i + 1), wl = ls.slice(i - n + 1, i + 1);
+    up[i] = 100 * (n - (i - (i - n + 1 + wh.indexOf(Math.max(...wh))))) / n;
+    dn[i] = 100 * (n - (i - (i - n + 1 + wl.indexOf(Math.min(...wl))))) / n;
+  }
+  return [up, dn];
+}
+function vortex(cs, n = 14) {
+  const hs = highs(cs), ls = lows(cs), cl = closes(cs);
+  const tr = [], pvm = [], mvm = [];
+  for (let i = 0; i < cs.length; i++) {
+    if (i === 0) { tr.push(hs[0] - ls[0]); pvm.push(0); mvm.push(0); }
+    else {
+      tr.push(Math.max(hs[i] - ls[i], Math.abs(hs[i] - cl[i - 1]), Math.abs(ls[i] - cl[i - 1])));
+      pvm.push(Math.abs(hs[i] - ls[i - 1])); mvm.push(Math.abs(ls[i] - hs[i - 1]));
+    }
+  }
+  const st = tr.length >= n ? tr.slice(-n).reduce((a, b) => a + b, 0) : 0;
+  const sp = pvm.slice(-n).reduce((a, b) => a + b, 0), sm = mvm.slice(-n).reduce((a, b) => a + b, 0);
+  return [st ? sp / st : 0, st ? sm / st : 0];
+}
+function trix(vals, n = 15) {
+  const e = ema(ema(ema(vals, n), n), n);
+  const out = new Array(vals.length).fill(null);
+  for (let i = 1; i < vals.length; i++)
+    if (e[i] !== null && e[i - 1] !== null && e[i - 1] !== 0)
+      out[i] = (e[i] - e[i - 1]) / Math.abs(e[i - 1]) * 10000;
+  return out;
+}
+function alligator(cs) {
+  const m = med(cs);
+  return [sma(m, 13), sma(m, 8), sma(m, 5)];
+}
+
+// ---------- 3. MOMENTUM ----------
+function williamsR(cs, n = 14) {
+  const hs = highs(cs), ls = lows(cs), cl = closes(cs);
+  const out = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n - 1) continue;
+    const hh = Math.max(...hs.slice(i - n + 1, i + 1)), ll = Math.min(...ls.slice(i - n + 1, i + 1));
+    out[i] = hh !== ll ? -100 * (hh - cl[i]) / (hh - ll) : -50.0;
+  }
+  return out;
+}
+function roc(vals, n = 12) {
+  const out = new Array(vals.length).fill(null);
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n) continue;
+    out[i] = vals[i - n] ? (vals[i] - vals[i - n]) / vals[i - n] * 100 : 0.0;
+  }
+  return out;
+}
+function momentum(vals, n = 10) {
+  const out = new Array(vals.length).fill(null);
+  for (let i = 0; i < vals.length; i++) { if (i < n) continue; out[i] = vals[i] - vals[i - n]; }
+  return out;
+}
+function ultimateOsc(cs) {
+  const cl = closes(cs), hs = highs(cs), ls = lows(cs);
+  const bp = [], tr = [];
+  for (let i = 0; i < cs.length; i++) {
+    const pc = i ? cl[i - 1] : cl[0];
+    bp.push(cl[i] - Math.min(ls[i], pc));
+    tr.push(Math.max(hs[i], pc) - Math.min(ls[i], pc));
+  }
+  const avg = n => {
+    const o = new Array(cs.length).fill(null);
+    for (let i = 0; i < cs.length; i++) {
+      if (i < n - 1) continue;
+      const s = tr.slice(i - n + 1, i + 1).reduce((a, b) => a + b, 0);
+      o[i] = s ? bp.slice(i - n + 1, i + 1).reduce((a, b) => a + b, 0) / s * 100 : 0.0;
+    }
+    return o;
+  };
+  const a7 = avg(7), a14 = avg(14), a28 = avg(28);
+  return a7.map((a, i) => (a === null || a14[i] === null || a28[i] === null) ? null : (4 * a + 2 * a14[i] + a28[i]) / 7);
+}
+function awesomeOsc(cs) {
+  const m = med(cs);
+  const s5 = sma(m, 5), s34 = sma(m, 34);
+  return s5.map((a, i) => (a === null || s34[i] === null) ? null : a - s34[i]);
+}
+function acceleratorOsc(cs) {
+  const ao = awesomeOsc(cs), s5 = sma(ao, 5);
+  return ao.map((a, i) => (a === null || s5[i] === null) ? null : a - s5[i]);
+}
+function rvi(cs, n = 10) {
+  const cl = closes(cs), op = opens(cs), hs = highs(cs), ls = lows(cs);
+  const num = cl.map((c, i) => c - op[i]), den = hs.map((h, i) => h - ls[i]);
+  const sn = sma(num, n), sd = sma(den, n);
+  return sn.map((a, i) => (a === null || sd[i] === null || sd[i] === 0) ? null : 100 * a / sd[i]);
+}
+function tsi(vals, r = 25, s = 13) {
+  const m = [0.0]; for (let i = 1; i < vals.length; i++) m.push(vals[i] - vals[i - 1]);
+  const am = m.map(x => Math.abs(x));
+  const num = ema(ema(m, r), s), den = ema(ema(am, r), s);
+  return num.map((a, i) => (a === null || den[i] === null || den[i] === 0) ? null : 100 * a / den[i]);
+}
+function fisher(cs, n = 10) {
+  const m = med(cs);
+  const out = new Array(cs.length).fill(null); let prev = 0.0;
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n - 1) continue;
+    const hh = Math.max(...m.slice(i - n + 1, i + 1)), ll = Math.min(...m.slice(i - n + 1, i + 1));
+    let v = hh !== ll ? 2 * ((m[i] - ll) / (hh - ll) - 0.5) : 0.0;
+    v = Math.max(-0.999, Math.min(0.999, v));
+    const f = 0.5 * Math.log((1 + v) / (1 - v)) + 0.5 * prev;
+    prev = f; out[i] = f;
+  }
+  return out;
+}
+function smi(cs, n = 13, s1 = 25, s2 = 2) {
+  const hs = highs(cs), ls = lows(cs), cl = closes(cs);
+  const num = [], den = [];
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n - 1) { num.push(0.0); den.push(0.0); continue; }
+    const hh = Math.max(...hs.slice(i - n + 1, i + 1)), ll = Math.min(...ls.slice(i - n + 1, i + 1));
+    num.push(cl[i] - (hh + ll) / 2); den.push((hh - ll) / 2);
+  }
+  const n1 = ema(ema(num, s1), s2), d1 = ema(ema(den, s1), s2);
+  return n1.map((a, i) => (a === null || d1[i] === null || d1[i] === 0) ? null : 100 * a / d1[i]);
+}
+function cmo(vals, n = 14) {
+  const out = new Array(vals.length).fill(null);
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n) continue;
+    let up = 0, dn = 0;
+    for (let j = i - n + 1; j <= i; j++) {
+      up += Math.max(vals[j] - vals[j - 1], 0);
+      dn += Math.max(vals[j - 1] - vals[j], 0);
+    }
+    out[i] = (up + dn) ? 100 * (up - dn) / (up + dn) : 0.0;
+  }
+  return out;
+}
+function elderRay(cs, n = 13) {
+  const e = ema(closes(cs), n), hs = highs(cs), ls = lows(cs);
+  return [hs.map((h, i) => e[i] === null ? null : h - e[i]), ls.map((l, i) => e[i] === null ? null : l - e[i])];
+}
+function stochRsi(cs, n = 14) {
+  const r = rsi(closes(cs), n);
+  const out = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n - 1 || r[i] === null) continue;
+    const w = r.slice(i - n + 1, i + 1).filter(x => x !== null);
+    if (w.length < 2) continue;
+    const hh = Math.max(...w), ll = Math.min(...w);
+    out[i] = hh !== ll ? (r[i] - ll) / (hh - ll) * 100 : 50.0;
+  }
+  return [out, sma(out, 3)];
+}
+function qqe(cs, rsiN = 14, atrN = 14) {
+  const r = rsi(closes(cs), rsiN);
+  const tr = new Array(cs.length).fill(0.0);
+  for (let i = 1; i < cs.length; i++)
+    tr[i] = (r[i] !== null && r[i - 1] !== null) ? Math.abs(r[i] - r[i - 1]) : 0.0;
+  const atrr = ema(tr, atrN);
+  const lng = new Array(cs.length).fill(null), sht = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (r[i] === null || atrr[i] === null) continue;
+    const a = 4.236 * atrr[i];
+    if (i === 0 || lng[i - 1] === null) { lng[i] = r[i] - a; sht[i] = r[i] + a; }
+    else {
+      lng[i] = (r[i - 1] > lng[i - 1]) ? Math.max(lng[i - 1], r[i] - a) : r[i] - a;
+      sht[i] = (r[i - 1] < sht[i - 1]) ? Math.min(sht[i - 1], r[i] + a) : r[i] + a;
+    }
+  }
+  return [r, lng, sht];
+}
+
+// ---------- 4. VOLATILITAS & STATISTIK ----------
+function histVol(vals, n = 20) {
+  const lr = [0.0]; for (let i = 1; i < vals.length; i++) lr.push(vals[i - 1] ? Math.log(vals[i] / vals[i - 1]) : 0.0);
+  const out = new Array(vals.length).fill(null);
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n - 1) continue;
+    const w = lr.slice(i - n + 1, i + 1);
+    const m = w.reduce((a, b) => a + b, 0) / n;
+    out[i] = Math.sqrt(w.reduce((a, x) => a + (x - m) ** 2, 0) / n) * 100;
+  }
+  return out;
+}
+function stddev(vals, n = 20) {
+  const m = sma(vals, n);
+  const out = new Array(vals.length).fill(null);
+  for (let i = 0; i < vals.length; i++) {
+    if (m[i] === null) continue;
+    let s = 0; for (let j = i - n + 1; j <= i; j++) s += (vals[j] - m[i]) ** 2;
+    out[i] = Math.sqrt(s / n);
+  }
+  return out;
+}
+function ttmSqueeze(cs) {
+  const cl = closes(cs);
+  const bu = bb(cl, 20, 2.0)[0], bl = bb(cl, 20, 2.0)[2];
+  const ku = keltner(cs, 20, 1.5)[0], kl = keltner(cs, 20, 1.5)[2];
+  const sq = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (bu[i] === null || ku[i] === null) continue;
+    sq[i] = (bl[i] > kl[i] && bu[i] < ku[i]) ? 1 : 0;
+  }
+  const mid = cs.map(c => (c.h + c.l) / 2);
+  const mom = linregSlope(cl.map((c, i) => c - mid[i]), 20);
+  return [sq, mom];
+}
+function linreg(vals, n = 20) {
+  const out = new Array(vals.length).fill(null), slope = new Array(vals.length).fill(null);
+  const xs = [...Array(n).keys()];
+  const mx = xs.reduce((a, b) => a + b, 0) / n;
+  const den = xs.reduce((a, x) => a + (x - mx) ** 2, 0);
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n - 1) continue;
+    const w = vals.slice(i - n + 1, i + 1);
+    const my = w.reduce((a, b) => a + b, 0) / n;
+    let s = 0;
+    for (let j = 0; j < n; j++) s += (xs[j] - mx) * (w[j] - my);
+    s = den ? s / den : 0.0;
+    slope[i] = s; out[i] = my + s * (n - 1 - mx);
+  }
+  return [out, slope];
+}
+function linregSlope(vals, n = 20) { return linreg(vals, n)[1]; }
+function zscore(vals, n = 20) {
+  const m = sma(vals, n), s = stddev(vals, n);
+  return m.map((a, i) => (a === null || s[i] === null || s[i] === 0) ? null : (vals[i] - a) / s[i]);
+}
+function choppiness(cs, n = 14) {
+  const a = atr(cs, 1)[0];
+  const out = new Array(cs.length).fill(null);
+  const hs = highs(cs), ls = lows(cs);
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n - 1) continue;
+    let s = 0; for (let j = i - n + 1; j <= i; j++) s += a[j];
+    const rng = Math.max(...hs.slice(i - n + 1, i + 1)) - Math.min(...ls.slice(i - n + 1, i + 1));
+    out[i] = (rng && s) ? 100 * Math.log10(s / rng) / Math.log10(n) : 0.0;
+  }
+  return out;
+}
+function efficiencyRatio(vals, n = 50) {
+  const out = new Array(vals.length).fill(null);
+  for (let i = 0; i < vals.length; i++) {
+    if (i < n) continue;
+    const ch = Math.abs(vals[i] - vals[i - n]);
+    let vol = 0;
+    for (let j = i - n + 1; j <= i; j++) vol += Math.abs(vals[j] - vals[j - 1]);
+    out[i] = vol ? ch / vol : 0.0;
+  }
+  return out;
+}
+function dpo(vals, n = 20) {
+  const m = sma(vals, Math.floor(n / 2) + 1);
+  const out = new Array(vals.length).fill(null);
+  const off = Math.floor(n / 2) + 1;
+  for (let i = 0; i < vals.length; i++) {
+    if (i < off || m[i - off] === null || m[i - off] === undefined) continue;
+    out[i] = vals[i] - m[i - off];
+  }
+  return out;
+}
+
+// ---------- 5. VOLUME ----------
+function obv(cs) {
+  const cl = closes(cs), v = vols(cs);
+  const out = [0.0];
+  for (let i = 1; i < cs.length; i++)
+    out.push(out[i - 1] + (cl[i] > cl[i - 1] ? v[i] : (cl[i] < cl[i - 1] ? -v[i] : 0)));
+  return out;
+}
+function mfi(cs, n = 14) {
+  const t = tp(cs), v = vols(cs);
+  const mf = t.map((x, i) => x * v[i]);
+  const out = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n) continue;
+    let pos = 0, neg = 0;
+    for (let j = i - n + 1; j <= i; j++) {
+      if (t[j] > t[j - 1]) pos += mf[j];
+      if (t[j] < t[j - 1]) neg += mf[j];
+    }
+    out[i] = neg ? 100 - 100 / (1 + pos / neg) : 100.0;
+  }
+  return out;
+}
+function cmf(cs, n = 20) {
+  const hs = highs(cs), ls = lows(cs), cl = closes(cs), v = vols(cs);
+  const out = new Array(cs.length).fill(null);
+  for (let i = 0; i < cs.length; i++) {
+    if (i < n - 1) continue;
+    let num = 0, den = 0;
+    for (let j = i - n + 1; j <= i; j++) {
+      const rng = hs[j] - ls[j];
+      const mf = rng ? ((cl[j] - ls[j]) - (hs[j] - cl[j])) / rng : 0.0;
+      num += mf * v[j]; den += v[j];
+    }
+    out[i] = den ? num / den : 0.0;
+  }
+  return out;
+}
+function adLine(cs) {
+  const hs = highs(cs), ls = lows(cs), cl = closes(cs), v = vols(cs);
+  const out = [];
+  for (let i = 0; i < cs.length; i++) {
+    const rng = hs[i] - ls[i];
+    const mfm = rng ? ((cl[i] - ls[i]) - (hs[i] - cl[i])) / rng : 0.0;
+    out.push((i ? out[i - 1] : 0) + mfm * v[i]);
+  }
+  return out;
+}
+function chaikinOsc(cs) {
+  const a = adLine(cs), e3 = ema(a, 3), e10 = ema(a, 10);
+  return a.map((_, i) => (e3[i] === null || e10[i] === null) ? null : e3[i] - e10[i]);
+}
+function forceIndex(cs, n = 13) {
+  const cl = closes(cs), v = vols(cs);
+  const raw = [0.0]; for (let i = 1; i < cs.length; i++) raw.push((cl[i] - cl[i - 1]) * v[i]);
+  return ema(raw, n);
+}
+function eom(cs, n = 14) {
+  const hs = highs(cs), ls = lows(cs), v = vols(cs);
+  const raw = new Array(cs.length).fill(0.0);
+  for (let i = 1; i < cs.length; i++) {
+    const midMove = (hs[i] + ls[i]) / 2 - (hs[i - 1] + ls[i - 1]) / 2;
+    const box = hs[i] !== ls[i] ? v[i] / (hs[i] - ls[i]) : 0.0;
+    raw[i] = box ? midMove / box : 0.0;
+  }
+  return sma(raw, n);
+}
+function volOsc(cs, fast = 5, slow = 10) {
+  const v = vols(cs), f = sma(v, fast), s = sma(v, slow);
+  return f.map((a, i) => (a === null || s[i] === null || s[i] === 0) ? null : (a - s[i]) / s[i] * 100);
+}
+function klinger(cs, fast = 34, slow = 55, sig = 13) {
+  const hs = highs(cs), ls = lows(cs), cl = closes(cs), v = vols(cs);
+  const trend = [0];
+  for (let i = 1; i < cs.length; i++)
+    trend.push((hs[i] + ls[i] + cl[i]) > (hs[i - 1] + ls[i - 1] + cl[i - 1]) ? 1 : -1);
+  const vf = [];
+  for (let i = 0; i < cs.length; i++) {
+    const dm = hs[i] - ls[i];
+    const cm = i > 0 ? Math.max(Math.abs(hs[i] - cl[i - 1]), Math.abs(ls[i] - cl[i - 1]), hs[i] - ls[i]) : 0;
+    vf.push(cm ? v[i] * trend[i] * dm / cm : 0.0);
+  }
+  const ef = ema(vf, fast), es = ema(vf, slow);
+  const ko = ef.map((a, i) => (a === null || es[i] === null) ? null : a - es[i]);
+  return [ko, ema(ko, sig)];
+}
+function rvol(cs, n = 20) {
+  const v = vols(cs), m = sma(v, n);
+  return v.map((a, i) => (m[i] === null || m[i] === 0) ? null : a / m[i]);
+}
+
+// ---------- POPULER RETAIL (TDI, WaveTrend) ----------
+function tdi(cs) {
+  const r = rsi(closes(cs), 13);
+  const [u, m, l] = bb(r.map(x => x === null ? 50.0 : x), 34, 1.618);
+  const sig = sma(r, 7);
+  return [r, m, u, l, sig];
+}
+function wavetrend(cs) {
+  const ap = hlc3(cs);
+  const esa = ema(ap, 10);
+  const d = ema(ap.map((a, i) => (esa[i] === null || esa[i] === undefined) ? 0.0 : Math.abs(a - esa[i])), 10);
+  const ci = ap.map((a, i) => (esa[i] === null || esa[i] === undefined || d[i] === null || d[i] === undefined || d[i] === 0) ? null : (a - esa[i]) / (0.015 * d[i]));
+  const wt1 = ema(ci, 21), wt2 = sma(wt1, 4);
+  return [wt1, wt2];
+}
+
+// ---------- 6. STRUKTUR & LEVEL ----------
+function fractals(cs) {
+  const hs = highs(cs), ls = lows(cs);
+  const up = [], dn = [];
+  for (let i = 2; i < cs.length - 2; i++) {
+    if (hs[i] === Math.max(...hs.slice(i - 2, i + 3))) up.push([i, hs[i]]);
+    if (ls[i] === Math.min(...ls.slice(i - 2, i + 3))) dn.push([i, ls[i]]);
+  }
+  return [up, dn];
+}
+function fibLevels(lo, hi) {
+  const d = hi - lo;
+  return { '0%': lo, '23.6%': lo + d * 0.236, '38.2%': lo + d * 0.382, '50%': lo + d * 0.5,
+    '61.8%': lo + d * 0.618, '78.6%': lo + d * 0.786, '100%': hi,
+    '127.2%': hi + d * 0.272, '161.8%': hi + d * 0.618 };
+}
+function atr(cs, n = 14) {
+  const tr = [];
+  for (let i = 0; i < cs.length; i++) {
+    if (i === 0) tr.push(cs[0].h - cs[0].l);
+    else tr.push(Math.max(cs[i].h - cs[i].l, Math.abs(cs[i].h - cs[i - 1].c), Math.abs(cs[i].l - cs[i - 1].c)));
+  }
+  return [rma(tr, n), tr];
+}
+function adx(cs, n = 14) {
+  const N = cs.length, hs = highs(cs), ls = lows(cs), cl = closes(cs);
+  const tr = new Array(N).fill(null), pdm = new Array(N).fill(null), mdm = new Array(N).fill(null);
+  for (let i = 1; i < N; i++) {
+    tr[i] = Math.max(hs[i] - ls[i], Math.abs(hs[i] - cl[i - 1]), Math.abs(ls[i] - cl[i - 1]));
+    const up = hs[i] - hs[i - 1], dn = ls[i - 1] - ls[i];
+    pdm[i] = (up > dn && up > 0) ? up : 0.0;
+    mdm[i] = (dn > up && dn > 0) ? dn : 0.0;
+  }
+  const a = rma(tr, n), p = rma(pdm, n), m = rma(mdm, n);
+  const pdi = new Array(N).fill(null), mdi = new Array(N).fill(null), dx = new Array(N).fill(null);
+  for (let i = 0; i < N; i++) {
+    if (a[i] && p[i] !== null && m[i] !== null) {
+      pdi[i] = 100 * p[i] / a[i]; mdi[i] = 100 * m[i] / a[i];
+      const s = pdi[i] + mdi[i];
+      dx[i] = s ? 100 * Math.abs(pdi[i] - mdi[i]) / s : 0.0;
+    }
+  }
+  return [rma(dx, n), pdi, mdi];
+}
+
+// ---------- TREND ----------
+function supertrend(cs, n = 10, mult = 3.0) {
+  const N = cs.length, a = atr(cs, n)[0], m = med(cs), cl = closes(cs);
+  const fu = new Array(N).fill(null), fl = new Array(N).fill(null), st = new Array(N).fill(null), bull = new Array(N).fill(false);
+  for (let i = 0; i < N; i++) {
+    if (a[i] === null) continue;
+    let ub = m[i] + mult * a[i], lb = m[i] - mult * a[i];
+    if (i > 0 && fu[i - 1] !== null) {
+      if (!(ub < fu[i - 1] || cl[i - 1] > fu[i - 1])) ub = fu[i - 1];
+      if (!(lb > fl[i - 1] || cl[i - 1] < fl[i - 1])) lb = fl[i - 1];
+    }
+    fu[i] = ub; fl[i] = lb;
+    if (i === 0 || st[i - 1] === null) bull[i] = cl[i] > m[i];
+    else if (st[i - 1] === fu[i - 1]) bull[i] = cl[i] > fu[i];
+    else bull[i] = !(cl[i] < fl[i]);
+    st[i] = bull[i] ? fl[i] : fu[i];
+  }
+  return [st, bull];
+}
+function psar(cs, step = 0.02, maxaf = 0.20) {
+  const hs = highs(cs), ls = lows(cs), N = cs.length;
+  const out = new Array(N).fill(null), bulls = new Array(N).fill(true);
+  if (N < 3) return [out, bulls];
+  let bull = cs[1].c >= cs[0].c;
+  let sar = bull ? ls[0] : hs[0], ep = bull ? hs[0] : ls[0], af = step;
+  for (let i = 1; i < N; i++) {
+    sar = sar + af * (ep - sar);
+    if (bull) {
+      sar = Math.min(sar, ls[i - 1], i > 1 ? ls[i - 2] : ls[i - 1]);
+      if (ls[i] < sar) { bull = false; sar = ep; ep = ls[i]; af = step; }
+      else if (hs[i] > ep) { ep = hs[i]; af = Math.min(af + step, maxaf); }
+    } else {
+      sar = Math.max(sar, hs[i - 1], i > 1 ? hs[i - 2] : hs[i - 1]);
+      if (hs[i] > sar) { bull = true; sar = ep; ep = hs[i]; af = step; }
+      else if (ls[i] < ep) { ep = ls[i]; af = Math.min(af + step, maxaf); }
+    }
+    out[i] = sar; bulls[i] = bull;
+  }
+  return [out, bulls];
+}
+function ichimoku(cs) {
+  const hs = highs(cs), ls = lows(cs), N = cs.length;
+  const donchMid = n => {
+    const o = new Array(N).fill(null);
+    for (let i = n - 1; i < N; i++) o[i] = (Math.max(...hs.slice(i - n + 1, i + 1)) + Math.min(...ls.slice(i - n + 1, i + 1))) / 2;
+    return o;
+  };
+  const tenkan = donchMid(9), kijun = donchMid(26);
+  const sa = tenkan.map((a, i) => (a === null || kijun[i] === null) ? null : (a + kijun[i]) / 2);
+  const sb = donchMid(52);
+  let ctop = null, cbot = null;
+  if (N > 26 && sa[N - 27] !== null && sb[N - 27] !== null) {
+    ctop = Math.max(sa[N - 27], sb[N - 27]); cbot = Math.min(sa[N - 27], sb[N - 27]);
+  }
+  return [tenkan, kijun, sa, sb, ctop, cbot];
+}
+function halfTrend(cs, amplitude = 2, chdev = 2.0, atrN = 100) {
+  const N = cs.length, hs = highs(cs), ls = lows(cs), cl = closes(cs);
+  let a = atr(cs, atrN)[0];
+  if (last(a) === null) a = atr(cs, 14)[0];
+  const hma_ = sma(hs, amplitude), lma_ = sma(ls, amplitude);
+  let trend = 0, nxt = 0;
+  let maxlow = ls[0], minhigh = hs[0], up = null, dn = null;
+  const out = new Array(N).fill(null), bull = new Array(N).fill(true);
+  let prevTrend = null;
+  for (let i = 0; i < N; i++) {
+    const loP = Math.min(...ls.slice(Math.max(0, i - amplitude + 1), i + 1));
+    const hiP = Math.max(...hs.slice(Math.max(0, i - amplitude + 1), i + 1));
+    const refL = i ? ls[i - 1] : ls[i], refH = i ? hs[i - 1] : hs[i];
+    if (nxt === 1) {
+      maxlow = Math.max(loP, maxlow);
+      if (hma_[i] !== null && hma_[i] < maxlow && cl[i] < refL) { trend = 1; nxt = 0; minhigh = hiP; }
+    } else {
+      minhigh = Math.min(hiP, minhigh);
+      if (lma_[i] !== null && lma_[i] > minhigh && cl[i] > refH) { trend = 0; nxt = 1; maxlow = loP; }
+    }
+    if (trend === 0) {
+      up = (prevTrend !== null && prevTrend !== 0 && dn !== null) ? dn
+        : (up === null ? maxlow : Math.max(maxlow, up));
+    } else {
+      dn = (prevTrend !== null && prevTrend !== 1 && up !== null) ? up
+        : (dn === null ? minhigh : Math.min(minhigh, dn));
+    }
+    out[i] = trend === 0 ? up : dn;
+    bull[i] = (trend === 0); prevTrend = trend;
+  }
+  return [out, bull];
+}
+function sslChannel(cs, n = 10) {
+  const cl = closes(cs), up = sma(highs(cs), n), dn = sma(lows(cs), n);
+  let hlv = 0; const state = [];
+  for (let i = 0; i < cs.length; i++) {
+    if (up[i] !== null) {
+      if (cl[i] > up[i]) hlv = 1;
+      else if (cl[i] < dn[i]) hlv = -1;
+    }
+    state.push(hlv);
+  }
+  return [up, dn, (state.length && state[state.length - 1] !== 0) ? state[state.length - 1] === 1 : null];
+}
+function connorsRsi(cs, rankN = 100) {
+  const cl = closes(cs), N = cs.length;
+  const r3 = rsi(cl, 3);
+  const streak = new Array(N).fill(0);
+  for (let i = 1; i < N; i++) {
+    if (cl[i] > cl[i - 1]) streak[i] = streak[i - 1] > 0 ? streak[i - 1] + 1 : 1;
+    else if (cl[i] < cl[i - 1]) streak[i] = streak[i - 1] < 0 ? streak[i - 1] - 1 : -1;
+  }
+  const rs = rsi(streak.map(s => parseFloat(s)), 2);
+  const roc1 = [null];
+  for (let i = 1; i < N; i++) roc1.push(cl[i - 1] ? (cl[i] / cl[i - 1] - 1) * 100 : 0.0);
+  const out = new Array(N).fill(null);
+  for (let i = rankN + 1; i < N; i++) {
+    if (r3[i] === null || rs[i] === null) continue;
+    const w = roc1.slice(i - rankN, i);
+    const pr = 100.0 * w.filter(x => x < roc1[i]).length / rankN;
+    out[i] = (r3[i] + rs[i] + pr) / 3;
+  }
+  return out;
+}
+function schaffTrend(cs, fast = 23, slow = 50, cycle = 10, factor = 0.5) {
+  const cl = closes(cs), N = cs.length;
+  const ef = ema(cl, fast), es = ema(cl, slow);
+  const m = ef.map((a, i) => (a === null || es[i] === null) ? null : a - es[i]);
+  const stochSmooth = series => {
+    const out = new Array(N).fill(null); let prev = null;
+    for (let i = 0; i < N; i++) {
+      const w = series.slice(Math.max(0, i - cycle + 1), i + 1);
+      if (i < cycle - 1 || w.some(x => x === null)) continue;
+      const lo = Math.min(...w), hi = Math.max(...w);
+      const v = (series[i] - lo) / Math.max(hi - lo, 1e-4) * 100;
+      prev = prev === null ? v : prev + factor * (v - prev);
+      out[i] = prev;
+    }
+    return out;
+  };
+  const pf = stochSmooth(m), pff = stochSmooth(pf);
+  return [pff, sma(pff, 3)];
+}
+function hurst(vals, n = 240) {
+  if (vals.length < 130) return null;
+  const w = vals.slice(-n);
+  const r = [];
+  for (let i = 1; i < w.length; i++) if (w[i - 1] > 0 && w[i] > 0) r.push(Math.log(w[i] / w[i - 1]));
+  const pts = [];
+  for (const s of [10, 20, 40, 80]) {
+    const rsList = [];
+    for (let j = 0; j + s <= r.length; j += s) {
+      const blk = r.slice(j, j + s), mu = blk.reduce((a, b) => a + b, 0) / s;
+      let cum = 0, mx = 0, mn = 0;
+      for (const x of blk) { cum += x - mu; mx = Math.max(mx, cum); mn = Math.min(mn, cum); }
+      const sd = Math.sqrt(blk.reduce((a, x) => a + (x - mu) ** 2, 0) / s);
+      if (sd > 0) rsList.push((mx - mn) / sd);
+    }
+    if (rsList.length) pts.push([Math.log(s), Math.log(rsList.reduce((a, b) => a + b, 0) / rsList.length)]);
+  }
+  if (pts.length < 3) return null;
+  const mx_ = pts.reduce((a, p) => a + p[0], 0) / pts.length;
+  const my_ = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+  const den = pts.reduce((a, p) => a + (p[0] - mx_) ** 2, 0);
+  return den ? pts.reduce((a, p) => a + (p[0] - mx_) * (p[1] - my_), 0) / den : null;
+}
+function parkinson(cs, n = 20) {
+  const v = cs.filter(c => c.l > 0).map(c => Math.log(c.h / c.l) ** 2 / (4 * Math.LN2));
+  return v.length >= n ? Math.sqrt(v.slice(-n).reduce((a, b) => a + b, 0) / n) * 100 : null;
+}
+function garmanKlass(cs, n = 20) {
+  const v = cs.filter(c => c.l > 0 && c.o > 0).map(c => 0.5 * Math.log(c.h / c.l) ** 2 - (2 * Math.LN2 - 1) * Math.log(c.c / c.o) ** 2);
+  return v.length >= n ? Math.sqrt(Math.max(v.slice(-n).reduce((a, b) => a + b, 0) / n, 0)) * 100 : null;
+}
+function chandelier(cs, n = 22, mult = 3.0) {
+  const a = atr(cs, n)[0], av = last(a);
+  if (av === null) return [null, null];
+  const hs = highs(cs), ls = lows(cs);
+  let mx = -Infinity, mn = Infinity;
+  for (let i = Math.max(0, cs.length - n); i < cs.length; i++) { mx = Math.max(mx, hs[i]); mn = Math.min(mn, ls[i]); }
+  return [mx - mult * av, mn + mult * av];
+}
+function zigzag(cs, mult = 2.5, nAtr = 14) {
+  const N = cs.length, a = atr(cs, nAtr)[0], hs = highs(cs), ls = lows(cs);
+  let fallback = 0;
+  const lim = Math.min(N, 20);
+  for (let i = 0; i < lim; i++) fallback += hs[i] - ls[i];
+  fallback /= Math.max(lim, 1);
+  const piv = []; let d = 0;
+  let eh = hs[0], ehi = 0, el = ls[0], eli = 0;
+  for (let i = 1; i < N; i++) {
+    const thr = mult * (a[i] ? a[i] : fallback);
+    if (d === 0) {
+      if (hs[i] > eh) { eh = hs[i]; ehi = i; }
+      if (ls[i] < el) { el = ls[i]; eli = i; }
+      if (hs[i] - el >= thr && ehi !== eli) { piv.push([eli, el, 'L', true]); d = 1; eh = hs[i]; ehi = i; }
+      else if (eh - ls[i] >= thr && ehi !== eli) { piv.push([ehi, eh, 'H', true]); d = -1; el = ls[i]; eli = i; }
+    } else if (d === 1) {
+      if (hs[i] > eh) { eh = hs[i]; ehi = i; }
+      else if (eh - ls[i] >= thr) { piv.push([ehi, eh, 'H', true]); d = -1; el = ls[i]; eli = i; }
+    } else {
+      if (ls[i] < el) { el = ls[i]; eli = i; }
+      else if (hs[i] - el >= thr) { piv.push([eli, el, 'L', true]); d = 1; eh = hs[i]; ehi = i; }
+    }
+  }
+  if (d === 1) piv.push([ehi, eh, 'H', false]);
+  else if (d === -1) piv.push([eli, el, 'L', false]);
+  return piv;
+}
+function divergence(cs, ind, atrV = null, maxAge = 40, minSep = 5) {
+  const [up, dn] = fractals(cs), N = cs.length, res = [];
+  const minMove = atrV ? 0.25 * atrV : 0.0;
+  const ok = (i1, i2, p1, p2) => (N - 1 - i2) <= maxAge && (i2 - i1) >= minSep && Math.abs(p2 - p1) >= minMove;
+  const at = i => i < ind.length ? ind[i] : null;
+  if (up.length >= 2) {
+    const [i1, p1] = up[up.length - 2], [i2, p2] = up[up.length - 1];
+    const v1 = at(i1), v2 = at(i2);
+    if (v1 !== null && v2 !== null && v1 !== undefined && v2 !== undefined && ok(i1, i2, p1, p2)) {
+      if (p2 > p1 && v2 < v1) res.push('Regular BEARISH (harga HH, indikator LH)');
+      if (p2 < p1 && v2 > v1) res.push('Hidden BULLISH (harga LH, indikator HH)');
+    }
+  }
+  if (dn.length >= 2) {
+    const [i1, p1] = dn[dn.length - 2], [i2, p2] = dn[dn.length - 1];
+    const v1 = at(i1), v2 = at(i2);
+    if (v1 !== null && v2 !== null && v1 !== undefined && v2 !== undefined && ok(i1, i2, p1, p2)) {
+      if (p2 < p1 && v2 > v1) res.push('Regular BULLISH (harga LL, indikator HL)');
+      if (p2 > p1 && v2 < v1) res.push('Hidden BEARISH (harga HL, indikator LL)');
+    }
+  }
+  return res;
+}
+
+// ---------- WAKTU, SESI, LOADER ----------
+const TF_MIN = { M1: 1, M2: 2, M3: 3, M4: 4, M5: 5, M10: 10, M15: 15, M30: 30, H1: 60, H2: 120, H3: 180, H4: 240, H6: 360, H8: 480, H12: 720, D: 1440, D1: 1440 };
+// offset zona (ms), DST-aware ala zoneinfo (aturan era modern):
+// New York: EDT(-4) dari Minggu ke-2 Maret 02:00 EST s/d Minggu ke-1 Nov 02:00 EDT
+// London  : BST(+1) dari Minggu terakhir Maret 01:00 UTC s/d Minggu terakhir Okt 01:00 UTC
+// Tokyo   : +9 tanpa DST
+function nthSunday(y, m, n) { // m 0-based; tanggal (UTC) Minggu ke-n bulan itu
+  const first = new Date(Date.UTC(y, m, 1)).getUTCDay();
+  return 1 + ((7 - first) % 7) + 7 * (n - 1);
+}
+function lastSunday(y, m) { // tanggal (UTC) Minggu terakhir bulan itu
+  const d = new Date(Date.UTC(y, m + 1, 0));
+  return d.getUTCDate() - d.getUTCDay();
+}
+function nyOffsetMs(utcMs) {
+  const y = new Date(utcMs).getUTCFullYear();
+  const start = Date.UTC(y, 2, nthSunday(y, 2, 2), 7);   // 02:00 EST = 07:00 UTC
+  const end = Date.UTC(y, 10, nthSunday(y, 10, 1), 6);   // 02:00 EDT = 06:00 UTC
+  return (utcMs >= start && utcMs < end) ? -4 * 3600000 : -5 * 3600000;
+}
+function londonOffsetMs(utcMs) {
+  const y = new Date(utcMs).getUTCFullYear();
+  const start = Date.UTC(y, 2, lastSunday(y, 2), 1);     // 01:00 GMT = 01:00 UTC
+  const end = Date.UTC(y, 9, lastSunday(y, 9), 1);       // 02:00 BST = 01:00 UTC
+  return (utcMs >= start && utcMs < end) ? 3600000 : 0;
+}
+function tkyOffsetMs() { return 9 * 3600000; }
+function parseT(t) { // ISO8601 (termasuk pecahan detik 9 digit ala OANDA) atau epoch detik/ms -> Date (UTC)
+  if (t instanceof Date) return t;
+  const s0 = String(t).trim();
+  if (/^\d+(\.\d+)?$/.test(s0)) { // epoch murni
+    const x = +s0;
+    return new Date(x > 1e12 ? x : x * 1000);
+  }
+  let s = s0.replace('Z', '+00:00').replace(/(\.\d{3})\d+/, '$1'); // pecahan 9-digit -> 3 digit
+  if (!/[+-]\d{2}:?\d{2}$/.test(s)) s += '+00:00'; // tanpa offset -> UTC (sama dgn Python parse_t)
+  return new Date(s);
+}
+function tdayKey(dt) {
+  // hari trading FX: ganti hari pukul 17:00 New York -> (dt NY + 7 jam).date()
+  const d = new Date(dt.getTime() + nyOffsetMs(dt.getTime()) + 7 * 3600000);
+  return d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();
+}
+function wkKey(k) { // k = yyyymmdd int
+  const d = new Date(Date.UTC(Math.floor(k / 10000), Math.floor((k % 10000) / 100) - 1, k % 100));
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  const y0 = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((d - y0) / 86400000) + 1) / 7);
+  return d.getUTCFullYear() * 100 + week;
+}
+function moKey(k) { return Math.floor(k / 100) * 100 + (k % 100); }
+function moKeyOf(d0, d1) { return d0 * 100 + d1; }
+
+function normalizeCandle(c) {
+  if (Array.isArray(c) && c.length >= 6) {
+    const d = { t: c[0], o: +c[1], h: +c[2], l: +c[3], c: +c[4], v: +c[5] };
+    if (c.length >= 11) d.tb = +c[9];
+    return d;
+  }
+  const d = { ...c };
+  if (d.mid) Object.assign(d, d.mid);
+  if (d.t === undefined && d.time !== undefined) d.t = d.time;
+  if (d.v === undefined && d.volume !== undefined) d.v = d.volume;
+  for (const k of 'ohlc') d[k] = +d[k];
+  d.v = +(d.v || 0);
+  if (d.tb !== undefined && d.tb !== null) d.tb = +d.tb;
+  return d;
+}
+function loadCandles(raw, tf, closedOnly = true, nowMs = Date.now()) {
+  let cs = raw.map(normalizeCandle);
+  cs.forEach(c => { c.dt = parseT(c.t); });
+  if (cs.length >= 2 && cs[0].dt > cs[cs.length - 1].dt) cs.reverse();
+  if (closedOnly && cs.length) {
+    const flag = cs[cs.length - 1].complete;
+    if (flag === false) cs = cs.slice(0, -1);
+    else if (flag === undefined && TF_MIN[tf] && nowMs < cs[cs.length - 1].dt.getTime() + TF_MIN[tf] * 60000)
+      cs = cs.slice(0, -1);
+  }
+  return cs;
+}
+
+// ---------- VWAP & OPENING RANGE ----------
+function vwapCore(cs, keyf) {
+  const N = cs.length, vw = new Array(N).fill(null), sd = new Array(N).fill(null);
+  let cur = null, cv = 0, cpv = 0, cpv2 = 0;
+  for (let i = 0; i < N; i++) {
+    const c = cs[i], k = keyf(c);
+    if (k !== cur) { cur = k; cv = cpv = cpv2 = 0; }
+    const t = (c.h + c.l + c.c) / 3, v = c.v > 0 ? c.v : 1.0;
+    cv += v; cpv += t * v; cpv2 += t * t * v;
+    const w = cpv / cv; vw[i] = w;
+    sd[i] = Math.sqrt(Math.max(cpv2 / cv - w * w, 0));
+  }
+  return [vw, sd];
+}
+function vwap(cs, anchor = 'day') {
+  const kf = c => c.dt ? tdayKey(c.dt) : null;
+  const kfw = c => c.dt ? wkKey(tdayKey(c.dt)) : null;
+  return vwapCore(cs, anchor === 'week' ? kfw : (anchor === 'all' ? () => 0 : kf))[0];
+}
+function vwapBands(cs, k1 = 1.0, k2 = 2.0, anchor = 'day') {
+  const kf = c => c.dt ? tdayKey(c.dt) : null;
+  const [v, sd] = vwapCore(cs, kf);
+  const f = (s, k) => v.map((a, i) => (a === null || sd[i] === null) ? null : a + s * k * sd[i]);
+  return [v, f(1, k1), f(-1, k1), f(1, k2), f(-1, k2)];
+}
+const SESSIONS = { asia: [tkyOffsetMs, 9, 0], london: [londonOffsetMs, 8, 0], ny: [nyOffsetMs, 8, 30] };
+function openingRange(cs, tfMin, session = 'london', minutes = 60) {
+  if (!cs.length || !cs[cs.length - 1].dt || tfMin > minutes) return null;
+  const lastDt = cs[cs.length - 1].dt;
+  const off = SESSIONS[session][0](lastDt.getTime());
+  const [, hh, mm] = SESSIONS[session];
+  const loc = new Date(lastDt.getTime() + off);
+  let op = new Date(Date.UTC(loc.getUTCFullYear(), loc.getUTCMonth(), loc.getUTCDate(), hh, mm, 0));
+  if (loc < op) op = new Date(op.getTime() - 86400000);
+  const opU = new Date(op.getTime() - off);
+  const end = new Date(opU.getTime() + minutes * 60000);
+  const seg = cs.filter(c => c.dt && opU <= c.dt && c.dt < end);
+  if (!seg.length) return null;
+  const price = cs[cs.length - 1].c;
+  const H = Math.max(...seg.map(c => c.h)), L = Math.min(...seg.map(c => c.l));
+  const done = cs[cs.length - 1].dt.getTime() + tfMin * 60000 >= end.getTime();
+  const brk = (done && price > H) ? 'BREAK ATAS' : ((done && price < L) ? 'BREAK BAWAH' : 'di dalam range');
+  return { session, minutes, start: opU.toISOString(), H, L, formed: done, status: done ? brk : 'sedang terbentuk' };
+}
+
+// ---------- LEVEL HARIAN, PIVOT ----------
+function resample(items, keyf) {
+  const groups = [];
+  const sameK = (a, b) => a === b || (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((x, i) => x === b[i]));
+  for (const c of items) {
+    const k = keyf(c);
+    if (k === null || k === undefined) continue;
+    if (!groups.length || !sameK(k, groups[groups.length - 1].k)) { // nilai, bukan identitas (array [y,m] tetap digabung, sama dgn tuple Python)
+      groups.push({ k, o: c.o, h: c.h, l: c.l, c: c.c, v: c.v || 0, n: c.n || 1, ng: 1 });
+    } else {
+      const g = groups[groups.length - 1];
+      g.h = Math.max(g.h, c.h); g.l = Math.min(g.l, c.l); g.c = c.c;
+      g.v += c.v || 0; g.n += c.n || 1; g.ng += 1;
+    }
+  }
+  return groups;
+}
+function pivotLevels(h, l, c) {
+  const p = (h + l + c) / 3, r = h - l, bc = (h + l) / 2, tc = 2 * p - bc;
+  const cam = {};
+  [12, 6, 4, 2].forEach((dv, i) => {
+    cam['R' + (i + 1)] = c + r * 1.1 / dv;
+    cam['S' + (i + 1)] = c - r * 1.1 / dv;
+  });
+  return { P: p, R1: 2 * p - l, S1: 2 * p - h, R2: p + r, S2: p - r, R3: h + 2 * (p - l), S3: l - 2 * (h - p),
+    BC: bc, TC: tc, CPR_hi: Math.max(bc, tc), CPR_lo: Math.min(bc, tc), Camarilla: cam };
+}
+function keyLevels(cs, tfMin, daily = null) {
+  const L = { notes: [] };
+  if (!cs.length || !cs[cs.length - 1].dt) { L.notes.push('timestamp tak terbaca: level harian tidak dihitung'); return L; }
+  const curDay = tdayKey(cs[cs.length - 1].dt);
+  const idays = resample(cs, c => c.dt ? tdayKey(c.dt) : null);
+  const today = idays[idays.length - 1];
+  L.DO = today.o; L.DH = today.h; L.DL = today.l;
+  let days;
+  if (daily) {
+    days = resample(daily, c => c.dt ? tdayKey(c.dt) : null).filter(g => g.k < curDay);
+    L.source = daily.source || 'candle D1'; // sumber asli diset pemuat (file ind-D1.json / OANDA / Binance)
+  } else {
+    days = idays.slice(0, -1); L.source = 'resample intraday';
+    const exp = 1380 / tfMin * 0.8;
+    if (days.length && days[days.length - 1].n < exp)
+      L.notes.push(`hari kemarin hanya ${days[days.length - 1].n} bar (<${Math.round(exp)}): PDH/PDL/pivot PARSIAL — sediakan ind-D1.json`);
+  }
+  if (days.length) {
+    const p = days[days.length - 1];
+    L.PDH = p.h; L.PDL = p.l; L.PDC = p.c; L.PDO = p.o;
+    L.pivots = pivotLevels(p.h, p.l, p.c);
+  } else L.notes.push('tidak ada hari lengkap sebelum hari ini');
+  const curW = wkKey(curDay);
+  const weeks = resample(days, g => wkKey(g.k));
+  const pw = weeks.filter(w => w.k < curW);
+  if (pw.length && pw[pw.length - 1].ng >= 4) { L.PWH = pw[pw.length - 1].h; L.PWL = pw[pw.length - 1].l; }
+  else if (pw.length) L.notes.push('minggu lalu < 4 hari data: PWH/PWL tidak dipakai');
+  const cw = days.filter(g => wkKey(g.k) === curW).concat([today]);
+  L.WH = Math.max(...cw.map(g => g.h)); L.WL = Math.min(...cw.map(g => g.l));
+  const months = resample(days, g => [Math.floor(g.k / 10000), Math.floor((g.k % 10000) / 100)]);
+  const curM = [Math.floor(curDay / 10000), Math.floor((curDay % 10000) / 100)];
+  const pm = months.filter(m => m.k[0] < curM[0] || (m.k[0] === curM[0] && m.k[1] < curM[1]));
+  if (pm.length && pm[pm.length - 1].ng >= 15) { L.PMH = pm[pm.length - 1].h; L.PML = pm[pm.length - 1].l; }
+  else L.notes.push('PMH/PML n/a (butuh ind-D1.json dengan >=1 bulan data)');
+  return L;
+}
+
+// ---------- MARKET STRUCTURE ----------
+function swingPoints(cs, k = 3) {
+  const hs = highs(cs), ls = lows(cs), N = cs.length, out = [];
+  for (let i = k; i < N - k; i++) {
+    if (hs[i] > Math.max(...hs.slice(i - k, i)) && hs[i] >= Math.max(...hs.slice(i + 1, i + k + 1))) out.push([i + k, i, hs[i], 'H']);
+    if (ls[i] < Math.min(...ls.slice(i - k, i)) && ls[i] <= Math.min(...ls.slice(i + 1, i + k + 1))) out.push([i + k, i, ls[i], 'L']);
+  }
+  out.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  return out;
+}
+function marketStructure(cs, k = 3) {
+  const cl = closes(cs), N = cs.length, sw = swingPoints(cs, k);
+  const by = {};
+  sw.forEach(s => { (by[s[0]] = by[s[0]] || []).push(s); });
+  let bias = 0, lastH = null, lastL = null, prevH = null, prevL = null;
+  const labels = [], events = [];
+  for (let i = 0; i < N; i++) {
+    (by[i] || []).forEach(([, idx, p, t]) => {
+      let lab;
+      if (t === 'H') {
+        lab = prevH !== null ? (p > prevH ? 'HH' : 'LH') : 'H';
+        prevH = p; lastH = [idx, p];
+      } else {
+        lab = prevL !== null ? (p < prevL ? 'LL' : 'HL') : 'L';
+        prevL = p; lastL = [idx, p];
+      }
+      labels.push([idx, lab, p]);
+    });
+    if (lastH !== null && cl[i] > lastH[1]) {
+      events.push({ i, dir: 1, type: bias === -1 ? 'CHoCH' : 'BOS', level: lastH[1] });
+      bias = 1; lastH = null;
+    } else if (lastL !== null && cl[i] < lastL[1]) {
+      events.push({ i, dir: -1, type: bias === 1 ? 'CHoCH' : 'BOS', level: lastL[1] });
+      bias = -1; lastL = null;
+    }
+  }
+  const sh = sw.filter(s => s[3] === 'H'), sl = sw.filter(s => s[3] === 'L');
+  return { bias, events, labels, unbroken_high: lastH, unbroken_low: lastL, swings: sw,
+    last_swing_high: sh.length ? [sh[sh.length - 1][1], sh[sh.length - 1][2]] : null,
+    last_swing_low: sl.length ? [sl[sl.length - 1][1], sl[sl.length - 1][2]] : null };
+}
+function liquiditySweeps(cs, sw, lookback = 3, window = 80) {
+  const hs = highs(cs), ls = lows(cs), cl = closes(cs), N = cs.length, res = [];
+  for (let j = Math.max(0, N - lookback); j < N; j++) {
+    for (const [conf, idx, p, t] of sw) {
+      if (conf > j || idx < j - window || idx >= j - 1) continue;
+      if (t === 'H') {
+        const btw = j > idx + 1 ? Math.max(...hs.slice(idx + 1, j)) : -1e18;
+        if (hs[j] > p && cl[j] < p && btw <= p) res.push({ type: 'sweep_high', level: p, bars_ago: N - 1 - j });
+      } else {
+        const btw = j > idx + 1 ? Math.min(...ls.slice(idx + 1, j)) : 1e18;
+        if (ls[j] < p && cl[j] > p && btw >= p) res.push({ type: 'sweep_low', level: p, bars_ago: N - 1 - j });
+      }
+    }
+  }
+  const seen = new Set(), out = [];
+  res.sort((a, b) => a.bars_ago - b.bars_ago).forEach(r => {
+    const key = r.type + '|' + r.level.toFixed(2);
+    if (!seen.has(key)) { seen.add(key); out.push(r); }
+  });
+  return out;
+}
+function equalLevels(sw, atrV, N, window = 120) {
+  if (!atrV) return { EQH: [], EQL: [] };
+  const tol = 0.25 * atrV, res = { EQH: [], EQL: [] };
+  for (const [typ, key] of [['H', 'EQH'], ['L', 'EQL']]) {
+    const pts = sw.filter(s => s[3] === typ && s[1] >= N - window).slice(-8);
+    for (let a = 0; a < pts.length; a++)
+      for (let b = a + 1; b < pts.length; b++)
+        if (Math.abs(pts[a][2] - pts[b][2]) <= tol) {
+          const lv = (pts[a][2] + pts[b][2]) / 2;
+          if (res[key].every(x => Math.abs(lv - x) > tol)) res[key].push(lv);
+        }
+  }
+  return res;
+}
+function fvgZones(cs, atrV, window = 150) {
+  const N = cs.length, res = [];
+  if (!atrV) return res;
+  for (let i = Math.max(2, N - window); i < N; i++) {
+    const h2 = cs[i - 2].h, l2 = cs[i - 2].l;
+    if (cs[i].l > h2 && cs[i].l - h2 >= 0.3 * atrV) {
+      const top = cs[i].l, bot = h2; let mit = false, part = false;
+      for (let j = i + 1; j < N; j++) {
+        if (cs[j].l <= bot) { mit = true; break; }
+        if (cs[j].l < top) part = true;
+      }
+      if (!mit) res.push({ dir: 1, top, bot, i, partial: part });
+    } else if (cs[i].h < l2 && l2 - cs[i].h >= 0.3 * atrV) {
+      const top = l2, bot = cs[i].h; let mit = false, part = false;
+      for (let j = i + 1; j < N; j++) {
+        if (cs[j].h >= top) { mit = true; break; }
+        if (cs[j].h > bot) part = true;
+      }
+      if (!mit) res.push({ dir: -1, top, bot, i, partial: part });
+    }
+  }
+  return res;
+}
+function displacement(cs, atrV, lookback = 10) {
+  if (!atrV) return [];
+  const out = [], N = cs.length;
+  for (let i = Math.max(0, N - lookback); i < N; i++) {
+    const c = cs[i], b = Math.abs(c.c - c.o), r = c.h - c.l;
+    if (r > 0 && b >= 1.5 * atrV && b / r >= 0.7)
+      out.push({ dir: c.c > c.o ? 1 : -1, bars_ago: N - 1 - i, size_atr: b / atrV });
+  }
+  return out;
+}
+function dealingRange(ms, price) {
+  const h = ms.last_swing_high, l = ms.last_swing_low;
+  if (!h || !l || h[1] <= l[1]) return null;
+  const pos = (price - l[1]) / (h[1] - l[1]);
+  const zone = pos > 1 ? 'DI ATAS range (breakout)' : (pos < 0 ? 'DI BAWAH range (breakdown)' : (pos > 0.5 ? 'PREMIUM' : 'DISCOUNT'));
+  return { high: h[1], low: l[1], eq: (h[1] + l[1]) / 2, pos, zone };
+}
+
+// ---------- VOLUME PROFILE ----------
+function vpSeg(seg, va = 0.70, nbins = 60) {
+  seg = seg.filter(c => c.h >= c.l);
+  if (seg.length < 3) return null;
+  const lo = Math.min(...seg.map(c => c.l)), hi = Math.max(...seg.map(c => c.h)), rng = hi - lo;
+  if (rng <= 0) return null;
+  const bw = rng / nbins, hist = new Array(nbins).fill(0);
+  for (const c of seg) {
+    const v = c.v > 0 ? c.v : 1.0;
+    const a = Math.min(Math.floor((c.l - lo) / bw), nbins - 1);
+    const b = Math.min(Math.floor((c.h - lo) / bw), nbins - 1);
+    const sh = v / (b - a + 1);
+    for (let k = a; k <= b; k++) hist[k] += sh;
+  }
+  const tot = hist.reduce((a, b) => a + b, 0);
+  const poc = hist.indexOf(Math.max(...hist));
+  let li = poc, hiI = poc, acc = hist[poc];
+  while (acc < va * tot && (li > 0 || hiI < nbins - 1)) {
+    const up = hiI < nbins - 1 ? hist[hiI + 1] : -1.0;
+    const dn = li > 0 ? hist[li - 1] : -1.0;
+    if (up >= dn) { hiI += 1; acc += hist[hiI]; } else { li -= 1; acc += hist[li]; }
+  }
+  const mid = k => lo + (k + 0.5) * bw;
+  const sm = hist.map((h, k) => (hist[Math.max(0, k - 1)] + hist[k] + hist[Math.min(nbins - 1, k + 1)]) / 3);
+  const mean = tot / nbins, hvn = [], lvn = [];
+  for (let k = 1; k < nbins - 1; k++) {
+    if (sm[k] > sm[k - 1] && sm[k] >= sm[k + 1] && sm[k] >= 1.2 * mean) hvn.push([sm[k], mid(k)]);
+    if (sm[k] < sm[k - 1] && sm[k] <= sm[k + 1] && sm[k] <= 0.6 * mean) lvn.push(mid(k));
+  }
+  const hvnP = hvn.sort((a, b) => b[0] - a[0]).slice(0, 4).map(x => x[1]);
+  return { poc: mid(poc), vah: lo + (hiI + 1) * bw, val: lo + li * bw, hvn: hvnP, lvn, lo, hi, bars: seg.length };
+}
+function vpSummary(cs, price, atrV, compN = 300) {
+  const hasVol = cs.slice(-100).reduce((a, c) => a + c.v, 0) > 0;
+  const out = { note: 'volume disebar merata per range bar (aproksimasi)' + (hasVol ? '' : '; volume kosong -> profil berbasis waktu (TPO)'),
+    day: null, prev_day: null, composite: null };
+  if (cs[cs.length - 1].dt) {
+    const keys = cs.map(c => c.dt ? tdayKey(c.dt) : null);
+    const cur = keys[keys.length - 1];
+    const day = cs.filter((c, i) => keys[i] === cur);
+    let prevk = null;
+    for (let i = keys.length - 1; i >= 0; i--) { if (keys[i] !== null && keys[i] !== cur) { prevk = keys[i]; break; } }
+    const prev = prevk !== null ? cs.filter((c, i) => keys[i] === prevk) : [];
+    out.day = vpSeg(day, 0.70, 50);
+    if (prev.length >= 8) {
+      const pv = vpSeg(prev, 0.70, 60);
+      if (pv && day.length) pv.naked = !(Math.min(...day.map(c => c.l)) <= pv.poc && pv.poc <= Math.max(...day.map(c => c.h)));
+      out.prev_day = pv;
+    }
+  }
+  out.composite = vpSeg(cs.slice(-compN), 0.70, 80);
+  out.composite_bars = Math.min(cs.length, compN);
+  for (const key of ['day', 'prev_day', 'composite']) {
+    const p = out[key];
+    if (p) {
+      p.pos = price > p.vah ? 'DI ATAS VA' : (price < p.val ? 'DI BAWAH VA' : 'DALAM VA');
+      p.dist_poc_atr = atrV ? (price - p.poc) / atrV : null;
+    }
+  }
+  return out;
+}
+
+// ---------- CVD / DELTA ----------
+function cvdSummary(cs, atrV) {
+  const recent = cs.slice(-50);
+  if (recent.reduce((a, c) => a + c.v, 0) <= 0 && !recent.some(c => c.bv)) return null;
+  let k = cs.length;
+  while (k > 0 && cs[k - 1].tb !== undefined && cs[k - 1].tb !== null) k -= 1;
+  const real = (cs.length - k) >= 60;
+  const seg = real ? cs.slice(k) : cs;
+  const bvol = c => real ? (c.bv || c.v) : c.v;
+  const delta = [];
+  for (const c of seg) {
+    if (real) delta.push(2 * c.tb - bvol(c));
+    else {
+      const rng = c.h - c.l, clv = rng ? ((c.c - c.l) - (c.h - c.c)) / rng : 0.0;
+      delta.push(clv * c.v);
+    }
+  }
+  const cum = []; let s_ = 0;
+  for (const d of delta) { s_ += d; cum.push(s_); }
+  let cvdDay = null;
+  if (seg[seg.length - 1].dt) {
+    const kd = tdayKey(seg[seg.length - 1].dt);
+    cvdDay = seg.reduce((a, c, i) => a + (c.dt && tdayKey(c.dt) === kd ? delta[i] : 0), 0);
+  }
+  const pct = i => bvol(seg[i]) ? delta[i] / bvol(seg[i]) * 100 : 0.0;
+  const last10 = [];
+  for (let i = Math.max(0, seg.length - 10); i < seg.length; i++) last10.push(pct(i));
+  const slope = cum.length >= 20 ? last(linreg(cum, 20)[1]) : null;
+  const divs = (atrV && seg.length > 30) ? divergence(seg, cum, atrV) : [];
+  return { real, source: real ? 'taker buy/sell Binance (asli)' : 'ESTIMASI: posisi close dalam range x tick volume, bukan delta asli',
+    bars_used: seg.length, delta_last: delta[delta.length - 1], delta_pct_last: pct(seg.length - 1),
+    delta_pct_10: last10.reduce((a, b) => a + b, 0) / last10.length, cvd_day: cvdDay, slope, div: divs };
+}
+
+// ---------- BREAKOUT -> RETEST ----------
+function breakoutRetest(cs, atrV, levels, lookback = 30, maxOut = 6) {
+  const N = cs.length;
+  if (N < lookback + 3 || !atrV) return [];
+  const cl = closes(cs), hs = highs(cs), ls = lows(cs), out = [], seen = [], tol = 0.3 * atrV;
+  for (const [nm, lv_] of levels) {
+    if (lv_ === null || lv_ === undefined || lv_ !== lv_) continue;
+    if (seen.some(x => Math.abs(lv_ - x) <= tol)) continue;
+    for (const d of [1, -1]) {
+      let k = null;
+      for (let j = N - 1; j >= N - lookback - 1; j--) {
+        if (j < 1) break;
+        if (d === 1 && cl[j] > lv_ + 0.15 * atrV && cl[j - 1] <= lv_) { k = j; break; }
+        if (d === -1 && cl[j] < lv_ - 0.15 * atrV && cl[j - 1] >= lv_) { k = j; break; }
+      }
+      if (k === null) continue;
+      let fail = false;
+      for (let j = k + 1; j < N; j++) {
+        if (d === 1 && cl[j] < lv_ - 0.1 * atrV) { fail = true; break; }
+        if (d === -1 && cl[j] > lv_ + 0.1 * atrV) { fail = true; break; }
+      }
+      if (fail) continue;
+      const touch = [];
+      for (let j = k + 1; j < N; j++) {
+        if (d === 1 && ls[j] <= lv_ + tol) touch.push(j);
+        if (d === -1 && hs[j] >= lv_ - tol) touch.push(j);
+      }
+      let state;
+      if (touch.length) {
+        const jf = touch[0];
+        let dep = 0;
+        for (let j = k; j < jf; j++) dep = d === 1 ? Math.max(dep, hs[j] - lv_) : Math.max(dep, lv_ - ls[j]);
+        if (dep < 0.5 * atrV) continue;
+        const jt = touch[touch.length - 1], ago = N - 1 - jt;
+        const bullLast = cs[N - 1].c > cs[N - 1].o;
+        const okLast = d === 1 ? (cl[N - 1] > lv_ && bullLast) : (cl[N - 1] < lv_ && !bullLast);
+        if (jt === N - 1) state = 'RETEST berlangsung' + (okLast ? ' (candle searah)' : '');
+        else if (okLast && ago <= 3) state = 'RETEST TERKONFIRMASI (hold + candle searah)';
+        else state = `retest ${ago} bar lalu`;
+      } else {
+        const dist = (cl[N - 1] - lv_) * d / atrV;
+        state = `BREAKOUT (belum retest, jarak ${dist.toFixed(1)}ATR)`;
+      }
+      out.push({ level: nm, price: lv_, dir: d, state, break_ago: N - 1 - k });
+      seen.push(lv_);
+      break;
+    }
+  }
+  out.sort((a, b) => a.break_ago - b.break_ago);
+  return out.slice(0, maxOut);
+}
+
+// ---------- PARAMETER (default = ind-retail.py v4) ----------
+const PARAM_DEFAULTS = {
+  candle: { big_body: 0.8, marubozu_ratio: 0.7, marubozu_min: 0.5, pin_wick: 0.6, pin_body: 0.3,
+    pin_min_range: 0.5, doji_body: 0.1, displ_atr: 1.5, impulse_atr: 1.0, engulf_min: 0.5,
+    harami_small: 0.5, star_small: 0.3, soldier_min: 0.5, tweezer_tol: 0.1, exhaust_atr: 2.0,
+    prior_move: 1.0, near_level: 0.5 },
+  regime: { mode: 'fixed', adx_trend: 25.0, adx_range: 20.0, chop_hi: 55.0,
+    pct_win: 500, w_adx: 0.40, w_chop: 0.35, w_er: 0.25,
+    score_hi: 62.0, score_lo: 38.0, band: 12.0, adx_n: 14, chop_n: 14, er_n: 20 },
+};
+const PARAMS = { candle: { ...PARAM_DEFAULTS.candle }, regime: { ...PARAM_DEFAULTS.regime } };
+function applyParams(tfParams) { // tfParams = bagian {candle, regime} dari ind-params.json untuk TF ini
+  PARAMS.candle = { ...PARAM_DEFAULTS.candle };
+  PARAMS.regime = { ...PARAM_DEFAULTS.regime };
+  if (!tfParams) return null;
+  const used = [];
+  for (const k of ['candle', 'regime']) {
+    const sec = tfParams[k] || {};
+    for (const kk of Object.keys(sec)) if (kk in PARAMS[k]) PARAMS[k][kk] = sec[kk];
+    if (Object.keys(sec).length) used.push(k);
+  }
+  const m = tfParams.meta || {};
+  return `parameter terkalibrasi dimuat${m.when ? ' — ' + m.when : ''} (${used.join(', ') || 'kosong'})`;
+}
+
+// ---------- REGIME ----------
+function rollPct(series, win, minn = 100) {
+  const out = new Array(series.length).fill(null), buf = [], hist = [];
+  for (let i = 0; i < series.length; i++) {
+    const v = series[i]; if (v === null || v === undefined) continue;
+    hist.push(v);
+    let lo = 0, hi = buf.length;
+    while (lo < hi) { const mid = (lo + hi) >> 1; if (buf[mid] < v) lo = mid + 1; else hi = mid; }
+    buf.splice(lo, 0, v);
+    if (hist.length > win) {
+      const old = hist[hist.length - win - 1];
+      let lo2 = 0, hi2 = buf.length;
+      while (lo2 < hi2) { const mid = (lo2 + hi2) >> 1; if (buf[mid] < old) lo2 = mid + 1; else hi2 = mid; }
+      buf.splice(lo2, 1);
+    }
+    if (buf.length >= minn) {
+      let lo3 = 0, hi3 = buf.length;
+      while (lo3 < hi3) { const mid = (lo3 + hi3) >> 1; if (buf[mid] <= v) lo3 = mid + 1; else hi3 = mid; }
+      out[i] = 100.0 * lo3 / buf.length;
+    }
+  }
+  return out;
+}
+function regimeFeatures(cs, P = null) {
+  P = P || PARAMS.regime;
+  const [ax, pdi, mdi] = adx(cs, Math.round(P.adx_n));
+  return { adx: ax, pdi, mdi, chop: choppiness(cs, Math.round(P.chop_n)), er: efficiencyRatio(closes(cs), Math.round(P.er_n)) };
+}
+function regimeSeries(cs, P = null, F = null) {
+  P = P || PARAMS.regime;
+  F = F !== null ? F : regimeFeatures(cs, P);
+  const N = cs.length;
+  const adaptive = P.mode === 'adaptive';
+  let pa, pc, pe;
+  if (adaptive) {
+    const w = Math.round(P.pct_win);
+    pa = F['pa' + w] = F['pa' + w] || rollPct(F.adx, w);
+    pc = F['pc' + w] = F['pc' + w] || rollPct(F.chop, w);
+    pe = F['pe' + w] = F['pe' + w] || rollPct(F.er, w);
+  }
+  const out = new Array(N), state0 = { kind: 'TRANSISI' };
+  let state = 'TRANSISI';
+  for (let i = 0; i < N; i++) {
+    const a_ = F.adx[i], c_ = F.chop[i];
+    if (a_ === null || a_ === undefined || c_ === null || c_ === undefined) { out[i] = { kind: 'n/a', score: null, dir: 0 }; continue; }
+    let sc = null;
+    if (adaptive && pa[i] !== null && pa[i] !== undefined && pc[i] !== null && pc[i] !== undefined && pe[i] !== null && pe[i] !== undefined) {
+      sc = P.w_adx * pa[i] + P.w_chop * (100 - pc[i]) + P.w_er * pe[i];
+      if (sc >= P.score_hi) state = 'TREND';
+      else if (sc <= P.score_lo) state = 'RANGE';
+      else if (state === 'TREND' && sc >= P.score_hi - P.band) { /* tetap */ }
+      else if (state === 'RANGE' && sc <= P.score_lo + P.band) { /* tetap */ }
+      else state = 'TRANSISI';
+    } else {
+      if (a_ >= P.adx_trend && c_ < P.chop_hi) state = 'TREND';
+      else if (a_ < P.adx_range && c_ >= P.chop_hi) state = 'RANGE';
+      else state = 'TRANSISI';
+    }
+    let d = 0;
+    if (state === 'TREND' && F.pdi[i] !== null && F.pdi[i] !== undefined && F.mdi[i] !== null && F.mdi[i] !== undefined)
+      d = F.pdi[i] > F.mdi[i] ? 1 : -1;
+    out[i] = { kind: state, score: sc, dir: d };
+  }
+  return out;
+}
+function regime(cs, P = null) {
+  P = P || PARAMS.regime;
+  const cl = closes(cs);
+  const F = regimeFeatures(cs, P), rs = regimeSeries(cs, P, F);
+  const cur = rs.length ? rs[rs.length - 1] : { kind: 'n/a', dir: 0, score: null };
+  const a14 = atr(cs, 14)[0], bwv = bb(cl, 20, 2.0)[4];
+  const atrPr = pctRank(a14, 200), bwPr = pctRank(bwv, 200);
+  const vol = atrPr === null ? 'n/a' : (atrPr >= 80 ? 'TINGGI' : (atrPr <= 20 ? 'RENDAH' : 'NORMAL'));
+  const sq = ttmSqueeze(cs)[0];
+  return { kind: cur.kind, dir: cur.dir, score: cur.score, mode: P.mode,
+    adx: last(F.adx), chop: last(F.chop), er: last(F.er),
+    atr: last(a14), atr_pctile: atrPr, bbw_pctile: bwPr, vol, squeeze: last(sq) === 1, hurst: hurst(cl) };
+}
+
+// ---------- CANDLE + KONTEKS LOKASI ----------
+function candleSignals(cs, atrV, levels, P = null) {
+  const N = cs.length;
+  if (N < 8 || !atrV) return [];
+  P = P || PARAMS.candle;
+  const cl = closes(cs);
+  const B = j => Math.abs(cs[j].c - cs[j].o);
+  const Rg = j => cs[j].h - cs[j].l;
+  const bu = j => cs[j].c > cs[j].o;
+  const be = j => cs[j].c < cs[j].o;
+  const uw = j => cs[j].h - Math.max(cs[j].o, cs[j].c);
+  const lw = j => Math.min(cs[j].o, cs[j].c) - cs[j].l;
+  const big = j => B(j) >= P.big_body * atrV;
+  const i = N - 1, p = i - 1, p2 = i - 2, p3 = i - 3, p4 = i - 4;
+  const r = Rg(i) || 1e-9, b = B(i);
+  const sig = [];
+  const add = (name, bias, nb, kind) => sig.push([name, bias, nb, kind]);
+  if (r >= P.pin_min_range * atrV) {
+    if (lw(i) >= P.pin_wick * r && b <= P.pin_body * r) add('PINLO', 1, 1, 'pin');
+    if (uw(i) >= P.pin_wick * r && b <= P.pin_body * r) add('PINHI', -1, 1, 'pin');
+  }
+  if (b <= P.doji_body * r && r >= 0.3 * atrV) add('Doji', 0, 1, 'neutral');
+  if (b >= P.marubozu_ratio * r && b >= P.marubozu_min * atrV) add(bu(i) ? 'Marubozu bull' : 'Marubozu bear', bu(i) ? 1 : -1, 1, 'cont');
+  if (b >= P.displ_atr * atrV && b >= 0.7 * r) add(bu(i) ? 'Displacement bull' : 'Displacement bear', bu(i) ? 1 : -1, 1, 'cont');
+  else if (b >= P.impulse_atr * atrV && b >= 0.6 * r) add(bu(i) ? 'Impulse bull' : 'Impulse bear', bu(i) ? 1 : -1, 1, 'cont');
+  if (bu(i) && Math.abs(cs[i].o - cs[i].l) <= 0.05 * r && b >= 0.6 * r) add('Belt hold bull', 1, 1, 'rev');
+  if (be(i) && Math.abs(cs[i].o - cs[i].h) <= 0.05 * r && b >= 0.6 * r) add('Belt hold bear', -1, 1, 'rev');
+  const c_ = cs[i].c, o_ = cs[i].o, pc = cs[p].c, po = cs[p].o;
+  if (bu(i) && be(p) && o_ <= pc && c_ >= po && b > B(p) && b >= P.engulf_min * atrV) add('Bullish Engulfing', 1, 2, 'rev');
+  if (be(i) && bu(p) && o_ >= pc && c_ <= po && b > B(p) && b >= P.engulf_min * atrV) add('Bearish Engulfing', -1, 2, 'rev');
+  if (big(p) && b < P.harami_small * B(p) && Math.max(o_, c_) <= Math.max(po, pc) && Math.min(o_, c_) >= Math.min(po, pc) && bu(i) !== bu(p))
+    add(be(p) ? 'Bullish Harami' : 'Bearish Harami', be(p) ? 1 : -1, 2, 'rev');
+  if (be(p) && big(p) && bu(i) && o_ <= pc && pc < c_ < po && c_ > (po + pc) / 2) add('Piercing Line', 1, 2, 'rev');
+  if (bu(p) && big(p) && be(i) && o_ >= pc && po < c_ < pc && c_ < (po + pc) / 2) add('Dark Cloud Cover', -1, 2, 'rev');
+  const o2 = cs[p2].o, c2 = cs[p2].c;
+  if (be(p2) && big(p2) && B(p) <= P.star_small * B(p2) && bu(i) && c_ > (o2 + c2) / 2 && b >= 0.5 * atrV) add('Morning Star', 1, 3, 'rev');
+  if (bu(p2) && big(p2) && B(p) <= P.star_small * B(p2) && be(i) && c_ < (o2 + c2) / 2 && b >= 0.5 * atrV) add('Evening Star', -1, 3, 'rev');
+  if (be(p2) && big(p2) && bu(p) && po >= c2 && pc <= o2 && bu(i) && c_ > o2) add('Three Inside Up', 1, 3, 'rev');
+  if (bu(p2) && big(p2) && be(p) && po <= c2 && pc >= o2 && be(i) && c_ < o2) add('Three Inside Down', -1, 3, 'rev');
+  if (be(p2) && bu(p) && po <= c2 && pc >= o2 && bu(i) && c_ > pc) add('Three Outside Up', 1, 3, 'rev');
+  if (bu(p2) && be(p) && po >= c2 && pc <= o2 && be(i) && c_ < pc) add('Three Outside Down', -1, 3, 'rev');
+  const soldiers = [p2, p, i].every(j => bu(j) && B(j) >= P.soldier_min * atrV);
+  if (soldiers && cl[p2] < cl[p] < cl[i] && cs[p].o >= cs[p2].o && cs[i].o >= cs[p].o) add('Three White Soldiers', 1, 3, 'cont');
+  const crows = [p2, p, i].every(j => be(j) && B(j) >= P.soldier_min * atrV);
+  if (crows && cl[p2] > cl[p] > cl[i] && cs[p].o <= cs[p2].o && cs[i].o <= cs[p].o) add('Three Black Crows', -1, 3, 'cont');
+  if (N >= 6) {
+    const inside3 = [p3, p2, p].every(j => cs[j].h <= cs[p4].h && cs[j].l >= cs[p4].l);
+    if (bu(p4) && big(p4) && inside3 && bu(i) && c_ > cs[p4].c) add('Rising Three Methods', 1, 5, 'cont');
+    if (be(p4) && big(p4) && inside3 && be(i) && c_ < cs[p4].c) add('Falling Three Methods', -1, 5, 'cont');
+    const mid4 = (cs[p4].o + cs[p4].c) / 2;
+    const small3 = [p3, p2, p].every(j => B(j) <= 0.6 * B(p4));
+    if (bu(p4) && big(p4) && cs[p3].o >= cs[p4].c - 0.15 * atrV && small3
+      && Math.min(...[p3, p2, p].map(j => cs[j].l)) >= mid4 && [p3, p2, p].filter(j => be(j)).length >= 2
+      && cl[p] <= cl[p3] && bu(i) && c_ > Math.max(...[p3, p2, p].map(j => cs[j].h)) && c_ > cs[p4].c)
+      add('Mat Hold bull', 1, 5, 'cont');
+    if (be(p4) && big(p4) && cs[p3].o <= cs[p4].c + 0.15 * atrV && small3
+      && Math.max(...[p3, p2, p].map(j => cs[j].h)) <= mid4 && [p3, p2, p].filter(j => bu(j)).length >= 2
+      && cl[p] >= cl[p3] && be(i) && c_ < Math.min(...[p3, p2, p].map(j => cs[j].l)) && c_ < cs[p4].c)
+      add('Mat Hold bear', -1, 5, 'cont');
+  }
+  if (Math.abs(cs[i].h - cs[p].h) <= P.tweezer_tol * atrV && bu(p) && be(i) && b >= 0.3 * atrV) add('Tweezer Top', -1, 2, 'rev');
+  if (Math.abs(cs[i].l - cs[p].l) <= P.tweezer_tol * atrV && be(p) && bu(i) && b >= 0.3 * atrV) add('Tweezer Bottom', 1, 2, 'rev');
+  if (cs[i].h <= cs[p].h && cs[i].l >= cs[p].l) add('Inside Bar', 0, 1, 'neutral');
+  else if (cs[i].h >= cs[p].h && cs[i].l <= cs[p].l && b > B(p)) add('Outside Bar', 0, 2, 'neutral');
+  const mk = j => B(j) >= 0.7 * Rg(j) && Rg(j) > 0;
+  if (mk(p) && mk(i) && be(p) && bu(i) && o_ > po) add('Kicking bull', 1, 2, 'rev');
+  if (mk(p) && mk(i) && bu(p) && be(i) && o_ < po) add('Kicking bear', -1, 2, 'rev');
+  let hh = -Infinity, ll = Infinity;
+  for (let j = i - 10; j < i; j++) { hh = Math.max(hh, cs[j].h); ll = Math.min(ll, cs[j].l); }
+  if (cs[i].h > hh && c_ < hh) add('Failed breakout atas', -1, 1, 'rev');
+  if (cs[i].l < ll && c_ > ll) add('Failed breakout bawah', 1, 1, 'rev');
+  if (cs[p].h <= cs[p2].h && cs[p].l >= cs[p2].l) {
+    if (cs[i].h > cs[p2].h && cs[p2].l < c_ < cs[p2].h) add('Fakey bear', -1, 3, 'rev');
+    if (cs[i].l < cs[p2].l && cs[p2].l < c_ < cs[p2].h) add('Fakey bull', 1, 3, 'rev');
+  }
+  if (Rg(i) < 0.6 * atrV && Rg(p) < 0.6 * atrV && Rg(p2) < 0.6 * atrV) add('Kompresi (3 bar sempit)', 0, 3, 'neutral');
+  const mv = cl[i - 1] - cl[i - 4];
+  if (r >= P.exhaust_atr * atrV && mv >= P.exhaust_atr * atrV && c_ <= cs[i].l + 0.3 * r) add('Exhaustion atas', -1, 1, 'rev');
+  if (r >= P.exhaust_atr * atrV && mv <= -P.exhaust_atr * atrV && c_ >= cs[i].h - 0.3 * r) add('Exhaustion bawah', 1, 1, 'rev');
+  const out = [];
+  for (let [name, bias, nb, kind] of sig) {
+    const j0 = Math.max(1, N - nb);
+    const pb = cl[j0 - 1] - cl[Math.max(0, j0 - 6)];
+    const prior = pb <= -P.prior_move * atrV ? -1 : (pb >= P.prior_move * atrV ? 1 : 0);
+    if (kind === 'pin') {
+      if (bias > 0) { name = prior <= 0 ? 'Hammer' : 'Hanging Man'; bias = prior <= 0 ? 1 : -1; }
+      else { name = prior >= 0 ? 'Shooting Star' : 'Inverted Hammer'; bias = prior >= 0 ? -1 : 1; }
+      kind = 'rev';
+    }
+    let near = null;
+    if (bias !== 0) {
+      let ref;
+      if (bias > 0) { ref = Infinity; for (let j = j0; j < N; j++) ref = Math.min(ref, cs[j].l); }
+      else { ref = -Infinity; for (let j = j0; j < N; j++) ref = Math.max(ref, cs[j].h); }
+      const cand = [];
+      for (const [nm, pr] of levels) if (Math.abs(pr - ref) <= P.near_level * atrV) cand.push([Math.abs(pr - ref), nm, pr]);
+      if (cand.length) { cand.sort((a, b2) => a[0] - b2[0]); near = cand[0][1]; }
+    }
+    let ctx;
+    if (kind === 'rev') {
+      const ok1 = prior === -bias, ok2 = near !== null;
+      ctx = (ok1 && ok2) ? 'valid' : ((ok1 || ok2) ? 'lemah' : 'tanpa konteks');
+    } else if (kind === 'cont') ctx = prior === bias ? 'valid' : 'lemah';
+    else ctx = 'info';
+    out.push({ name, bias, ctx, near, prior });
+  }
+  return out;
+}
+
+// ---------- VOTING PER KELUARGA ----------
+function famVote(members, thr = 0.34, minN = 2) {
+  const vals = Object.values(members).filter(v => v !== null && v !== undefined);
+  if (vals.length < minN) return [0, null];
+  const m = vals.reduce((a, b) => a + b, 0) / vals.length;
+  return [m >= thr ? 1 : (m <= -thr ? -1 : 0), m];
+}
+
+// ---------- ANALISA TERPADU ----------
+function analyze(tf, cs, daily = null, notes = null) {
+  const N = cs.length, cl = closes(cs), price = cl[cl.length - 1], tfm = TF_MIN[tf] || 15;
+  const R = { tf, bars: N, price, t: cs[N - 1].t, warn: [], notes: [...(notes || [])] };
+  if (N < 220) R.warn.push(`hanya ${N} bar: EMA200/Ichimoku/percentile kurang akurat (idealnya >=300)`);
+  const safe = (key, fn) => {
+    try { R[key] = fn(); } catch (e) { R[key] = null; R.warn.push(`${key}: ${e.message}`); }
+    return R[key];
+  };
+  const aS = atr(cs, 14)[0], atrV = last(aS);
+  R.atr = atrV;
+
+  const L = safe('levels', () => keyLevels(cs, tfm, daily)) || {};
+  const vwD = cs[N - 1].dt ? last(vwap(cs, 'day')) : null;
+  const vwW = cs[N - 1].dt ? last(vwap(cs, 'week')) : null;
+  let vu1, vd1, vu2, vd2;
+  if (cs[N - 1].dt) [, vu1, vd1, vu2, vd2] = vwapBands(cs);
+  R.vwap = { day: vwD, week: vwW, day_up1: vu1 ? last(vu1) : null, day_dn1: vd1 ? last(vd1) : null,
+    day_up2: vu2 ? last(vu2) : null, day_dn2: vd2 ? last(vd2) : null, note: 'bobot = tick volume (proxy)' };
+
+  safe('vprofile', () => vpSummary(cs, price, atrV));
+  safe('cvd', () => cvdSummary(cs, atrV));
+  safe('orb', () => {
+    const res = {};
+    for (const s of ['asia', 'london', 'ny']) { const o = openingRange(cs, tfm, s, 60); if (o) res[s] = o; }
+    return res;
+  });
+
+  safe('trend', () => {
+    const e20 = last(ema(cl, 20)), e50 = last(ema(cl, 50)), e200 = last(ema(cl, 200));
+    const [st, stb] = supertrend(cs), [sar, sarb] = psar(cs), [ax, pdi, mdi] = adx(cs);
+    const [tenkan, kijun, sa, sb, ctop, cbot] = ichimoku(cs);
+    const [ht, htb] = halfTrend(cs), sslb = sslChannel(cs)[2];
+    const mem = {};
+    for (const [nm, e] of [['EMA20', e20], ['EMA50', e50], ['EMA200', e200]])
+      mem[nm] = e === null ? null : (price > e ? 1 : -1);
+    mem['Supertrend'] = st[st.length - 1] !== null ? (stb[stb.length - 1] ? 1 : -1) : null;
+    mem['PSAR'] = sarb[sarb.length - 1] ? 1 : -1;
+    mem['Ichimoku(awan berlaku)'] = ctop === null ? null : (price > ctop ? 1 : (price < cbot ? -1 : 0));
+    mem['HalfTrend'] = htb[htb.length - 1] ? 1 : -1;
+    mem['SSL'] = sslb === null || sslb === undefined ? null : (sslb ? 1 : -1);
+    const axv = last(ax), pv = last(pdi), mv = last(mdi);
+    mem['ADX/DI'] = (axv === null || axv === undefined || pv === null || pv === undefined) ? null : (axv >= 20 ? sign(pv - mv) : 0);
+    const [v, m] = famVote(mem, 0.34, 4);
+    return { vote: v, score: m, members: mem, ema20: e20, ema50: e50, ema200: e200,
+      supertrend: last(st), ichimoku: { tenkan: last(tenkan), kijun: last(kijun), cloud_now: [cbot, ctop],
+        cloud_ahead: (sa[N - 1] !== null && sa[N - 1] !== undefined && sb[N - 1] !== null && sb[N - 1] !== undefined) ? [Math.min(sa[N - 1], sb[N - 1]), Math.max(sa[N - 1], sb[N - 1])] : null },
+      adx: axv, pdi: pv, mdi: mv };
+  });
+
+  safe('momentum', () => {
+    const r = last(rsi(cl)), [, , mh] = macd(cl), ao = last(awesomeOsc(cs)), cc = last(cci(cs)), ts = last(tsi(cl));
+    const mem = {
+      'RSI(>55/<45)': r === null ? null : (r >= 55 ? 1 : (r <= 45 ? -1 : 0)),
+      'MACD hist': mh === null || last(mh) === null ? null : sign(last(mh)),
+      'AO': ao === null ? null : sign(ao), 'CCI': cc === null ? null : sign(cc),
+      'TSI': ts === null ? null : sign(ts),
+    };
+    const [v, m] = famVote(mem, 0.34, 3);
+    return { vote: v, score: m, members: mem, rsi: r, macd_hist: last(mh), cci: cc, ao,
+      rsi_zone: r === null ? 'n/a' : (r >= 70 ? 'OVERBOUGHT' : (r <= 30 ? 'OVERSOLD' : 'netral')),
+      note: 'OB/OS tidak ikut voting' };
+  });
+
+  safe('volume', () => {
+    const v = vols(cs);
+    if (v.slice(-50).reduce((a, b) => a + b, 0) <= 0) return { vote: 0, score: null, members: {}, note: 'volume kosong' };
+    const cm = last(cmf(cs)), mf = last(mfi(cs)), ob = obv(cs), slope = last(linreg(ob, 20)[1]);
+    const mem = {
+      'CMF': cm === null ? null : (cm > 0.05 ? 1 : (cm < -0.05 ? -1 : 0)),
+      'MFI': mf === null ? null : (mf >= 55 ? 1 : (mf <= 45 ? -1 : 0)),
+      'OBV slope': slope === null ? null : sign(slope),
+    };
+    const cv_ = R.cvd;
+    if (cv_ && cv_.real && cv_.slope !== null && cv_.slope !== undefined) mem['CVD slope (asli)'] = sign(cv_.slope);
+    const [vt, m] = famVote(mem, 0.34, 2);
+    return { vote: vt, score: m, members: mem, cmf: cm, mfi: mf, rvol: last(rvol(cs)),
+      note: 'TICK volume OANDA = proxy, bukan volume transaksi' };
+  });
+
+  const ms = safe('structure', () => marketStructure(cs, 3));
+  let S = {};
+  if (ms) {
+    const sw = ms.swings;
+    const ev = ms.events.length ? ms.events[ms.events.length - 1] : null;
+    const labs = ms.labels.map(l => l[1]).slice(-6);
+    let lastH = null, lastL = null;
+    for (let i = ms.labels.length - 1; i >= 0; i--) {
+      if (!lastH && ['HH', 'LH'].includes(ms.labels[i][1])) lastH = ms.labels[i][1];
+      if (!lastL && ['HL', 'LL'].includes(ms.labels[i][1])) lastL = ms.labels[i][1];
+      if (lastH && lastL) break;
+    }
+    const seq = (lastH === 'HH' && lastL === 'HL') ? 1 : ((lastH === 'LH' && lastL === 'LL') ? -1 : 0);
+    const mem = { 'bias BOS/CHoCH': ms.bias, 'urutan swing': seq };
+    const [v, m] = famVote(mem, 0.5, 1);
+    S = { vote: v, score: m, members: mem, bias: ms.bias, seq: labs,
+      last_event: ev ? { ...ev, bars_ago: N - 1 - ev.i } : null,
+      unbroken_high: ms.unbroken_high ? ms.unbroken_high[1] : null,
+      unbroken_low: ms.unbroken_low ? ms.unbroken_low[1] : null,
+      dealing_range: dealingRange(ms, price),
+      sweeps: liquiditySweeps(cs, sw), equal: equalLevels(sw, atrV, N),
+      fvg: fvgZones(cs, atrV).sort((a, b) => Math.abs((a.top + a.bot) / 2 - price) - Math.abs((b.top + b.bot) / 2 - price)).slice(0, 4),
+      displacement: displacement(cs, atrV) };
+  }
+  R.struct = S;
+
+  safe('location', () => {
+    const mem = {};
+    if (vwD !== null && vwD !== undefined) mem['VWAP sesi'] = sign(price - vwD);
+    if (L.DO !== undefined && L.DO !== null) mem['Open harian'] = sign(price - L.DO);
+    if (L.pivots) mem['Pivot P (kemarin)'] = sign(price - L.pivots.P);
+    const vpd = (R.vprofile || {}).day;
+    if (vpd) mem['POC sesi'] = sign(price - vpd.poc);
+    const [v, m] = famVote(mem);
+    return { vote: v, score: m, members: mem };
+  });
+
+  safe('regime', () => regime(cs));
+  const [chL, chS] = N > 30 ? chandelier(cs) : [null, null];
+  R.chandelier = { long_stop: chL, short_stop: chS };
+  R.vol_est = { 'parkinson_%': parkinson(cs), 'garman_klass_%': garmanKlass(cs) };
+
+  const lv = [];
+  for (const nm of ['PDH', 'PDL', 'PWH', 'PWL', 'PMH', 'PML']) if (L[nm] !== undefined && L[nm] !== null) lv.push([nm, L[nm]]);
+  if (L.pivots) {
+    for (const nm of ['P', 'R1', 'R2', 'S1', 'S2']) lv.push([nm, L.pivots[nm]]);
+    lv.push(['Cam R3', L.pivots.Camarilla.R3], ['Cam S3', L.pivots.Camarilla.S3]);
+  }
+  if (vwD !== null && vwD !== undefined) lv.push(['VWAP', vwD]);
+  const vpr = R.vprofile || {};
+  for (const [tag, key] of [['sesi', 'day'], ['kemarin', 'prev_day']]) {
+    const pp = vpr[key];
+    if (pp) for (const nm of ['poc', 'vah', 'val']) lv.push([nm.toUpperCase() + ' ' + tag, pp[nm]]);
+  }
+  if (S.vote !== undefined) {
+    for (const x of S.equal.EQH) lv.push(['EQH', x]);
+    for (const x of S.equal.EQL) lv.push(['EQL', x]);
+  }
+  if (ms) for (const s of ms.swings.slice(-14)) lv.push(['swing ' + s[3], s[2]]);
+  safe('candles', () => candleSignals(cs, atrV, lv));
+  safe('retest', () => breakoutRetest(cs, atrV, lv));
+
+  const fams = {};
+  for (const k of ['trend', 'momentum', 'volume']) fams[k] = (R[k] || {}).vote || 0;
+  fams['structure'] = S.vote !== undefined ? S.vote : 0;
+  fams['location'] = (R.location || {}).vote || 0;
+  const tot = Object.values(fams).reduce((a, b) => a + b, 0);
+  R.votes = { families: fams, total: tot, max: 5,
+    label: tot >= 3 ? 'BULL' : (tot <= -3 ? 'BEAR' : 'MIXED'),
+    note: 'ringkasan keluarga, bukan keputusan entry; volume = proxy tick' };
+  return R;
+}
+
+
+</script>
+<script>
+'use strict';
+/* ════════════════════════════════════════════════════════════════
+   APP — UI, chart, sumber data (demo/binance/file), render kartu
+   ════════════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const fmt = (x, d = 2) => (x === null || x === undefined || Number.isNaN(x)) ? 'n/a' : Number(x).toFixed(d);
+const sv = v => v === 1 ? '+1' : (v === -1 ? '−1' : ' 0');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const APP = {
+  results: {},        // tf -> R (hasil analyze)
+  candles: {},        // tf -> cs
+  daily: null,        // cs harian (ind-D1 / binance 1d)
+  activeTf: 'M15',
+  tfs: [],
+  params: null,       // ind-params.json
+  srcMode: 'demo',
+  live: false,
+  timer: null,
+  busy: false,
+  files: {},          // nama file -> objek json (untuk src FILE)
+};
+
+/* ---------- pipeline strip ---------- */
+function pipe(st) {
+  document.querySelectorAll('#brainPipe span').forEach(el => {
+    el.classList.remove('on');
+    if (el.dataset.st === st) el.classList.add('on');
+  });
+}
+function pipeDone() { document.querySelectorAll('#brainPipe span').forEach(el => { el.classList.remove('on'); el.classList.add('done'); }); }
+function pipeReset() { document.querySelectorAll('#brainPipe span').forEach(el => el.classList.remove('on', 'done')); }
+
+/* ---------- tema ---------- */
+$('themeSel').value = localStorage.getItem('irb_theme') || 'brain';
+document.documentElement.dataset.theme = $('themeSel').value;
+$('themeSel').onchange = () => { document.documentElement.dataset.theme = $('themeSel').value; localStorage.setItem('irb_theme', $('themeSel').value); drawChart(); };
+
+/* ---------- help ---------- */
+$('helpBtn').onclick = () => $('helpWrap').classList.add('on');
+$('helpClose').onclick = () => $('helpWrap').classList.remove('on');
+$('helpWrap').onclick = e => { if (e.target === $('helpWrap')) $('helpWrap').classList.remove('on'); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('helpWrap').classList.remove('on'); });
+
+/* ════════════════ SUMBER DATA ════════════════ */
+/* ---------- fetch dasar (port DTS Watchdog: tFetch + workerFetch) ---------- */
+function tFetch(u, ms, o) {
+  return Promise.race([
+    fetch(u, Object.assign({ cache: 'no-store' }, o || {})),
+    new Promise((_, rej) => setTimeout(() => rej(new Error('timeout ' + ms + 'ms')), ms))
+  ]);
+}
+async function workerFetch(u, ms) { // langsung dulu; diblok origin → proxy CORS server-side
+  let r = null, err = '';
+  try { r = await tFetch(u, ms); } catch (e) { err = e.message || 'jaringan gagal'; }
+  if (r && r.ok) return r;
+  if (r && r.status !== 403 && r.status !== 451) throw new Error('HTTP ' + r.status);
+  const P = ['https://proxy.cors.dev/', 'https://api.codetabs.com/v1/proxy/?quest='];
+  let last = r ? 'origin ditolak (HTTP ' + r.status + ')' : 'tak terjangkau (' + err + ')';
+  for (const p of P) {
+    try {
+      const rp = await tFetch(p.indexOf('quest=') > 0 ? p + encodeURIComponent(u) : p + u, ms);
+      if (rp.ok) { rp.viaProxy = true; return rp; }
+      last += ' · proxy HTTP ' + rp.status;
+    } catch (e) { last += ' · proxy gagal'; }
+  }
+  throw new Error(last);
+}
+
+/* ---------- KONEKSI OANDA: REST v3 (token) + Worker quote/candle (tanpa token) ---------- */
+const OA_DEF_WORKER = 'https://dts-oanda-worker.hanjakal.workers.dev/';
+let OA_CFG = {};
+try { OA_CFG = JSON.parse(localStorage.getItem('irb_oa') || '{}'); } catch (e) { OA_CFG = {}; }
+function oaGran(tf) { return { M5: 'M5', M15: 'M15', M30: 'M30', H1: 'H1', H2: 'H2', H4: 'H4', D1: 'D', D: 'D' }[tf] || 'M15'; }
+function oaBase(env) { return env === 'live' ? 'https://api-fxtrade.oanda.com' : 'https://api-fxpractice.oanda.com'; }
+function oaParseCandles(j) { // {candles:[{time, mid:{o,h,l,c}, volume, complete}]} atau array [{t|time,...}]
+  const arr = Array.isArray(j) ? j : (j && Array.isArray(j.candles) ? j.candles : null);
+  if (!arr || arr.length < 12) throw new Error('candle kosong/tak valid');
+  const out = arr.filter(Boolean).map(x => {
+    const m = x.mid || x;
+    const t = x.time != null ? Date.parse(x.time) : (+x.t > 1e12 ? +x.t : +x.t * 1000);
+    return { t, o: +m.o, h: +m.h, l: +m.l, c: +m.c, v: +(x.volume != null ? x.volume : x.v || 0), complete: x.complete };
+  }).filter(c => isFinite(c.t) && c.o > 0 && c.h >= c.l && c.c > 0);
+  if (out.length < 12) throw new Error('format candle tidak valid');
+  return out; // loadCandles mengurutkan otomatis (urutan bebas)
+}
+/* --- bridge harga OANDA↔Binance (port DTS Watchdog: despike, nyClosed, oaSession, oaDelta) --- */
+function despike(cs) { // buang wick 'hantu' feed Binance (PAXG tipis → print salah puluhan/ratusan $)
+  const r = cs.map(c => c.h - c.l).sort((a, b) => a - b), med = r[r.length >> 1] || 0;
+  if (!(med > 0)) return cs;
+  const lim = Math.max(med * 8, cs[0].c * 0.004);
+  return cs.map(c => {
+    const top = Math.max(c.o, c.c), bot = Math.min(c.o, c.c);
+    const h = Math.min(c.h, top + lim), l = Math.max(c.l, bot - lim);
+    return (h === c.h && l === c.l) ? c : { t: c.t, o: c.o, h, l, c: c.c, v: c.v };
+  });
+}
+let _nyFmt = null;
+function nyClosed(ms) { // pasar OANDA tutup utk logam: Jum 17:00 → Min 17:00 waktu New York (ikut DST)
+  try {
+    if (!_nyFmt) _nyFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+    let d = '', h = 0, m = 0;
+    _nyFmt.formatToParts(new Date(ms)).forEach(x => { if (x.type === 'weekday') d = x.value; else if (x.type === 'hour') h = +x.value; else if (x.type === 'minute') m = +x.value; });
+    const mn = h * 60 + m;
+    return d === 'Sat' || (d === 'Fri' && mn >= 1020) || (d === 'Sun' && mn < 1020);
+  } catch (e) { // tanpa Intl: asumsi waktu standar (tutup Jum 22:00 → Min 22:00 UTC)
+    const u = new Date(ms), dd = u.getUTCDay(), mu = u.getUTCHours() * 60 + u.getUTCMinutes();
+    return dd === 6 || (dd === 5 && mu >= 1320) || (dd === 0 && mu < 1320);
+  }
+}
+function oaSession(cs, tfMin, ins) { // buang candle weekend utk logam (Binance 24/7, OANDA tidak)
+  if (!/^(XAU|XAG|XPT|XPD)_/.test(ins || '')) return cs;
+  const ms = (tfMin || 15) * 60000;
+  const out = cs.filter(c => !(nyClosed(c.t) && nyClosed(c.t + Math.max(0, ms - 1))));
+  return out.length >= 30 ? out : cs;
+}
+function oaDelta(refClose, liveMid, prev) { // selisih (harga live OANDA − close Binance); sanity ±5%
+  if (!(refClose > 0) || !(liveMid > 0)) return prev || 0;
+  const d = liveMid - refClose;
+  return Math.abs(d) < refClose * 0.05 ? d : (prev || 0);
+}
+async function fetchOandaCandles(ins, gran, count, tok) {
+  const wUrl = OA_CFG.worker || OA_DEF_WORKER;
+  let workerNote = '';
+  if (tok) { // jalur 1 — REST v3 langsung (candle asli OANDA)
+    try {
+      const r = await tFetch(oaBase(OA_CFG.env) + '/v3/instruments/' + encodeURIComponent(ins) + '/candles?price=M&granularity=' + gran + '&count=' + count,
+        9000, { headers: { Authorization: 'Bearer ' + tok } });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      APP.oaHost = 'OANDA API (' + (OA_CFG.env || 'practice') + ')';
+      return oaParseCandles(j);
+    } catch (e) { workerNote = 'OANDA API: ' + e.message + ' → '; }
+  }
+  // jalur 2 — Worker Cloudflare: quote selalu; candle bila Worker V2 menyediakan (candles=1)
+  let quote = null;
+  try {
+    const r = await workerFetch(wUrl + '?instrument=' + encodeURIComponent(ins) + '&granularity=' + gran + '&count=' + count + '&price=M&candles=1&t=' + Date.now(), 8000);
+    const d = await r.json();
+    const bid = +d.bid, ask = +d.ask;
+    quote = { bid, ask, mid: (bid > 0 && ask >= bid) ? (bid + ask) / 2 : +(d.mid != null ? d.mid : d.price != null ? d.price : d.close) };
+    if (!(quote.mid > 0)) quote = null;
+    const cs = oaParseCandles(d);
+    APP.oaHost = 'OANDA Worker' + (r.viaProxy ? '+proxy' : '');
+    return cs;
+  } catch (e) { workerNote += 'Worker candle: ' + e.message + ' → '; }
+  // jalur 3 — bridge: candle Binance (XAU/PAXG proxy) → despike → buang weekend → digeser ke harga OANDA live
+  const tfMin = { M5: 5, M15: 15, M30: 30, H1: 60, H2: 120, H4: 240, D: 1440 }[gran] || 15;
+  const iv = { M5: '5m', M15: '15m', M30: '30m', H1: '1h', H2: '2h', H4: '4h', D: '1d' }[gran] || '15m';
+  let px = quote;
+  if (!px) px = await fetchOandaPrice(ins); // worker candle gagal → quote polos masih mungkin hidup
+  if (!px) throw new Error(workerNote + 'Worker OANDA tidak terjangkau (candle & quote) — isi API token untuk jalur REST langsung');
+  const { sym, cs: bnc } = await fetchBinance(iv, Math.min(count, 1000));
+  let cs = oaSession(despike(bnc), tfMin, ins);
+  const off = oaDelta(cs[cs.length - 1].c, px.mid, 0);
+  cs = cs.map(c => ({ t: c.t, o: c.o + off, h: c.h + off, l: c.l + off, c: c.c + off, v: c.v }));
+  APP.oaHost = 'Binance ' + sym + ' → harga OANDA (Δ ' + off.toFixed(2) + ')';
+  APP.oaNote = workerNote.replace(/ → $/, '') + ' · candle = Binance ' + sym + ' digeser ke level harga OANDA Worker (Δ ' + off.toFixed(2) + ')';
+  return cs;
+}
+async function fetchOandaPrice(ins) { // bid/ask live via Worker (readout harga)
+  try {
+    const r = await workerFetch((OA_CFG.worker || OA_DEF_WORKER) + '?instrument=' + encodeURIComponent(ins) + '&t=' + Date.now(), 5000);
+    const d = await r.json();
+    const bid = +d.bid, ask = +d.ask;
+    const mid = (bid > 0 && ask >= bid) ? (bid + ask) / 2 : +(d.mid != null ? d.mid : d.price != null ? d.price : d.close);
+    return mid > 0 ? { bid, ask, mid } : null;
+  } catch (e) { return null; }
+}
+
+const BIN_HOSTS = [
+  ['https://fapi.binance.com', '/fapi/v1/klines', 1500, ['XAUUSDT', 'PAXGUSDT']],
+  ['https://data-api.binance.vision', '/api/v3/klines', 1000, ['PAXGUSDT']],
+  ['https://api.binance.com', '/api/v3/klines', 1000, ['PAXGUSDT']],
+  ['https://api1.binance.com', '/api/v3/klines', 1000, ['PAXGUSDT']],
+  ['https://api2.binance.com', '/api/v3/klines', 1000, ['PAXGUSDT']],
+  ['https://api3.binance.com', '/api/v3/klines', 1000, ['PAXGUSDT']],
+  ['https://api4.binance.com', '/api/v3/klines', 1000, ['PAXGUSDT']],
+];
+const BN_IV = { M1: '1m', M3: '3m', M5: '5m', M15: '15m', M30: '30m', H1: '1h', H2: '2h', H4: '4h', H6: '6h', H8: '8h', H12: '12h', D1: '1d', D: '1d' };
+
+async function fetchBinance(interval, limit = 1000, sym = null) {
+  const errs = [];
+  for (const [base, path, mx, syms] of BIN_HOSTS) {
+    for (const s of (sym ? [sym] : syms)) {
+      try {
+        const url = `${base}${path}?symbol=${s}&interval=${interval}&limit=${Math.min(limit, mx)}`;
+        const r = await fetch(url, { signal: AbortSignal.timeout(9000) });
+        if (!r.ok) { errs.push(`${base} ${s}: HTTP ${r.status}`); continue; }
+        const raw = await r.json();
+        if (Array.isArray(raw) && raw.length >= 30 && Array.isArray(raw[0])) {
+          const nowMs = Date.now();
+          const cs = raw.map(k => ({ t: +k[0], o: +k[1], h: +k[2], l: +k[3], c: +k[4], v: +k[5],
+            tb: +k[9], trades: +k[8], complete: +k[6] < nowMs, src: 'binance', sym: s }));
+          return { sym: s, host: base, cs };
+        }
+        errs.push(`${base} ${s}: respons tak valid`);
+      } catch (e) { errs.push(`${base} ${s}: ${e.name || e.message}`); }
+    }
+  }
+  throw new Error('semua sumber Binance gagal (' + errs.slice(0, 3).join('; ') + (errs.length > 3 ? '; …' : '') + ')');
+}
+
+/* ---------- demo generator (deterministik per hari, XAUUSD-like) ---------- */
+function demoCandles(tf, n = 700) {
+  const tfm = TF_MIN[tf] || 15;
+  const seedBase = Math.floor(Date.now() / 86400000);
+  let s = tfm * 7919 + seedBase * 104729; // deterministic
+  const rnd = () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
+  const gauss = () => (rnd() + rnd() + rnd() + rnd() + rnd() + rnd() - 3) / 1.2247;
+  // mulai dari Senin minggu ini, UTC
+  const now = new Date();
+  const day = (now.getUTCDay() + 6) % 7;
+  const monday = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - day);
+  const t0 = monday - n * tfm * 60000;
+  let price = 2580 + (seedBase % 97) * 1.3;
+  let volState = 1.0;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    volState = Math.max(0.3, Math.min(4, volState * Math.exp(gauss() * 0.25)));
+    const spread = Math.abs(gauss()) * 2.1 * volState + 0.4;
+    const o = price;
+    const drift = 0.02 * Math.sin(i / 37) + 0.012 * Math.cos(i / 111) + 0.05 * Math.sin(i / 570);
+    const c = o + drift + gauss() * spread;
+    const h = Math.max(o, c) + Math.abs(gauss()) * spread * 0.55;
+    const l = Math.min(o, c) - Math.abs(gauss()) * spread * 0.55;
+    const v = Math.max(1, 780 + gauss() * 260 + volState * 130);
+    out.push({ t: t0 + i * tfm * 60000, o: +o.toFixed(2), h: +h.toFixed(2), l: +l.toFixed(2), c: +c.toFixed(2), v: +v.toFixed(1) });
+    price = c;
+  }
+  return out;
+}
+
+/* ════════════════ TIER SUMBER DATA (gaya DTS Watchdog) ════════════════
+   ELITE   = oanda_api    : REST v3 OANDA — wajib API token + Account ID (candle asli semua TF)
+   PREMIUM = oanda_worker : Worker Cloudflare — tanpa kredensial; candle asli bila Worker V2 (candles=1)
+   REGULER = oanda        : Worker quote + candle Binance XAU/PAXG di-bridge ke level harga OANDA
+   Setiap tier otomatis turun (fallback) bila jalur utamanya gagal — jalur aktif tampil di badge & meta. */
+function isOandaTier() { return APP.srcMode === 'oanda_api' || APP.srcMode === 'oanda_worker' || APP.srcMode === 'oanda'; }
+function oandaTier() {
+  if (APP.srcMode === 'oanda_api') return OA_CFG.tok ? 'api' : 'worker';   // token kosong → turun ke Worker  if (APP.srcMode === 'oanda_worker') return 'worker';
+  return 'bridge';
+}
+function tierLabel() {
+  const t = { oanda_api: 'ELITE', oanda_worker: 'PREMIUM', oanda: 'REGULER' }[APP.srcMode];
+  return t || APP.srcMode.toUpperCase();
+}
+
+async function getData(tf) {
+  if (APP.srcMode === 'demo') return { cs: loadCandles(demoCandles(tf), tf, !APP.live), note: 'DEMO sintetis — bukan data pasar nyata' };
+  if (APP.srcMode === 'binance') {
+    const iv = BN_IV[tf];
+    if (!iv) throw new Error(`TF ${tf} tak tersedia di Binance`);
+    const { sym, cs } = await fetchBinance(iv, 1000);
+    return { cs: loadCandles(cs, tf, !APP.live), note: `Binance ${sym} (${iv}) — basis bisa beda dari OANDA XAUUSD` };
+  }
+  if (isOandaTier()) { // ELITE / PREMIUM / REGULER — jalur & fallback di dalam fetchOandaCandles
+    const ins = (OA_CFG.ins || 'XAU_USD').toUpperCase().replace('/', '_');
+    const cs = await fetchOandaCandles(ins, oaGran(tf), 1000, oandaTier() === 'api' ? OA_CFG.tok : '');
+    return { cs: loadCandles(cs, tf, !APP.live), note: `OANDA ${ins} ${oaGran(tf)} via ${APP.oaHost}` };
+  }
+  // FILE
+  const key = Object.keys(APP.files).find(k => k === `ind-${tf}.json` || k === `ind-${tf}.bn.json`);
+  if (!key) throw new Error(`ind-${tf}.json belum diunggah (sumber FILE)`);
+  return { cs: loadCandles(APP.files[key].candles || APP.files[key].data || APP.files[key], tf, !APP.live), note: `file ${key}` };
+}
+async function getDaily() {
+  if (APP.srcMode === 'file') {
+    const key = Object.keys(APP.files).find(k => k === 'ind-D1.json' || k === 'ind-D.json');
+    if (key) { const d = APP.files[key]; const cs = loadCandles(d.candles || d.data || d, 'D1', false); cs.source = key; return cs; }
+    return null;
+  }
+  if (APP.srcMode === 'binance') {
+    try { const { sym, cs } = await fetchBinance('1d', 400); const d = loadCandles(cs, 'D1', false); d.source = 'Binance ' + sym + ' 1d'; return d; } catch (e) { return null; }
+  }
+  if (isOandaTier()) {
+    try {
+      const ins = (OA_CFG.ins || 'XAU_USD').toUpperCase().replace('/', '_');
+      const cs = await fetchOandaCandles(ins, 'D', 400, oandaTier() === 'api' ? OA_CFG.tok : '');
+      const d = loadCandles(cs, 'D1', false);
+      d.source = APP.oaHost || ('OANDA ' + ins);
+      return d;
+    } catch (e) { return null; }
+  }
+  return null;
+}
+
+/* ════════════════ RUN ════════════════ */
+async function run() {
+  if (APP.busy) return;
+  APP.busy = true;
+  $('go').disabled = true;
+  const badge = $('srcBadge');
+  badge.textContent = 'MENGHITUNG…'; badge.className = 'badge';
+  pipeReset();
+  APP.srcMode = $('src').value;
+  APP.live = $('live').checked;
+  APP.oaPx = null; APP.oaWarn = null;
+  APP.tfs = $('mtf').value.split(',').filter(t => TF_MIN[t]);
+  if (!APP.tfs.length) APP.tfs = ['M15'];
+  if (!APP.tfs.includes(APP.activeTf)) APP.activeTf = APP.tfs[0];
+  try {
+    APP.daily = await getDaily();
+    for (const tf of APP.tfs) {
+      pipe('data');
+      const { cs, note } = await getData(tf);
+      APP.candles[tf] = cs;
+      pipe('level');
+      const tfKey = tf === 'D1' ? 'D' : tf;
+      const pnote = applyParams(APP.params ? APP.params[tfKey] : null);
+      const notes = [note]; if (pnote) notes.push(pnote);
+      pipe('struktur');
+      const R = analyze(tf, cs, APP.daily, notes);
+      pipe('regime');
+      APP.results[tf] = R;
+      if (tf === APP.tfs[0] || tf === APP.activeTf) { APP.activeTf = tf; }
+      renderAll();
+      await new Promise(r => setTimeout(r, 30)); // beri UI kesempatan update
+    }
+    pipeDone();
+    let hostShort = '';
+    if (isOandaTier()) { // jalur aktif hanya relevan untuk tier OANDA (hindari sisa run sebelumnya)
+      hostShort = (APP.oaHost || 'Worker').replace(/^OANDA /, '').replace(' → harga OANDA', ' → harga');
+    } else if (APP.srcMode === 'binance') {
+      hostShort = APP.candles[APP.activeTf] && APP.candles[APP.activeTf].sym ? 'Binance ' + APP.candles[APP.activeTf].sym : '';
+    }
+    badge.textContent = tierLabel() + ' · OK' + (hostShort ? ' · ' + hostShort : '');
+    badge.className = 'badge on';
+    badge.title = 'Tier ' + tierLabel() + (isOandaTier() ? ' · jalur aktif: ' + (APP.oaHost || '-') : '');
+    // ELITE tanpa token → ingatkan pengguna (tier turun otomatis, tapi kasih tahu caranya naik lagi)
+    if (APP.srcMode === 'oanda_api' && !OA_CFG.tok)
+      APP.oaWarn = (APP.oaWarn ? APP.oaWarn + ' · ' : '') + 'ELITE butuh API token + Account ID (⚙ → Koneksi OANDA) — sementara turun ke jalur ' + (APP.oaHost || 'Worker');
+    if (isOandaTier()) { // harga bid/ask live + berita otomatis
+      const px = await fetchOandaPrice(OA_CFG.ins || 'XAU_USD');
+      if (px) APP.oaPx = px;
+      if (APP.oaNote) { APP.oaWarn = APP.oaNote; APP.oaNote = null; }
+    }
+    if ($('newsOn').checked) fetchNews();
+    renderAll();
+  } catch (e) {
+    console.error(e);
+    badge.textContent = 'GAGAL'; badge.className = 'badge err';
+    $('fileInfo').textContent = '⚠ ' + e.message;
+    document.querySelectorAll('#brainPipe span').forEach(el => el.classList.remove('on'));
+  }
+  if ($('auto').checked && (APP.srcMode === 'binance' || isOandaTier())) {
+    clearInterval(APP.timer);
+    APP.timer = setInterval(() => { if (!APP.busy) run(); }, 60000);
+    $('go').textContent = '■ Stop';
+    $('go').classList.add('stop');
+  } else {
+    clearInterval(APP.timer); APP.timer = null;
+    $('go').textContent = '▶ Jalankan Analisa';
+    $('go').classList.remove('stop');
+  }
+  APP.busy = false;
+  $('go').disabled = false;
+}
+$('go').onclick = () => { if (APP.timer && $('go').classList.contains('stop')) { clearInterval(APP.timer); APP.timer = null; $('go').textContent = '▶ Jalankan Analisa'; $('go').classList.remove('stop'); $('srcBadge').textContent = 'SIAGA'; $('srcBadge').className = 'badge'; } else run(); };
+
+/* ---------- ticker harga LIVE (bid/ask berdetak tiap 5 detik) ----------
+   Analisa penuh (candle+indikator+sinyal) tetap tiap 60s / saat Mulai ditekan;
+   ticker ini hanya mengambil quote Worker → harga hero & pita bid/ask ikut bergerak tanpa re-run analisa. */
+let _lastPx = null;
+function renderLivePx(px) {
+  if (!(px && px.mid > 0)) return;
+  // harga hero bergerak (hijau/merah sesuai arah vs quote sebelumnya)
+  const el = $('price');
+  const before = +(el.dataset.px || 0);
+  el.textContent = fmt(px.mid);
+  el.dataset.px = px.mid;
+  el.style.color = before ? (px.mid > before ? 'var(--g)' : (px.mid < before ? 'var(--r)' : '')) : '';
+  // pita live di atas (ticker)
+  const tk = $('ticker');
+  const ins = (OA_CFG.ins || 'XAU_USD').replace('_', '/');
+  const spread = (px.ask > 0 && px.bid > 0) ? (px.ask - px.bid) : null;
+  const html = `<b class="mono" style="color:var(--acc)">LIVE ${esc(ins)}</b>
+      <span class="mono">bid <b>${fmt(px.bid)}</b> · ask <b>${fmt(px.ask)}</b>${spread != null ? ' · spread <b>' + fmt(spread, 2) + '</b>' : ''}</span>
+      <span class="sm m">● berdetak tiap 5s (quote Worker)</span>`;
+  let live = document.getElementById('livePx');
+  if (!live) { live = document.createElement('div'); live.id = 'livePx'; live.className = 'nw'; live.style.borderColor = 'var(--acc)'; tk.prepend(live); }
+  live.innerHTML = html;
+  if (isOandaTier()) APP.oaPx = px; // meta hero ikut menunjukkan quote live
+}
+function tickLive() {
+  if (APP.busy || !isOandaTier() || !$('go') || $('go').disabled) return;
+  fetchOandaPrice(OA_CFG.ins || 'XAU_USD').then(renderLivePx).catch(() => {});
+}
+setInterval(tickLive, 5000);
+
+/* ---------- TF selector ---------- */
+function fillTf() {
+  $('tf').innerHTML = APP.tfs.map(t => `<option value="${t}" ${t === APP.activeTf ? 'selected' : ''}>${t}</option>`).join('');
+}
+$('mtf').onchange = () => { APP.tfs = $('mtf').value.split(',').filter(t => TF_MIN[t]); APP.activeTf = APP.tfs[0] || 'M15'; fillTf(); renderAll(); };
+$('tf').onchange = () => { APP.activeTf = $('tf').value; renderAll(); };
+$('src').onchange = () => {
+  APP.srcMode = $('src').value;
+  const auto = $('auto').parentElement;
+  auto.style.opacity = (APP.srcMode === 'binance' || isOandaTier()) ? 1 : .45;
+  $('auto').disabled = APP.srcMode !== 'binance' && !isOandaTier();
+  // panel koneksi ada di dalam drawer ⚙ — di layar lebar buka otomatis; di HP cukup sorot tombol ⚙ (hemat ruang)
+  const p = $('oaPanel');
+  if (p) p.style.outline = isOandaTier() ? '1px dashed var(--acc)' : '';
+  $('cfgBtn').classList.toggle('want', isOandaTier());
+  if (isOandaTier() && window.innerWidth > 640 && !$('adv').classList.contains('on')) $('adv').classList.add('on');
+};
+
+/* ---------- panel koneksi OANDA (localStorage irb_oa) ---------- */
+function oaFill() {
+  $('oaTok').value = OA_CFG.tok || '';
+  $('oaAcc').value = OA_CFG.acc || '';
+  $('oaEnv').value = OA_CFG.env || 'practice';
+  $('oaIns').value = OA_CFG.ins || 'XAU_USD';
+  $('oaWorker').value = OA_CFG.worker || OA_DEF_WORKER;
+  $('newsOn').checked = OA_CFG.news !== false;
+  $('newsSnd').checked = !!OA_CFG.snd;
+}
+$('oaSave').onclick = () => {
+  OA_CFG.tok = $('oaTok').value.trim();
+  OA_CFG.acc = $('oaAcc').value.trim();
+  OA_CFG.env = $('oaEnv').value;
+  OA_CFG.ins = $('oaIns').value.trim().toUpperCase().replace('/', '_') || 'XAU_USD';
+  OA_CFG.worker = $('oaWorker').value.trim() || OA_DEF_WORKER;
+  OA_CFG.news = $('newsOn').checked;
+  OA_CFG.snd = $('newsSnd').checked;
+  localStorage.setItem('irb_oa', JSON.stringify(OA_CFG));
+  $('fileInfo').textContent = '🔐 koneksi OANDA disimpan (' + (OA_CFG.tok ? 'API token + ' : 'Worker ') + OA_CFG.env + ' · ' + OA_CFG.ins + ')';
+  run();
+};
+
+/* ════════════════ BERITA & KALENDER EKONOMI (port DTS Watchdog) ════════════════ */
+const NEWS_STATE = { list: [], done: {}, win: 300, timers: { alarm: null, stop: null, hide: null, cd: null } };
+let AC = null;
+function newsBeep(impact) { // High: square 4 pulsa; Medium: sine 2 pulsa
+  try {
+    if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const hi = impact === 'HIGH', seq = hi ? [1000, 700, 1000, 700] : [800, 800], t0 = AC.currentTime;
+    seq.forEach((hz, i) => {
+      const o = AC.createOscillator(), g = AC.createGain(), a = t0 + i * 0.22;
+      o.type = hi ? 'square' : 'sine'; o.frequency.value = hz;
+      g.gain.setValueAtTime(0.0001, a);
+      g.gain.exponentialRampToValueAtTime(hi ? 0.25 : 0.3, a + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, a + 0.2);
+      o.connect(g); g.connect(AC.destination); o.start(a); o.stop(a + 0.21);
+    });
+  } catch (e) {}
+}
+async function fetchNews() {
+  if (!$('newsOn').checked) { NEWS_STATE.list = []; renderTicker(); $('newsCard').style.display = 'none'; return; }
+  $('newsCard').style.display = '';
+  let all = [];
+  // sumber 1 — file lokal news.json / news_next.json (folder sama, seperti nyai)
+  for (const L of ['./news.json', './news_next.json']) {
+    try { const r = await tFetch(L + '?t=' + Date.now(), 6000); if (r.ok) { const d = await r.json(); if (Array.isArray(d)) all = all.concat(d); } } catch (e) {}
+  }
+  // sumber 2 — kalender mingguan faireconomy (ForexFactory), langsung lalu proxy
+  if (!all.length) {
+    const W = ['https://nfs.faireconomy.media/ff_calendar_thisweek.json', 'https://nfs.faireconomy.media/ff_calendar_nextweek.json'];
+    let lastErr = '';
+    for (const u of W) {
+      try { const r = await workerFetch(u, 8000); const d = await r.json(); if (Array.isArray(d)) all = all.concat(d); }
+      catch (e) { lastErr = e.message; }
+    }
+    $('newsSrc').textContent = all.length ? 'sumber: faireconomy (ForexFactory) minggu ini + depan' : 'sumber gagal: ' + (lastErr || 'tidak diketahui');
+  } else $('newsSrc').textContent = 'sumber: news.json / news_next.json (lokal)';
+  if (!all.length) {
+    renderTicker('⚠ kalender berita tidak terbaca (news.json / faireconomy)');
+    return;
+  }
+  NEWS_STATE.list = all.map(n => ({ title: n.title || '-', country: n.country || '-',
+      date: new Date(n.date), impact: String(n.impact || 'Low').toUpperCase(),
+      forecast: n.forecast || '', previous: n.previous || '' }))
+    .filter(n => !isNaN(n.date.getTime()) && n.impact !== 'HOLIDAY')
+    .sort((a, b) => a.date - b.date);
+  renderTicker();
+  renderNewsTable();
+  checkNews();
+}
+function whenText(d) {
+  const m = Math.round((d.getTime() - Date.now()) / 60000);
+  if (m <= 0) return 'sedang rilis';
+  if (m < 60) return m + ' menit lagi';
+  return Math.floor(m / 60) + ' jam ' + (m % 60) + ' menit lagi';
+}
+function renderTicker(errTxt) {
+  const el = $('ticker'), now = Date.now();
+  const keepLive = el.querySelector('#livePx'); // jangan hapus pita harga live saat render berita
+  if (errTxt) { el.innerHTML = `<span class="r" style="font-size:11px">${esc(errTxt)}</span>`; return; }
+  if (!$('newsOn').checked) { el.innerHTML = ''; return; }
+  const fut = NEWS_STATE.list.filter(n => n.date.getTime() > now - 2 * 3600000);
+  const up = fut.filter(n => n.impact !== 'LOW').concat(fut.filter(n => n.impact === 'LOW')).slice(0, 4)
+    .sort((a, b) => a.date - b.date);
+  if (!up.length) { el.innerHTML = '<span class="m" style="font-size:11px">📰 Tidak ada berita dalam waktu dekat.</span>'; return; }
+  const news = up.map(n => {
+    const m = (n.date.getTime() - now) / 60000, live = m < 0;
+    const w = live ? 'LIVE' : m < 60 ? 'T-' + Math.round(m) + 'm' : m < 1440 ? 'T-' + (m / 60).toFixed(1) + 'h' : 'T-' + (m / 1440).toFixed(1) + 'd';
+    const k = n.impact === 'HIGH' ? 'nh' : n.impact === 'MEDIUM' ? 'nm' : 'nl';
+    const hm = ('0' + n.date.getHours()).slice(-2) + ':' + ('0' + n.date.getMinutes()).slice(-2);
+    return `<div class="nw ${k}" title="${esc(n.impact)} impact"><div class="t"><b>${esc(n.country)}</b> ${esc(n.title)}</div><div class="s"><span class="mono">${hm}</span><b class="${live ? 'r' : (m < 60 ? 'y' : '')}">${w}</b></div></div>`;
+  }).join('');
+  el.innerHTML = news;
+  if (keepLive) el.prepend(keepLive); // pita harga live tetap di posisi depan
+}
+function renderNewsTable() {
+  if (!$('newsOn').checked || !NEWS_STATE.list.length) { $('newsTbl').innerHTML = ''; return; }
+  const now = Date.now();
+  const fut = NEWS_STATE.list.filter(n => n.date.getTime() > now).slice(0, 8);
+  const past = NEWS_STATE.list.filter(n => n.date.getTime() <= now).slice(-3).reverse();
+  const impCls = i => i === 'HIGH' ? 'no' : (i === 'MEDIUM' ? 'wr' : 'nu');
+  let h = '<tr><th>waktu lokal</th><th>neg</th><th>impact</th><th>event</th><th class="num">forecast</th><th class="num">prev</th><th>countdown</th></tr>';
+  const row = n => {
+    const m = (n.date.getTime() - now) / 60000;
+    const cd = m <= 0 ? '<span class="r">LIVE</span>' : (m < 60 ? '<span class="y">T-' + Math.round(m) + 'm</span>' : 'T-' + (m / 60).toFixed(1) + 'h');
+    return `<tr><td class="mono">${n.date.toLocaleString([], { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>`
+      + `<td class="b mono">${esc(n.country)}</td><td>${chip(n.impact, impCls(n.impact))}</td>`
+      + `<td>${esc(n.title)}</td><td class="num">${esc(n.forecast || '-')}</td><td class="num">${esc(n.previous || '-')}</td><td class="mono">${cd}</td></tr>`;
+  };
+  fut.forEach(n => h += row(n));
+  if (past.length) h += '<tr><th colspan="7" style="padding-top:10px">baru saja rilis</th></tr>';
+  past.forEach(n => h += row(n));
+  $('newsTbl').innerHTML = h;
+}
+function closeNewsPop() {
+  $('newspop').style.display = 'none';
+  clearInterval(NEWS_STATE.timers.alarm); clearTimeout(NEWS_STATE.timers.stop);
+  clearTimeout(NEWS_STATE.timers.hide); clearInterval(NEWS_STATE.timers.cd);
+  NEWS_STATE.timers.alarm = NEWS_STATE.timers.stop = null;
+}
+function showNews(n) {
+  const hi = n.impact === 'HIGH', lo = n.impact === 'LOW';
+  closeNewsPop();
+  $('newspop').style.display = 'block';
+  $('npTitle').textContent = '⚠ ' + n.impact + ' · ' + n.country;
+  $('npTitle').className = hi ? 'r' : (lo ? 'm' : 'y');
+  $('npMeta').innerHTML = `<b>${esc(n.title)}</b><br><span class="m">Forecast:</span> ${esc(n.forecast || '-')} &nbsp; <span class="m">Prev:</span> ${esc(n.previous || '-')}`
+    + `<br><span class="m">Rilis:</span> ${n.date.toLocaleString()} <span class="m">(${whenText(n.date)})</span>`;
+  const upd = () => {
+    const left = (n.date.getTime() - Date.now()) / 1000;
+    $('npCd').textContent = left <= 0 ? '🔴 SEDANG RILIS' : '⏳ dalam ' + Math.floor(left / 60) + 'm ' + Math.floor(left % 60) + 's';
+  };
+  upd();
+  NEWS_STATE.timers.cd = setInterval(upd, 1000);
+  if ($('newsSnd').checked) newsBeep(n.impact);
+  NEWS_STATE.timers.alarm = setInterval(() => { if ($('newsSnd').checked) newsBeep(n.impact); }, 3000);
+  NEWS_STATE.timers.stop = setTimeout(() => clearInterval(NEWS_STATE.timers.alarm), lo ? 6000 : 60000);
+  NEWS_STATE.timers.hide = setTimeout(closeNewsPop, 60000);
+}
+function checkNews() {
+  if (!$('newsOn').checked) { renderTicker(); return; }
+  const now = Date.now();
+  for (const n of NEWS_STATE.list) {
+    const diff = (n.date.getTime() - now) / 1000;
+    const key = n.country + '|' + n.title + '|' + n.date.getTime();
+    if (diff > 0 && diff <= NEWS_STATE.win && !NEWS_STATE.done[key]) {
+      NEWS_STATE.done[key] = 1;
+      showNews(n);
+      break;
+    }
+  }
+  renderTicker();
+}
+function newsNear() {
+  const now = Date.now();
+  return NEWS_STATE.list.some(n => n.impact === 'HIGH' && n.country === 'USD' && Math.abs(n.date.getTime() - now) <= 600000);
+}
+$('npClose').onclick = closeNewsPop;
+$('newsBtn').onclick = () => { $('newsSrc').textContent = 'sumber: memuat…'; fetchNews(); };
+$('newsOn').onchange = () => { OA_CFG.news = $('newsOn').checked; localStorage.setItem('irb_oa', JSON.stringify(OA_CFG)); fetchNews(); };
+$('newsSnd').onchange = () => { OA_CFG.snd = $('newsSnd').checked; localStorage.setItem('irb_oa', JSON.stringify(OA_CFG)); };
+setInterval(() => { if (NEWS_STATE.list.length) { renderTicker(); renderNewsTable(); checkNews(); } }, 30000);
+setInterval(fetchNews, 5 * 60000);
+oaFill();
+
+/* ---------- file upload ---------- */
+$('fileBtn').onclick = () => $('files').click();
+$('files').onchange = async e => {
+  const list = [...e.target.files];
+  const infos = [];
+  for (const f of list) {
+    try {
+      const j = JSON.parse(await f.text());
+      APP.files[f.name] = j;
+      infos.push(f.name);
+      if (f.name === 'ind-params.json') { APP.params = j; }
+    } catch (err) { infos.push(`${f.name} (gagal: ${err.message})`); }
+  }
+  $('fileInfo').textContent = '📄 ' + infos.join(', ');
+  if (infos.some(x => x.startsWith('ind-')) && !infos.includes('ind-params.json')) $('src').value = 'file';
+  // jika TF aktif tersedia di file, langsung analisa ulang
+  const hasTf = APP.tfs.some(tf => Object.keys(APP.files).some(k => k === `ind-${tf}.json`));
+  if (hasTf) { $('src').value = 'file'; APP.srcMode = 'file'; run(); }
+};
+
+/* ════════════════ RENDER ════════════════ */
+function chip(txt, cls) { return `<span class="chip ${cls}">${esc(txt)}</span>`; }
+function famChip(name, v) {
+  const cls = v === 1 ? 'g' : (v === -1 ? 'r' : 'm');
+  const col = v === 1 ? 'var(--g)' : (v === -1 ? 'var(--r)' : 'var(--mut)');
+  return `<span class="famchip" title="suara keluarga ${name}"><i class="fp" style="background:${col}"></i>${esc(name)} <b class="${cls}">${sv(v)}</b></span>`;
+}
+function kv(k, v, cls = '') { return `<div class="kv"><span class="m">${esc(k)}</span><b class="${cls}">${v}</b></div>`; }
+
+/* ════════════════ MESIN SINYAL — Entry/SL/TP/RR (gaya DTS Watchdog: zona + konfluensi + RR gate) ════════════════
+   Mesin ini lapisan PRESENTASI (seperti kartu-kartu lain): engine ind-retail.py v4 tetap port 1:1 murni analisa.
+   Zona entry = FVG belum mitigasi & swing terdekat dari engine; arah harus searah bias struktur / voting total;
+   SL = balik zona ± 0.3×ATR (paling protektif, gaya DTS); TP = RR × jarak (gate RR di ⚙). Bukan nasihat keuangan. */
+const SIG_CFG = { rr: 2.0, minAtr: 0.6, useTrend: true, useVotes: true, sound: true, lot: 0.01 };
+function sigLoad() {
+  try {
+    const s = JSON.parse(localStorage.getItem('irb_sig') || '{}');
+    Object.assign(SIG_CFG, s);
+    const m = (id, k) => { const e = $(id); if (e) e.value = SIG_CFG[k]; };
+    m('sgRR', 'rr'); m('sgLot', 'lot');
+    const c = (id, k) => { const e = $(id); if (e) e.checked = SIG_CFG[k] !== false; };
+    c('sgTrend', 'useTrend'); c('sgVotes', 'useVotes'); c('sgSnd', 'sound');
+  } catch (e) {}
+}
+function sigSave() {
+  const n = (id, k) => { const e = $(id); if (e) { const v = +e.value; if (v > 0) SIG_CFG[k] = v; } };
+  n('sgRR', 'rr'); n('sgLot', 'lot');
+  const b = (id, k) => { const e = $(id); if (e) SIG_CFG[k] = e.checked; };
+  b('sgTrend', 'useTrend'); b('sgVotes', 'useVotes'); b('sgSnd', 'sound');
+  try { localStorage.setItem('irb_sig', JSON.stringify(SIG_CFG)); } catch (e) {}
+}
+function sigBeep(dir) { // BUY: nada naik; SELL: nada turun (WebAudio, tanpa file)
+  try {
+    if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const seq = dir === 'BUY' ? [600, 800, 1000] : [1000, 800, 600], t0 = AC.currentTime;
+    seq.forEach((hz, i) => {
+      const o = AC.createOscillator(), g = AC.createGain(), a = t0 + i * 0.16;
+      o.type = 'sine'; o.frequency.value = hz;
+      g.gain.setValueAtTime(0.0001, a);
+      g.gain.exponentialRampToValueAtTime(0.25, a + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, a + 0.15);
+      o.connect(g); g.connect(AC.destination); o.start(a); o.stop(a + 0.16);
+    });
+  } catch (e) {}
+}
+function sigSpeak(dir) { // ucapkan arah (SpeechSynthesis, bila tersedia)
+  try {
+    if (!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(dir === 'BUY' ? 'Sinyal beli' : 'Sinyal jual');
+    u.lang = 'id-ID'; u.rate = 1;
+    window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function nearestLvl(R, target) { // level kunci terdekat ke zona (konfluensi)
+  const S = R.struct || {}, L = R.levels || {};
+  const lv = [];
+  for (const nm of ['PDH', 'PDL', 'PWH', 'PWL', 'PMH', 'PML']) if (L[nm] != null) lv.push([nm, L[nm]]);
+  if (L.pivots) for (const nm of ['P', 'R1', 'S1']) if (L.pivots[nm] != null) lv.push([nm, L.pivots[nm]]);
+  if (S.dealing_range) lv.push(['EQ range', S.dealing_range.eq]);
+  if (!lv.length) return null;
+  lv.sort((x, y) => Math.abs(x[1] - target) - Math.abs(y[1] - target));
+  const d = Math.abs(lv[0][1] - target);
+  return d < 0.5 * (R.atr || 1) ? lv[0] : null;
+}
+function buildSignal(R, cs) { // R = analyze() hasil TF aktif; cs = candle TF aktif
+  const out = { state: 'NO-DATA', side: null, entry: null, sl: null, tp: null, rr: null, zone: null, why: [], no: [] };
+  if (!R || !R.atr || !cs || cs.length < 60) { out.no.push('data kurang (<60 bar)'); return out; }
+  const px = R.price, a = R.atr, S = R.struct || {}, v = R.votes || {};
+  const dirWanted = v.total >= 2 ? 1 : (v.total <= -2 ? -1 : 0); // voting total mengarah
+  // kandidat zona: FVG belum mitigasi (engine) + zona swing terdekat
+  const cand = [];
+  for (const f of (S.fvg || [])) cand.push({ kind: 'FVG', dir: f.dir, top: f.top, bot: f.bot, i: f.i, partial: f.partial });
+  for (const s of (S.swings || []).slice(-8)) cand.push({ kind: 'SWING ' + (s[3] === 'H' ? 'LOW→zona supply' : 'HIGH→zona demand'), dir: s[3] === 'H' ? -1 : 1, top: s[2] + 0.15 * a, bot: s[2] - 0.15 * a, i: s[1], partial: false });
+  // saring: arah searah konteks, harga belum melewati zona, jarak wajar, SL cukup tebal
+  let best = null;
+  const seen = new Set();
+  for (const z of cand) {
+    const zk = z.kind + '|' + z.top.toFixed(1) + '|' + z.bot.toFixed(1);
+    if (seen.has(zk)) continue; seen.add(zk);
+    if (SIG_CFG.useTrend) {
+      if (z.dir > 0 && S.bias === -1) continue;               // BUY tapi struktur bearish
+      if (z.dir < 0 && S.bias === 1) continue;                // SELL tapi struktur bullish
+    }
+    if (SIG_CFG.useVotes) {
+      if (z.dir > 0 && dirWanted === -1) continue;
+      if (z.dir < 0 && dirWanted === 1) continue;
+    }
+    const mid = (z.top + z.bot) / 2, dist = Math.abs(px - mid);
+    if (dist > 4 * a) continue;                                // terlalu jauh dari harga
+    if (z.dir > 0 && px < z.bot) continue;                     // harga sudah menembus bawah zona BUY
+    if (z.dir < 0 && px > z.top) continue;                     // harga sudah menembus atas zona SELL
+    const risk = z.dir > 0 ? px - (z.bot - 0.3 * a) : (z.top + 0.3 * a) - px;
+    if (risk < SIG_CFG.minAtr * a) continue;                   // SL terlalu tipis
+    const score = (z.kind === 'FVG' ? 2 : 1) + (z.partial ? 0 : 1);
+    const near = nearestLvl(R, mid);                           // konfluensi level kunci
+    const sc = score + (near ? 2 : 0);
+    if (!best || sc > best.sc) best = { z, risk, sc, near };
+  }
+  if (!best) { out.state = 'MENUNGGU'; out.no = [...new Set(out.no)]; if (!out.no.length) out.no.push('belum ada zona valid searah konteks (bias struktur ' + (S.bias === 1 ? 'bullish' : S.bias === -1 ? 'bearish' : 'netral') + ', voting ' + v.total + '/5)'); return out; }
+  const z = best.z, entry = px;
+  const sl = z.dir > 0 ? z.bot - 0.3 * a : z.top + 0.3 * a;    // balik zona ± 0.3×ATR (paling protektif)
+  const tp = z.dir > 0 ? entry + SIG_CFG.rr * (entry - sl) : entry - SIG_CFG.rr * (sl - entry);
+  out.state = 'VALID'; out.side = z.dir > 0 ? 'BUY' : 'SELL';
+  out.entry = entry; out.sl = sl; out.tp = tp;
+  out.rr = SIG_CFG.rr; out.zone = { kind: z.kind, top: z.top, bot: z.bot, partial: z.partial };
+  out.pips = { risk: Math.abs(entry - sl), reward: Math.abs(tp - entry) };
+  out.why = [];
+  out.why.push('zona ' + z.kind + (z.partial ? ' (parsial)' : '') + ' ' + fmt(z.bot) + '–' + fmt(z.top) + ' belum mitigasi');
+  if (S.bias) out.why.push('bias struktur ' + (S.bias === 1 ? 'bullish (BOS ↑)' : 'bearish (BOS ↓)'));
+  if (dirWanted) out.why.push('voting total ' + v.total + '/5 (' + v.label + ')');
+  const rg = R.regime || {};
+  if (rg.kind) out.why.push('regime ' + rg.kind + (rg.dir ? (rg.dir === 1 ? ' NAIK' : ' TURUN') : ''));
+  if (best.near) out.why.push('konfluensi level ' + best.near[0] + ' ' + fmt(best.near[1]));
+  return out;
+}
+let _lastSigKey = '';
+function renderSignal() { // kartu SINYAL — status, Entry/SL/TP/RR, alasan
+  const R = APP.results[APP.activeTf], cs = APP.candles[APP.activeTf];
+  const sg = buildSignal(R, cs);
+  APP.signal = sg;
+  const el = $('sigBody'); if (!el) return;
+  const cls = sg.state === 'VALID' ? 'g' : (sg.state === 'MENUNGGU' ? 'y' : 'm');
+  let h = `<div class="row"><b class="${cls}" style="font-size:17px;letter-spacing:1px">${sg.state === 'VALID' ? '✅ SINYAL VALID · ' + sg.side : (sg.state === 'MENUNGGU' ? '⏳ MENUNGGU SETUP' : '— NO DATA')}</b>
+    <span class="sm m">TF ${esc(APP.activeTf)} · RR gate ${fmt(SIG_CFG.rr, 1)} · lot ${fmt(SIG_CFG.lot, 2)}</span></div>`;
+  if (sg.state === 'VALID') {
+    h += `<div class="sigbox" data-side="${sg.side}">
+      <div class="sigrow"><span>arah</span><b class="${sg.side === 'BUY' ? 'g' : 'r'}">${sg.side === 'BUY' ? '▲ BUY' : '▼ SELL'}</b></div>
+      <div class="sigrow"><span>entry (market)</span><b>${fmt(sg.entry)}</b></div>
+      <div class="sigrow"><span>stop loss</span><b class="r">${fmt(sg.sl)}</b></div>
+      <div class="sigrow"><span>take profit</span><b class="g">${fmt(sg.tp)}</b></div>
+      <div class="sigrow"><span>risk / reward</span><b>${fmt(sg.pips.risk, 1)} / ${fmt(sg.pips.reward, 1)} pts · RR 1:${fmt(sg.rr, 1)}</b></div>
+      <div class="sigrow"><span>zona</span><b>${esc(sg.zone.kind)} ${fmt(sg.zone.bot)}–${fmt(sg.zone.top)}${sg.zone.partial ? ' (parsial)' : ''}</b></div>
+    </div><div style="margin-top:6px">`;
+    for (const w of sg.why) h += `<div class="sm">• ${esc(w)}</div>`;
+    h += `</div><div class="sm m" style="margin-top:4px">SL = balik zona ± 0.3×ATR · TP = RR × jarak SL · lot referensi ${fmt(SIG_CFG.lot, 2)} (atur di ⚙). Halaman tidak mengirim order ke broker.</div>`;
+    const key = sg.side + '|' + fmt(sg.entry) + '|' + fmt(sg.sl); // alert hanya saat sinyal BARU
+    if (SIG_CFG.sound && key !== _lastSigKey) { sigBeep(sg.side); sigSpeak(sg.side); }
+    _lastSigKey = key;
+  } else {
+    for (const n of (sg.no || []).slice(0, 4)) h += `<div class="sm m">• ${esc(n)}</div>`;
+    if (sg.state === 'MENUNGGU') h += `<div class="sm m" style="margin-top:4px">Mesin mencari zona FVG/swing searah konteks dengan RR ≥ ${fmt(SIG_CFG.rr, 1)}. Kartu ini bukan nasihat keuangan.</div>`;
+  }
+  el.innerHTML = h;
+}
+
+function renderAll() {
+  const R = APP.results[APP.activeTf];
+  fillTf();
+  if (!R) return;
+  // hero
+  $('price').textContent = fmt(R.price);
+  const _dt = R.t ? parseT(R.t) : null;
+  const dt = _dt && !isNaN(_dt.getTime()) ? _dt : null;
+  let meta = `${R.tf} · bar terakhir ${dt ? dt.toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : 'n/a'} · ${R.bars} bar tutup · ATR14 ${fmt(R.atr)}`;
+  if (isOandaTier() && APP.oaPx)
+    meta += ` · <span class="mono">OANDA bid ${fmt(APP.oaPx.bid)} / ask ${fmt(APP.oaPx.ask)}</span>`;
+  if (newsNear()) meta += ` · <span class="y b">⚠ HIGH impact USD ±10 menit</span>`;
+  if (APP.oaWarn) meta += `<br><span class="y">⚠ ${esc(APP.oaWarn)}</span>`;
+  $('priceMeta').innerHTML = meta;
+  const v = R.votes;
+  $('voteLabel').textContent = v.label;
+  $('voteLabel').className = 'vlabel ' + v.label;
+  $('famStrip').innerHTML = Object.entries(v.families).map(([k, x]) => famChip(k, x)).join('')
+    + `<span class="famchip" style="border-color:var(--acc)"><b>${v.total >= 0 ? '+' : ''}${v.total}/5</b> · ${v.label}</span>`;
+  renderRegime(R); renderTrend(R); renderMom(R); renderVol(R); renderStruct(R); renderLoc(R);
+  renderLvl(R); renderOrb(R); renderVp(R); renderCvd(R); renderCandles(R); renderRetest(R);
+  renderMtf(); renderWarn(R); renderFull(R); renderSignal();
+  drawChart();
+}
+
+function renderRegime(R) {
+  const g = R.regime || {};
+  const arah = g.dir === 1 ? ' NAIK' : (g.dir === -1 ? ' TURUN' : '');
+  const kindCls = g.kind === 'TREND' ? 'g' : (g.kind === 'RANGE' ? 'c' : 'y');
+  let h = `<div class="row"><b class="${kindCls}" style="font-size:16px">${esc(g.kind || 'n/a')}${esc(arah)}</b>
+    <span class="sm m">mode ${esc(g.mode || 'fixed')}</span></div>`;
+  h += kv('ADX / CHOP / ER', `${fmt(g.adx, 1)} / ${fmt(g.chop, 1)} / ${fmt(g.er)}`);
+  h += kv('Volatilitas', `${esc(g.vol || 'n/a')} (ATR ${fmt(g.atr)}, persentil ${fmt(g.atr_pctile, 0)})`);
+  h += kv('Squeeze BBTM', g.squeeze ? 'ON — volatilitas terkompresi' : 'off', g.squeeze ? 'y' : '');
+  h += kv('Hurst ~', fmt(g.hurst), (g.hurst || 0) > 0.55 ? 'g' : '');
+  h += `<div class="sm m" style="margin-top:4px">TREND: ADX ≥ ${g.mode === 'adaptive' ? 'skor adaptif' : '25'} &amp; CHOP &lt; 55 · RANGE: ADX &lt; 20 &amp; CHOP ≥ 55</div>`;
+  $('regimeBody').innerHTML = h;
+}
+
+function renderTrend(R) {
+  const t = R.trend || {};
+  let h = `<div class="row"><b class="${t.vote === 1 ? 'g' : (t.vote === -1 ? 'r' : 'y')}">suara ${sv(t.vote)}</b>
+    <span class="sm m">skor ${fmt(t.score)}</span></div>`;
+  h += '<div class="tw"><table><tr><th>anggota</th><th class="num">suara</th></tr>';
+  for (const [k, x] of Object.entries(t.members || {})) {
+    if (x === null || x === undefined) continue;
+    h += `<tr><td>${esc(k)}</td><td class="num ${x === 1 ? 'g' : (x === -1 ? 'r' : 'm')}">${sv(x)}</td></tr>`;
+  }
+  h += '</table></div>';
+  const ik = t.ichimoku || {};
+  h += kv('EMA 20/50/200', `${fmt(t.ema20)} / ${fmt(t.ema50)} / ${fmt(t.ema200)}`);
+  h += kv('Supertrend', fmt(t.supertrend));
+  if (ik.cloud_now) h += kv('Ichimoku awan berlaku', `${fmt(ik.cloud_now[0])} – ${fmt(ik.cloud_now[1])}`);
+  if (ik.cloud_ahead) h += kv('awan depan (26 bar)', `${fmt(ik.cloud_ahead[0])} – ${fmt(ik.cloud_ahead[1])}`);
+  h += kv('ADX (+DI/−DI)', `${fmt(t.adx, 1)} (${fmt(t.pdi, 1)}/${fmt(t.mdi, 1)})`);
+  $('trendBody').innerHTML = h;
+}
+
+function renderMom(R) {
+  const m = R.momentum || {};
+  let h = `<div class="row"><b class="${m.vote === 1 ? 'g' : (m.vote === -1 ? 'r' : 'y')}">suara ${sv(m.vote)}</b>
+    <span class="sm m">skor ${fmt(m.score)}</span></div>`;
+  h += '<div class="tw"><table><tr><th>anggota</th><th class="num">suara</th></tr>';
+  for (const [k, x] of Object.entries(m.members || {})) {
+    if (x === null || x === undefined) continue;
+    h += `<tr><td>${esc(k)}</td><td class="num ${x === 1 ? 'g' : (x === -1 ? 'r' : 'm')}">${sv(x)}</td></tr>`;
+  }
+  h += '</table></div>';
+  const rz = m.rsi_zone === 'OVERBOUGHT' ? 'r' : (m.rsi_zone === 'OVERSOLD' ? 'g' : '');
+  h += kv('RSI 14', `${fmt(m.rsi, 1)} <span class="${rz}">(${esc(m.rsi_zone || '')})</span>`);
+  h += kv('MACD hist', fmt(m.macd_hist), (m.macd_hist || 0) > 0 ? 'g' : 'r');
+  h += kv('CCI / AO', `${fmt(m.cci, 0)} / ${fmt(m.ao)}`);
+  h += `<div class="sm m" style="margin-top:4px">OB/OS tidak ikut voting.</div>`;
+  $('momBody').innerHTML = h;
+}
+
+function renderVol(R) {
+  const vo = R.volume || {};
+  let h = '';
+  if (!Object.keys(vo.members || {}).length) { $('volBody').innerHTML = '<div class="warnbox">volume kosong</div>'; return; }
+  h += `<div class="row"><b class="${vo.vote === 1 ? 'g' : (vo.vote === -1 ? 'r' : 'y')}">suara ${sv(vo.vote)}</b>
+    <span class="sm m">skor ${fmt(vo.score)}</span></div>`;
+  h += '<div class="tw"><table><tr><th>anggota</th><th class="num">suara</th></tr>';
+  for (const [k, x] of Object.entries(vo.members || {})) {
+    if (x === null || x === undefined) continue;
+    h += `<tr><td>${esc(k)}</td><td class="num ${x === 1 ? 'g' : (x === -1 ? 'r' : 'm')}">${sv(x)}</td></tr>`;
+  }
+  h += '</table></div>';
+  h += kv('CMF 20', fmt(vo.cmf, 3), (vo.cmf || 0) > 0 ? 'g' : 'r');
+  h += kv('MFI 14', fmt(vo.mfi, 1));
+  h += kv('RVOL 20', fmt(vo.rvol) + '×', (vo.rvol || 0) > 1.2 ? 'y' : '');
+  h += `<div class="sm m" style="margin-top:4px">TICK volume = proxy, bukan volume transaksi.</div>`;
+  $('volBody').innerHTML = h;
+}
+
+function renderStruct(R) {
+  const S = R.struct || {};
+  if (S.vote === undefined) { $('structBody').innerHTML = '<div class="warnbox">struktur tidak dihitung (data kurang)</div>'; return; }
+  const biasTxt = S.bias === 1 ? 'BULL' : (S.bias === -1 ? 'BEAR' : 'netral');
+  let h = `<div class="row"><b class="${S.vote === 1 ? 'g' : (S.vote === -1 ? 'r' : 'y')}">suara ${sv(S.vote)}</b>
+    <span class="sm">bias <b class="${S.bias === 1 ? 'g' : (S.bias === -1 ? 'r' : 'm')}">${biasTxt}</b></span></div>`;
+  h += kv('urutan swing', (S.seq || []).join(' ') || '-');
+  const ev = S.last_event;
+  if (ev) {
+    const cls = ev.dir === 1 ? 'g' : 'r';
+    h += kv('event terakhir', `<span class="${cls}">${esc(ev.type)} ${ev.dir === 1 ? 'naik' : 'turun'} @ ${fmt(ev.level)}</span> <span class="m">(${ev.bars_ago} bar lalu)</span>`);
+  }
+  h += kv('swing H/L belum tembus', `${fmt(S.unbroken_high)} / ${fmt(S.unbroken_low)}`);
+  const dr = S.dealing_range;
+  if (dr) h += kv('dealing range', `${fmt(dr.low)}–${fmt(dr.high)} · <span class="${dr.pos > 0.5 ? 'y' : 'c'}">${esc(dr.zone)} (${Math.round(dr.pos * 100)}%)</span>`);
+  if ((S.sweeps || []).length) {
+    h += '<div style="margin-top:6px" class="sm"><b>sweep likuiditas:</b> ' + S.sweeps.map(s =>
+      `<span class="${s.type === 'sweep_high' ? 'r' : 'g'}">${s.type === 'sweep_high' ? 'high' : 'low'} @ ${fmt(s.level)}</span> <span class="m">(${s.bars_ago} bar lalu)</span>`).join(' · ') + '</div>';
+  }
+  if ((S.equal?.EQH || []).length || (S.equal?.EQL || []).length) {
+    h += kv('EQH', (S.equal.EQH || []).map(x => fmt(x)).join(', ') || '-');
+    h += kv('EQL', (S.equal.EQL || []).map(x => fmt(x)).join(', ') || '-');
+  }
+  if ((S.fvg || []).length) {
+    h += '<div style="margin-top:6px" class="sm"><b>FVG belum termitigasi:</b> ' + S.fvg.map(z =>
+      `<span class="${z.dir === 1 ? 'g' : 'r'}">${z.dir === 1 ? 'bull' : 'bear'} ${fmt(z.bot)}–${fmt(z.top)}${z.partial ? ' (parsial)' : ''}</span>`).join(' · ') + '</div>';
+  }
+  if ((S.displacement || []).length) {
+    h += '<div style="margin-top:4px" class="sm"><b>displacement:</b> ' + S.displacement.map(d =>
+      `<span class="${d.dir === 1 ? 'g' : 'r'}">${d.dir === 1 ? 'naik' : 'turun'} ${d.size_atr.toFixed(1)}×ATR</span> <span class="m">(${d.bars_ago} bar lalu)</span>`).join(' · ') + '</div>';
+  }
+  $('structBody').innerHTML = h;
+}
+
+function renderLoc(R) {
+  const L = R.location || {};
+  let h = `<div class="row"><b class="${L.vote === 1 ? 'g' : (L.vote === -1 ? 'r' : 'y')}">suara ${sv(L.vote)}</b>
+    <span class="sm m">skor ${fmt(L.score)}</span></div>`;
+  h += '<div class="tw"><table><tr><th>anggota</th><th class="num">suara</th></tr>';
+  for (const [k, x] of Object.entries(L.members || {})) {
+    if (x === null || x === undefined) continue;
+    h += `<tr><td>${esc(k)}</td><td class="num ${x === 1 ? 'g' : (x === -1 ? 'r' : 'm')}">${sv(x)}</td></tr>`;
+  }
+  h += '</table></div>';
+  $('locBody').innerHTML = h;
+}
+
+function renderLvl(R) {
+  const L = R.levels || {};
+  const names = [['DO', 'Open hari ini'], ['DH', 'High hari ini'], ['DL', 'Low hari ini'],
+    ['PDH', 'PDH'], ['PDL', 'PDL'], ['PDC', 'PDC kemarin'], ['PWH', 'PWH'], ['PWL', 'PWL'], ['WH', 'High minggu ini'], ['WL', 'Low minggu ini'], ['PMH', 'PMH'], ['PML', 'PML']];
+  let h = `<div class="sm m" style="margin-bottom:4px">sumber: ${esc(L.source || '-')}</div>`;
+  h += '<div class="tw"><table><tr><th>level</th><th class="num">harga</th><th class="num">jarak</th></tr>';
+  const price = R.price, at = R.atr || 1;
+  for (const [k, label] of names) {
+    if (L[k] === undefined || L[k] === null) continue;
+    const d = (L[k] - price) / at;
+    h += `<tr><td>${esc(label)}</td><td class="num">${fmt(L[k])}</td><td class="num ${Math.abs(d) < 0.5 ? 'y' : 'm'}">${d >= 0 ? '+' : ''}${d.toFixed(2)} ATR</td></tr>`;
+  }
+  h += '</table></div>';
+  const pv = L.pivots;
+  if (pv) {
+    h += `<details class="sec"><summary>Pivot harian (dari kemarin) &amp; CPR</summary><div class="tw"><table>
+      <tr><th>level</th><th class="num">harga</th></tr>
+      <tr><td>R3</td><td class="num">${fmt(pv.R3)}</td></tr><tr><td>R2</td><td class="num">${fmt(pv.R2)}</td></tr>
+      <tr><td>R1</td><td class="num">${fmt(pv.R1)}</td></tr><tr><td class="b">P</td><td class="num b">${fmt(pv.P)}</td></tr>
+      <tr><td>S1</td><td class="num">${fmt(pv.S1)}</td></tr><tr><td>S2</td><td class="num">${fmt(pv.S2)}</td></tr>
+      <tr><td>S3</td><td class="num">${fmt(pv.S3)}</td></tr>
+      <tr><td>CPR</td><td class="num">${fmt(pv.CPR_lo)}–${fmt(pv.CPR_hi)}</td></tr>
+      <tr><td>Cam R3 / S3</td><td class="num">${fmt(pv.Camarilla.R3)} / ${fmt(pv.Camarilla.S3)}</td></tr>
+      </table></div></details>`;
+  }
+  (L.notes || []).forEach(n => h += `<div class="warnbox">! ${esc(n)}</div>`);
+  $('lvlBody').innerHTML = h;
+}
+
+function renderOrb(R) {
+  const w = R.vwap || {};
+  let h = kv('VWAP sesi (17:00 NY)', fmt(w.day));
+  h += kv('pita ±1σ', `${fmt(w.day_dn1)} – ${fmt(w.day_up1)}`);
+  h += kv('pita ±2σ', `${fmt(w.day_dn2)} – ${fmt(w.day_up2)}`);
+  h += kv('VWAP minggu', fmt(w.week));
+  h += `<div class="sm m">bobot = tick volume (proxy)</div>`;
+  const orb = R.orb || {};
+  for (const s of ['asia', 'london', 'ny']) {
+    const o = orb[s];
+    if (!o) continue;
+    const st = o.status.includes('BREAK') ? (o.status.includes('ATAS') ? 'g' : 'r') : 'm';
+    h += kv(`ORB ${s} (${o.minutes}m)`, `${fmt(o.L)}–${fmt(o.H)} · <span class="${st}">${esc(o.status)}</span>`);
+  }
+  $('orbBody').innerHTML = h;
+}
+
+function renderVp(R) {
+  const vp = R.vprofile;
+  if (!vp) { $('vpBody').innerHTML = '<div class="warnbox">volume profile tidak dihitung</div>'; return; }
+  let h = '';
+  for (const [tag, key] of [['Sesi ini', 'day'], ['Kemarin', 'prev_day'], ['Komposit (300 bar)', 'composite']]) {
+    const p = vp[key];
+    if (!p) continue;
+    const posCls = p.pos === 'DI ATAS VA' ? 'g' : (p.pos === 'DI BAWAH VA' ? 'r' : 'c');
+    h += `<div style="margin-top:6px"><b>${tag}</b> <span class="m">(${p.bars} bar${p.naked ? ' · naked POC' : ''})</span></div>`;
+    h += kv('POC / VAH / VAL', `${fmt(p.poc)} / ${fmt(p.vah)} / ${fmt(p.val)}`);
+    h += kv('posisi harga', `<span class="${posCls}">${esc(p.pos)}</span> <span class="m">(${fmt(p.dist_poc_atr, 2)} ATR dari POC)</span>`);
+    if ((p.hvn || []).length) h += kv('HVN', p.hvn.map(x => fmt(x)).join(', '));
+    if ((p.lvn || []).length) h += kv('LVN', p.lvn.map(x => fmt(x)).join(', '));
+  }
+  h += `<div class="sm m" style="margin-top:4px">${esc(vp.note || '')}</div>`;
+  $('vpBody').innerHTML = h;
+}
+
+function renderCvd(R) {
+  const cv = R.cvd;
+  if (!cv) { $('cvdBody').innerHTML = '<div class="warnbox">volume kosong — CVD tidak dihitung</div>'; return; }
+  let h = `<div class="sm ${cv.real ? 'g' : 'y'}" style="margin-bottom:4px">${cv.real ? '● delta ASLI (taker-buy Binance)' : '● ESTIMASI (close location × tick volume)'}</div>`;
+  h += kv('bar terpakai', cv.bars_used);
+  h += kv('delta bar terakhir', `${fmt(cv.delta_last, 1)} (${fmt(cv.delta_pct_last, 0)}%)`, (cv.delta_pct_last || 0) >= 0 ? 'g' : 'r');
+  h += kv('rata-rata 10 bar', fmt(cv.delta_pct_10, 0) + '%');
+  h += kv('CVD hari ini', fmt(cv.cvd_day, 0), (cv.cvd_day || 0) >= 0 ? 'g' : 'r');
+  h += kv('slope CVD (20)', fmt(cv.slope, 2), (cv.slope || 0) > 0 ? 'g' : 'r');
+  if ((cv.div || []).length) cv.div.forEach(d => h += `<div class="warnbox">divergensi: ${esc(d)}</div>`);
+  $('cvdBody').innerHTML = h;
+}
+
+function renderCandles(R) {
+  const cd = R.candles || [];
+  if (!cd.length) { $('candleBody').innerHTML = '<div class="notebox">tidak ada pola pada bar tutup terakhir</div>'; return; }
+  let h = '';
+  for (const c of cd) {
+    const ctxCls = c.ctx === 'valid' ? 'ok' : (c.ctx === 'lemah' ? 'wr' : (c.ctx === 'tanpa konteks' ? 'no' : 'nu'));
+    const biasCls = c.bias === 1 ? 'g' : (c.bias === -1 ? 'r' : 'm');
+    h += `<div class="patrow"><b class="${biasCls}">${esc(c.name)}</b> ${chip(c.ctx, ctxCls)}`
+      + (c.near ? ` <span class="sm m">dekat ${esc(c.near)}</span>` : '')
+      + `</div>`;
+  }
+  h += `<div class="sm m" style="margin-top:4px">valid = pola + gerak sebelumnya + lokasi searah · lemah = salah satu · dinilai pada bar TUTUP terakhir.</div>`;
+  $('candleBody').innerHTML = h;
+}
+
+function renderRetest(R) {
+  const rt = R.retest;
+  if (rt === null || rt === undefined) { $('retestBody').innerHTML = '<div class="warnbox">tidak dihitung</div>'; return; }
+  if (!rt.length) { $('retestBody').innerHTML = '<div class="notebox">tidak ada breakout-retest aktif (30 bar terakhir)</div>'; return; }
+  let h = '<div class="tw"><table><tr><th>level</th><th class="num">harga</th><th>arah</th><th>status</th></tr>';
+  for (const x of rt) {
+    const konf = x.state.includes('TERKONFIRMASI') || x.state.includes('searah');
+    h += `<tr><td>${esc(x.level)}</td><td class="num">${fmt(x.price)}</td>
+      <td class="${x.dir === 1 ? 'g' : 'r'}">${x.dir === 1 ? 'naik' : 'turun'}</td>
+      <td class="${konf ? 'g' : ''}">${esc(x.state)} <span class="m">(${x.break_ago} bar lalu)</span></td></tr>`;
+  }
+  h += '</table></div>';
+  h += `<div class="sm m" style="margin-top:4px">close menembus level ≥ 0.15 ATR → menjauh ≥ 0.5 ATR → kembali menyentuh zona 0.3 ATR.</div>`;
+  $('retestBody').innerHTML = h;
+}
+
+function renderMtf() {
+  const tfs = APP.tfs.filter(t => APP.results[t]);
+  if (tfs.length < 2) { $('mtfCard').style.display = 'none'; return; }
+  $('mtfCard').style.display = '';
+  let h = '<tr><th>TF</th><th>regime</th><th class="num">trend</th><th class="num">mom</th><th class="num">vol*</th><th class="num">struktur</th><th class="num">lokasi</th><th class="num">total</th><th>label</th><th>harga</th></tr>';
+  for (const tf of tfs) {
+    const R = APP.results[tf], g = R.regime || {}, fm = R.votes.families;
+    const arah = g.dir === 1 ? ' ↑' : (g.dir === -1 ? ' ↓' : '');
+    const lab = R.votes.label;
+    h += `<tr style="cursor:pointer" data-tf="${tf}"><td class="b mono">${tf}</td><td>${esc(g.kind || 'n/a')}${arah}</td>`
+      + ['trend', 'momentum', 'volume', 'structure', 'location'].map(k =>
+        `<td class="num ${fm[k] === 1 ? 'g' : (fm[k] === -1 ? 'r' : 'm')}">${sv(fm[k])}</td>`).join('')
+      + `<td class="num b ${R.votes.total >= 3 ? 'g' : (R.votes.total <= -3 ? 'r' : 'y')}">${R.votes.total >= 0 ? '+' : ''}${R.votes.total}</td>
+         <td class="b ${lab === 'BULL' ? 'g' : (lab === 'BEAR' ? 'r' : 'y')}">${lab}</td><td class="num mono">${fmt(R.price)}</td></tr>`;
+  }
+  $('mtfTbl').innerHTML = h;
+  $('mtfTbl').querySelectorAll('tr[data-tf]').forEach(tr => tr.onclick = () => { APP.activeTf = tr.dataset.tf; renderAll(); });
+  const tots = tfs.map(t => APP.results[t].votes.total);
+  const sg = new Set(tots.map(x => x > 0 ? 1 : (x < 0 ? -1 : 0)));
+  $('mtfNote').innerHTML = '* volume = tick proxy. ' + (newsNear() ? '<span class="y">⚠ HIGH impact USD dalam ±10 menit — berita dulu, teknikal belakangan.</span> '
+    : '') + (sg.size === 1 && !sg.has(0)
+    ? '<span class="g">Semua TF searah.</span>'
+    : '<span class="y">TF TIDAK searah — hati-hati (konflik antar-timeframe).</span>');
+}
+
+function renderWarn(R) {
+  const w = R.warn || [], n = R.notes || [];
+  if (!w.length && !n.length) { $('warnCard').style.display = 'none'; return; }
+  $('warnCard').style.display = '';
+  let h = '';
+  n.forEach(x => h += `<div class="notebox">ℹ ${esc(x)}</div>`);
+  w.forEach(x => h += `<div class="warnbox">⚠ ${esc(x)}</div>`);
+  $('warnBody').innerHTML = h;
+}
+
+/* ---------- detail mentah (setara --full) ---------- */
+function renderFull(R) {
+  const cs = APP.candles[APP.activeTf];
+  if (!cs) return;
+  const cl = closes(cs);
+  const e = n => fmt(last(ema(cl, n)));
+  const ax = adx(cs), vp = vortex(cs), au = aroon(cs), [jaw, teeth, lips] = alligator(cs);
+  let h = '';
+  h += `[1 TREND] SMA20 ${fmt(last(sma(cl, 20)))} EMA20 ${e(20)} EMA50 ${e(50)} EMA200 ${e(200)} | WMA20 ${fmt(last(wma(cl, 20)))} HMA16 ${fmt(last(hma(cl, 16)))} KAMA ${fmt(last(kama(cl)))} DEMA20 ${fmt(last(dema(cl, 20)))} TEMA20 ${fmt(last(tema(cl, 20)))} ALMA9 ${fmt(last(alma(cl)))} VWMA20 ${fmt(last(vwma(cl, vols(cs), 20)))}\n`;
+  h += `  ADX ${fmt(last(ax[0]))} +DI ${fmt(last(ax[1]))} -DI ${fmt(last(ax[2]))} | Vortex +${fmt(vp[0])} -${fmt(vp[1])} | TRIX ${fmt(last(trix(cl)))} | Aroon up ${fmt(last(au[0]), 0)} dn ${fmt(last(au[1]), 0)} | Alligator ${fmt(last(jaw))}/${fmt(last(teeth))}/${fmt(last(lips))}\n`;
+  const r = last(rsi(cl)), [k_, d_] = stoch(cs), sr = stochRsi(cs)[0], [, , mh] = macd(cl);
+  h += `[2 MOMENTUM] RSI ${fmt(r)} | Stoch ${fmt(last(k_))}/${fmt(last(d_))} | StochRSI ${fmt(last(sr))} | MACD hist ${fmt(last(mh))} | CCI ${fmt(last(cci(cs)))} | W%R ${fmt(last(williamsR(cs)))} | ROC12 ${fmt(last(roc(cl)))} | UO ${fmt(last(ultimateOsc(cs)))} | AO ${fmt(last(awesomeOsc(cs)))} | AC ${fmt(last(acceleratorOsc(cs)))}\n`;
+  h += `  RVI ${fmt(last(rvi(cs)))} TSI ${fmt(last(tsi(cl)))} Fisher ${fmt(last(fisher(cs)))} SMI ${fmt(last(smi(cs)))} CMO ${fmt(last(cmo(cl)))} ConnorsRSI ${fmt(last(connorsRsi(cs)))} QQE-RSI ${fmt(last(qqe(cs)[0]))}\n`;
+  const [bu, bm, bl, pb, bw] = bb(cl, 20, 2.0), [ku, km, kl] = keltner(cs), [du, dm_, dl] = donchian(cs), [sq, sqm] = ttmSqueeze(cs);
+  h += `[3 VOLATILITAS] BB20 ${fmt(last(bl))}/${fmt(last(bm))}/${fmt(last(bu))} %B ${fmt(last(pb))} BW ${fmt(last(bw))}% | Keltner ${fmt(last(kl))}/${fmt(last(ku))} | Donchian ${fmt(last(dl))}/${fmt(last(du))} | HistVol ${fmt(last(histVol(cl)))}% | Squeeze ${last(sq) === 1 ? 'ON' : 'off'} mom ${fmt(last(sqm))}\n`;
+  const ob = obv(cs), [kl_, kls] = klinger(cs);
+  h += `[4 VOLUME proxy] OBV ${fmt(ob[ob.length - 1], 0)} | MFI ${fmt(last(mfi(cs)))} | CMF ${fmt(last(cmf(cs)), 3)} | ChaikinOsc ${fmt(last(chaikinOsc(cs)))} | Force ${fmt(last(forceIndex(cs)))} | Klinger ${fmt(last(kl_))}/${fmt(last(kls))} | RVOL ${fmt(last(rvol(cs)))}x | VolOsc ${fmt(last(volOsc(cs)))}%\n`;
+  const zz = zigzag(cs);
+  h += `[5 STRUKTUR] ZigZag(ATR) pivot terakhir: ${zz.slice(-3).map(z => `(${z[0]}, ${z[1].toFixed(2)}, ${z[2]}, ${z[3] ? 'ok' : 'berkembang'})`).join(' ')}\n`;
+  const sh = Math.max(...highs(cs).slice(-20)), sl = Math.min(...lows(cs).slice(-20)), fb = fibLevels(sl, sh);
+  h += `  Fib swing20 (H ${fmt(sh)} L ${fmt(sl)}): 38.2% ${fmt(fb['38.2%'])} 50% ${fmt(fb['50%'])} 61.8% ${fmt(fb['61.8%'])} | ext 127.2% ${fmt(fb['127.2%'])} 161.8% ${fmt(fb['161.8%'])}\n`;
+  const atrV = last(atr(cs, 14)[0]);
+  const divs = [];
+  for (const [name, ind] of [['RSI', rsi(cl)], ['MACD-hist', mh], ['Stoch', k_], ['CCI', cci(cs)], ['OBV', ob], ['MFI', mfi(cs)], ['AO', awesomeOsc(cs)]])
+    divergence(cs, ind, atrV).forEach(d => divs.push(`${name}: ${d}`));
+  h += `  Divergensi (≤40 bar, pivot ≥5 bar, selisih ≥0.25ATR): ${divs.length ? divs.join('; ') : 'tidak ada'}\n`;
+  const [stc] = schaffTrend(cs), [wt1] = wavetrend(cs), [tdR] = tdi(cs);
+  const [lr, lrs] = linreg(cl);
+  h += `[8 STATISTIK] LinReg20 ${fmt(last(lr))} slope ${fmt(last(lrs))} | Z ${fmt(last(zscore(cl)))} | CHOP ${fmt(last(choppiness(cs)))} | ER50 ${fmt(last(efficiencyRatio(cl)))} | DPO ${fmt(last(dpo(cl)))} | Hurst ${fmt(hurst(cl))}\n`;
+  h += `[10 POPULER] WaveTrend ${fmt(last(wt1))} | Schaff ${fmt(last(stc))} | TDI RSI ${fmt(last(tdR))}\n`;
+  $('fullBody').textContent = h;
+}
+
+/* ════════════════ CHART ════════════════ */
+const CH = { view: 170, off: 0, drag: null, hover: null, ov: { MA: true, LVL: true, STR: true } };
+$('ovMA').onclick = () => { CH.ov.MA = !CH.ov.MA; $('ovMA').classList.toggle('on', CH.ov.MA); drawChart(); };
+$('ovLvl').onclick = () => { CH.ov.LVL = !CH.ov.LVL; $('ovLvl').classList.toggle('on', CH.ov.LVL); drawChart(); };
+$('ovStr').onclick = () => { CH.ov.STR = !CH.ov.STR; $('ovStr').classList.toggle('on', CH.ov.STR); drawChart(); };
+$('chZoomIn').onclick = () => { CH.view = Math.max(40, Math.round(CH.view / 1.35)); drawChart(); };
+$('chZoomOut').onclick = () => { CH.view = Math.min(600, Math.round(CH.view * 1.35)); drawChart(); };
+$('chReset').onclick = () => { CH.view = 170; CH.off = 0; drawChart(); };
+
+function chartSetup() {
+  const cv = $('ch');
+  const wrap = $('chWrap');
+  const wheel = e => {
+    e.preventDefault();
+    const dir = e.deltaY > 0 ? 1.18 : 1 / 1.18;
+    CH.view = Math.max(40, Math.min(600, Math.round(CH.view * dir)));
+    drawChart();
+  };
+  cv.addEventListener('wheel', wheel, { passive: false });
+  cv.addEventListener('pointerdown', e => { CH.drag = { x: e.clientX, off: CH.off }; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', e => {
+    const rect = cv.getBoundingClientRect();
+    if (CH.drag) {
+      const n = APP.candles[APP.activeTf] ? APP.candles[APP.activeTf].length : 0;
+      const per = rect.width / CH.view;
+      CH.off = Math.max(0, Math.min(n - CH.view, Math.round(CH.drag.off + (CH.drag.x - e.clientX) / per)));
+      drawChart();
+    }
+    CH.hover = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    drawChart();
+  });
+  cv.addEventListener('pointerup', () => CH.drag = null);
+  cv.addEventListener('pointerleave', () => { CH.hover = null; CH.drag = null; drawChart(); });
+  new ResizeObserver(() => drawChart()).observe(wrap);
+}
+
+function drawChart() {
+  const cs = APP.candles[APP.activeTf], R = APP.results[APP.activeTf];
+  const cv = $('ch');
+  if (!cv) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth || 600, H = cv.clientHeight || 380;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+  if (!cs || !cs.length || !R) {
+    ctx.fillStyle = '#7d9b7d';
+    ctx.font = '13px ui-monospace,monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('belum ada data — tekan ▶ Jalankan Analisa', W / 2, H / 2);
+    return;
+  }
+  const N = cs.length;
+  const start = Math.max(0, N - CH.view - CH.off);
+  const end = Math.max(CH.view, N - CH.off);
+  const seg = cs.slice(start, end);
+  const padR = 64, padB = 20, padT = 8;
+  const pw = W - padR, ph = H - padB - padT;
+  let hi = -Infinity, lo = Infinity;
+  for (const c of seg) { hi = Math.max(hi, c.h); lo = Math.min(lo, c.l); }
+  // level overlay memperluas range
+  const lines = [];
+  const L = R.levels || {};
+  if (CH.ov.LVL) {
+    const addL = (nm, p, col, dash) => { if (p !== null && p !== undefined && p >= lo * 0.9 && p <= hi * 1.1) lines.push([nm, p, col, dash]); };
+    addL('PDH', L.PDH, '#fbbf24', [4, 3]); addL('PDL', L.PDL, '#fbbf24', [4, 3]);
+    const vpd = (R.vprofile || {}).day;
+    if (vpd) { addL('POC', vpd.poc, '#c084fc', [2, 3]); addL('VAH', vpd.vah, '#c084fc', [2, 3]); addL('VAL', vpd.val, '#c084fc', [2, 3]); }
+    if (R.vwap) addL('VWAP', R.vwap.day, '#2dd4bf', [6, 3]);
+    if (L.pivots) addL('P', L.pivots.P, '#60a5fa', [1, 3]);
+    for (const [nm, p, col] of lines) { hi = Math.max(hi, p); lo = Math.min(lo, p); }
+  }
+  const rng = (hi - lo) || 1;
+  hi += rng * 0.04; lo -= rng * 0.04;
+  const X = i => (i - start) / Math.max(1, seg.length - 1) * pw;
+  const Y = p => padT + (hi - p) / (hi - lo) * ph;
+  const bw = Math.max(1.5, pw / seg.length * 0.62);
+
+  // grid + sumbu harga
+  ctx.strokeStyle = 'rgba(125,155,125,.13)';
+  ctx.fillStyle = '#7d9b7d';
+  ctx.font = '10px ui-monospace,monospace';
+  ctx.textAlign = 'left';
+  const steps = 6;
+  for (let i = 0; i <= steps; i++) {
+    const p = lo + (hi - lo) * i / steps, y = Y(p);
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(pw, y); ctx.stroke();
+    ctx.fillText(p.toFixed(2), pw + 6, y + 3);
+  }
+  const css = getComputedStyle(document.documentElement);
+  const cG = css.getPropertyValue('--g').trim() || '#4ade80';
+  const cR = css.getPropertyValue('--r').trim() || '#f87171';
+  const cMut = css.getPropertyValue('--mut').trim() || '#7d9b7d';
+  const cY = css.getPropertyValue('--y').trim() || '#fbbf24';
+
+  // level lines
+  if (CH.ov.LVL) {
+    ctx.font = '9.5px ui-monospace,monospace';
+    for (const [nm, p, col, dash] of lines) {
+      const y = Y(p);
+      if (y < padT - 2 || y > H - padB + 2) continue;
+      ctx.strokeStyle = col; ctx.setLineDash(dash); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(pw, y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = col;
+      ctx.fillText(nm + ' ' + p.toFixed(2), 4, y - 2);
+    }
+  }
+
+  // EMA
+  if (CH.ov.MA) {
+    const cl = closes(cs);
+    const drawEma = (n, col, wd) => {
+      const e = ema(cl, n);
+      ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.beginPath();
+      let first = true;
+      for (let i = start; i < end; i++) {
+        if (e[i] === null || e[i] === undefined) continue;
+        const x = X(i), y = Y(e[i]);
+        if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    };
+    drawEma(20, '#fbbf24', 1.2); drawEma(50, '#2dd4bf', 1.2); drawEma(200, '#c084fc', 1.4);
+  }
+
+  // struktur: swing & FVG & BOS
+  if (CH.ov.STR) {
+    const S = R.struct;
+    if (S && S.fvg) {
+      for (const z of S.fvg) {
+        const x0 = X(z.i), yT = Y(z.top), yB = Y(z.bot);
+        ctx.fillStyle = z.dir === 1 ? 'rgba(74,222,128,.13)' : 'rgba(248,113,113,.13)';
+        ctx.fillRect(Math.max(0, x0), yT, pw - Math.max(0, x0), yB - yT);
+      }
+    }
+    if (S && S.last_event) {
+      const y = Y(S.last_event.level), x = X(S.last_event.i);
+      ctx.strokeStyle = S.last_event.dir === 1 ? cG : cR;
+      ctx.setLineDash([]);
+      ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(Math.max(0, x - pw * .18), y); ctx.lineTo(x + 6, y); ctx.stroke();
+      ctx.fillStyle = S.last_event.dir === 1 ? cG : cR;
+      ctx.font = 'bold 9.5px ui-monospace,monospace';
+      ctx.fillText(S.last_event.type + (S.last_event.dir === 1 ? ' ↑' : ' ↓'), Math.max(2, x - pw * .18), y - 3);
+    }
+    if (S && S.equal) {
+      ctx.font = '9px ui-monospace,monospace';
+      for (const x of (S.equal.EQH || [])) { const y = Y(x); ctx.strokeStyle = 'rgba(251,191,36,.5)'; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(pw * .3, y); ctx.lineTo(pw, y); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = cY; ctx.fillText('EQH', pw - 24, y - 2); }
+      for (const x of (S.equal.EQL || [])) { const y = Y(x); ctx.strokeStyle = 'rgba(251,191,36,.5)'; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(pw * .3, y); ctx.lineTo(pw, y); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = cY; ctx.fillText('EQL', pw - 24, y - 2); }
+    }
+  }
+
+  // candles
+  for (let i = 0; i < seg.length; i++) {
+    const c = seg[i], x = X(start + i);
+    const up = c.c >= c.o;
+    ctx.strokeStyle = up ? cG : cR;
+    ctx.fillStyle = up ? cG : cR;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, Y(c.h)); ctx.lineTo(x, Y(c.l)); ctx.stroke();
+    const yO = Y(c.o), yC = Y(c.c);
+    const top = Math.min(yO, yC), hh = Math.max(1, Math.abs(yC - yO));
+    ctx.globalAlpha = up ? 0.95 : 0.95;
+    ctx.fillRect(x - bw / 2, top, bw, hh);
+    ctx.globalAlpha = 1;
+  }
+
+  // crosshair + info
+  let info = `${APP.activeTf} · ${seg.length} bar terakhir (dari ${N}) · geser/zoom`;
+  if (CH.hover && CH.hover.x < pw) {
+    const i = start + Math.round(CH.hover.x / pw * (seg.length - 1));
+    if (i >= 0 && i < N) {
+      const c = cs[i];
+      ctx.strokeStyle = 'rgba(233,242,233,.25)';
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(CH.hover.x, 0); ctx.lineTo(CH.hover.x, H - padB); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, CH.hover.y); ctx.lineTo(pw, CH.hover.y); ctx.stroke();
+      ctx.setLineDash([]);
+      const d = c.dt ? c.dt.toISOString().replace('T', ' ').slice(0, 16) : '';
+      info = `${d} UTC · O ${c.o.toFixed(2)} H ${c.h.toFixed(2)} L ${c.l.toFixed(2)} C ${c.c.toFixed(2)} V ${Math.round(c.v)}${c.tb !== undefined ? ' Δ ' + Math.round(2 * c.tb - (c.bv || c.v)) : ''}`;
+      const px = Y(c.c);
+      ctx.fillStyle = cMut;
+      ctx.textAlign = 'left';
+      ctx.fillText(c.c.toFixed(2), pw + 6, Math.max(10, Math.min(H - padB, px + 3)));
+    }
+  }
+  $('chInfo').textContent = info;
+
+  // legend
+  $('chLegend').innerHTML =
+    `<span><i style="background:#fbbf24"></i>EMA20</span><span><i style="background:#2dd4bf"></i>EMA50</span>`
+    + `<span><i style="background:#c084fc"></i>EMA200</span><span><i style="background:#fbbf24;opacity:.6"></i>PDH/PDL</span>`
+    + `<span><i style="background:#c084fc;opacity:.6"></i>POC/VAH/VAL</span><span><i style="background:#2dd4bf;opacity:.6"></i>VWAP</span>`
+    + `<span><i style="background:#60a5fa;opacity:.6"></i>Pivot P</span><span><i style="background:#4ade80;opacity:.25"></i>FVG bull</span><span><i style="background:#f87171;opacity:.25"></i>FVG bear</span>`;
+}
+
+/* ---------- init ---------- */
+fillTf();
+chartSetup();
+$('src').onchange();
+sigLoad();
+$('cfgBtn').onclick = () => $('adv').classList.toggle('on'); // drawer ⚙ pengaturan (pola DTS)
+$('sgSave').onclick = () => { // simpan pengaturan mesin sinyal + render ulang kartu
+  sigSave();
+  $('sgSt').textContent = 'Tersimpan ✓';
+  setTimeout(() => { const s = $('sgSt'); if (s) s.textContent = ''; }, 2500);
+  renderAll();
+};
+drawChart();
+// auto-run demo saat pertama dibuka agar halaman tidak kosong
+run();
+
+</script>
+</body>
+</html>
