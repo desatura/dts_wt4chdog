@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="brain">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DTS Pakem Live</title>
+<style>
+:root{
+  --bg:#070b07; --panel:#0c120c; --panel2:#101a10; --ink:#e9f2e9; --mut:#7d9b7d;
+  --line:#1e2b1e; --acc:#f59e0b; --acc2:#fbbf24; --grn:#089981; --red:#f23645;
+  --grnbg:rgba(8,153,129,.16); --redbg:rgba(242,54,69,.14); --yelbg:rgba(245,158,11,.14);
+  --mono:ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace;
+}
+html[data-theme="light"]{
+  --bg:#f4f1ea; --panel:#fffdf7; --panel2:#fbf7ee; --ink:#1c241c; --mut:#6b7a6b;
+  --line:#e2dccb; --acc:#b45309; --acc2:#92400e; --grn:#067a66; --red:#d92b38;
+  --grnbg:rgba(8,153,129,.12); --redbg:rgba(242,54,69,.10); --yelbg:rgba(245,158,11,.12);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:13px;line-height:1.5}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline}
+header h1{margin:0;font-size:16px;color:var(--acc);letter-spacing:.5px}
+main{max-width:1080px;margin:0 auto;padding:12px 14px 40px}
+.ctlrow{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:4px 0 8px}
+.outline{font-size:clamp(17px,4.2vw,26px);font-weight:700;line-height:1.4;padding:22px 16px;margin:14px 0;border:1px solid var(--acc);border-radius:10px;background:var(--panel);word-break:break-word}
+.outline.buy{border-color:var(--grn)}
+.outline.sell{border-color:var(--red)}
+label{color:var(--mut);font-size:12px}
+input,select{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:var(--mono);font-size:12px}
+input[type=password]{width:170px}input[type=text]{width:130px}
+button{background:var(--acc);color:#111;border:0;border-radius:6px;padding:7px 14px;font-family:var(--mono);font-weight:700;cursor:pointer}
+button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+button:disabled{opacity:.5;cursor:default}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.dot.ok{background:#22c55e}.dot.bad{background:#ef4444}.dot.warn{background:#f59e0b}.dot.idle{background:#666}
+.wm{position:fixed;right:10px;bottom:8px;font-size:10px;color:var(--mut);opacity:.7;letter-spacing:1px;z-index:5}
+footer{color:var(--mut);font-size:11px;text-align:center;padding:6px}
+.mut{color:var(--mut)}.small{font-size:11px}
+.err{color:#f87171}.okc{color:#34d399}
+.g{color:var(--grn)}.r{color:var(--red)}.y{color:var(--acc2)}
+.dx{position:fixed;top:0;right:0;bottom:0;width:min(470px,100vw);background:var(--panel);border-left:1px solid var(--line);z-index:20;display:none;flex-direction:column;box-shadow:-8px 0 30px #0008}.dx.on{display:flex}
+.dxh{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.dxt{display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid var(--line);overflow-x:auto}.dxt button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:6px 9px;white-space:nowrap}.dxt button.on{background:var(--acc);color:#111}
+.dxb{display:none;overflow-y:auto;padding:10px 12px;flex:1}.dxb.on{display:block}
+.dxb input[type=text],.dxb input[type=password],.dxb textarea{width:100%;margin:3px 0}
+.dxb textarea{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:12px var(--mono);resize:vertical}
+.dxb h4{margin:12px 0 4px;color:var(--acc);font-size:12px}.dxb label.k{display:flex;gap:6px;align-items:center;margin:4px 0;color:var(--ink)}
+.btn{display:inline-block;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:700}
+.jw{overflow-x:auto}table.jt{width:100%;border-collapse:collapse;font-size:11px}.jt th,.jt td{border-bottom:1px solid var(--line);padding:3px 4px;text-align:right;white-space:nowrap}.jt th:first-child,.jt td:first-child{text-align:left}.jt a{cursor:pointer;color:var(--acc);text-decoration:underline;margin-right:4px}
+#ticker{display:flex;gap:6px;overflow-x:auto;margin:6px 0;scrollbar-width:none}#ticker::-webkit-scrollbar{display:none}
+.nw{flex:0 0 auto;border:1px solid var(--line);border-left:3px solid #666;border-radius:6px;padding:4px 8px;background:var(--panel);font-size:11px;max-width:240px}.nw.nh{border-left-color:var(--red)}.nw.nm{border-left-color:var(--acc)}
+.nw .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nw .s{display:flex;justify-content:space-between;gap:8px}
+#newspop{position:fixed;top:12px;left:50%;transform:translateX(-50%);width:min(420px,94vw);background:var(--panel);border:2px solid var(--red);border-radius:10px;padding:12px;z-index:30;display:none}
+.al{font-size:11px;padding:2px 0;border-bottom:1px dashed var(--line)}
+#dxLog{max-height:260px;overflow-y:auto;margin:6px 0}.cm{margin:4px 0;padding:6px 8px;border-radius:6px;font-size:12px;white-space:pre-wrap;word-break:break-word}.cm.u{background:var(--yelbg)}.cm.a{background:var(--panel2)}
+.chip{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:2px 8px;margin:2px;font-size:11px}.chip a{cursor:pointer;color:var(--red)}
+.st{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:12px;padding:3px 8px;font-size:11px;cursor:pointer;background:var(--panel2);line-height:1}
+.st small{font-size:10px;font-weight:700}
+.st svg{display:block}
+.st.on{color:var(--grn);border-color:var(--grn);background:var(--grnbg)}
+.st.off{color:var(--red);border-color:var(--red);background:var(--redbg)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="hTitle">XAUUSD · Pakem Live</h1>
+  <span style="flex:1"></span>
+  <span id="stAi" class="st off" title="AI"></span><span id="stBc" class="st off" title="Broadcast"></span>
+  <button id="btnTheme" class="ghost" type="button">☀/🌙 Tema</button>
+  <button id="dxGear" class="ghost" type="button" title="Menu: broadcast, jurnal, AI, berita">⚙</button>
+</header>
+<main>
+  <div class="ctlrow">
+    <label>Pair</label>
+    <select id="pair">
+      <option value="XAU_USD" selected>XAUUSD · Emas</option>
+      <option value="XAG_USD">XAGUSD · Perak</option>
+      <option value="EUR_USD">EURUSD</option>
+      <option value="GBP_USD">GBPUSD</option>
+      <option value="USD_JPY">USDJPY</option>
+      <option value="AUD_USD">AUDUSD</option>
+      <option value="USD_CAD">USDCAD</option>
+    </select>
+    <label>Tier</label>
+    <select id="tier">
+      <option value="oanda_worker" selected>PREMIUM · OANDA Worker</option>
+      <option value="oanda_api">ELITE · OANDA API</option>
+      <option value="oanda">REGULER · OANDA + Binance</option>
+    </select>
+    <span id="credRow">
+      <label>Env</label>
+      <select id="env"><option value="practice" selected>practice</option><option value="live">live</option></select>
+      <label>Account ID</label><input id="acc" type="text" placeholder="opsional" autocomplete="off">
+      <label>API token</label><input id="tok" type="password" placeholder="opsional" autocomplete="off">
+      <button id="btnSave" class="ghost" type="button">Simpan (localStorage)</button>
+    </span>
+    <button id="btnStart" type="button">■ BERHENTI</button>
+    <button id="btnRefresh" class="ghost" type="button">↻ Refresh candle</button>
+    <label>TF</label>
+    <select id="tf">
+      <option value="AUTO">AUTO</option>
+      <option value="M5" selected>M5</option>
+      <option value="M15">M15</option>
+      <option value="M30">M30</option>
+      <option value="H1">H1</option>
+      <option value="H4">H4</option>
+      <option value="D1">D1</option>
+    </select>
+  </div>
+  <div id="tierHint" class="small mut">PREMIUM · OANDA Worker — tanpa token. Harga &amp; candle dari Worker OANDA.</div>
+  <div id="ticker"></div>
+  <div id="outLine" class="outline">Menunggu data…</div>
+  <div id="dxAi" class="small"></div>
+  <div id="dxStat" class="small mut"></div>
+  <div id="dxAlerts"></div>
+</main>
+<footer>
+  <span id="livePx">—</span> <small id="liveBidAsk" class="mut"></small> · <span id="pipOpen" class="mut"></span><br>
+  <span id="connStatus" class="mut"></span><br>
+  <span id="clock" class="mut">--:--:-- WIB</span> · <span id="dataAge" class="mut"></span><br>
+  Ini bukan nasihat keuangan. Pakem DTS — Gate 6 Lapis + Jalur SCALP REVERSAL + Jalur BREAK.
+</footer>
+<div class="wm">DESATURA TRADING SYSTEM</div>
+<div id="newspop"><b id="npTitle"></b><div id="npMeta" class="small"></div><div id="npCd" class="y"></div><button id="npClose" class="ghost" type="button" style="margin-top:6px">Tutup</button></div>
+<div id="dxPanel" class="dx">
+<div class="dxh"><b>⚙ Menu DTS Pakem</b><span style="flex:1"></span><button id="dxX" class="ghost" type="button">✕</button></div>
+<div class="dxt"><button data-t="bc" class="on" type="button">📣 Broadcast</button><button data-t="jr" type="button">📓 Jurnal</button><button data-t="ai" type="button">🤖 AI</button><button data-t="nw" type="button">📰 Berita &amp; Alert</button></div>
+<div class="dxb on" id="dx-bc">
+<h4>Broadcast ke medsos</h4>
+<input type="text" id="nxTgTok" placeholder="Telegram bot token"><input type="text" id="nxTgChat" placeholder="Telegram chat/channel ID (@channel)">
+<input type="text" id="nxDc" placeholder="Discord webhook URL"><input type="text" id="nxWh" placeholder="Webhook umum (opsional)">
+<label class="k"><input type="checkbox" id="nxBValid"> ✅ Kirim saat ENTRY VALID</label>
+<label class="k"><input type="checkbox" id="nxBHasil"> 🎯🛑 Kirim hasil TP / SL</label>
+<button id="dxTest" type="button">Tes Broadcast</button> <span id="dxBSt" class="small mut"></span>
+<div class="small mut" style="margin-top:8px">Setelan dibagi dengan DTS Watchdog bila diakses dari alamat (origin) yang sama.</div>
+</div>
+<div class="dxb" id="dx-jr">
+<h4>Jurnal entry · otomatis dari call Pakem</h4>
+<div id="dxJS" class="small"></div>
+<div class="jw" id="dxJT"></div>
+<div class="small mut" style="margin:6px 0">TP/SL dideteksi dari harga live + high/low candle M5 setelah entry. Bila TP &amp; SL tersentuh di candle yang sama dihitung SL (konservatif). Winrate = TP ÷ (TP + SL); BE tidak dihitung.</div>
+<button id="dxCsv" class="ghost" type="button">⬇ Ekspor CSV</button> <button id="dxClr" class="ghost" type="button">🗑 Hapus jurnal</button>
+</div>
+<div class="dxb" id="dx-ai">
+<h4>AI (OpenAI-compatible / Claude)</h4>
+<label class="k"><input type="checkbox" id="nxAiOn"> Aktifkan opini AI tiap ENTRY VALID</label>
+<label class="k"><input type="checkbox" id="nxAiGate"> Broadcast hanya jika AI menjawab ENTRY</label>
+<input type="text" id="nxUrl" placeholder="Base URL, mis. https://api.openai.com/v1 atau https://api.anthropic.com">
+<input type="text" id="nxModel" placeholder="Model"><input type="password" id="nxKey" placeholder="API key (hanya di browser ini)">
+<textarea id="nxPrompt" rows="2" placeholder="Prompt sistem (opsional)"></textarea>
+<button id="dxTestAi" type="button">Tes AI</button> <span id="dxAiSt" class="small mut"></span>
+<div id="dxUse" class="small mut"></div>
+<h4>Tanya AI · bisa lampirkan file</h4>
+<div id="dxLog"></div><div id="dxFiles"></div>
+<textarea id="dxQ" rows="3" placeholder="Tanya soal call/level/jurnal, atau lampirkan screenshot chart, PDF, CSV…"></textarea>
+<label class="btn">📎 Lampirkan<input type="file" id="dxFile" multiple hidden accept="image/*,.pdf,.txt,.csv,.json,.md,.html,.py,.mq5,.mq4,.log,.xml,.js"></label> <button id="dxSend" type="button">Kirim</button>
+<div class="small mut">Gambar &amp; PDF dikirim sebagai lampiran; teks/CSV dibaca (maks 60 rb karakter). PDF butuh provider yang mendukung (OpenAI / Claude).</div>
+</div>
+<div class="dxb" id="dx-nw">
+<h4>Berita &amp; Alert (sama seperti DTS)</h4>
+<label class="k"><input type="checkbox" id="dxNews"> 📰 Ticker + popup berita ekonomi (T-5 menit, semua impact)</label>
+<label class="k"><input type="checkbox" id="dxSnd"> 🔔 Bunyi alert (call baru, TP/SL, berita)</label>
+<div class="small mut">Sumber berita: news.json lokal, cadangan kalender faireconomy — sama seperti DTS Watchdog.</div>
+</div>
+</div>
+
+<script>
+'use strict';
+/* ══════════════════════════════════════════════════════════════
+   DTS Pakem Live XAU — port JS dari pakem Python (analisa.py +
+   ind-calc.py + ind-retail.py + patterns.py + structure.py).
+   Cara koneksi disalin persis dari DTS Watchdog (workerFetch,
+   pollOanda, workerCandles, loadCandles, binRest, oaDelta).
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── KONFIG ─────────────────────────────────────────────── */
+var OANDA_WORKER = 'https://dts-oanda-worker.hanjakal.workers.dev/';
+var PROXIES = ['https://proxy.cors.dev/', 'https://api.codetabs.com/v1/proxy/?quest='];
+var BIN_HOSTS = ['https://api.binance.com', 'https://api1.binance.com', 'https://api2.binance.com', 'https://data-api.binance.vision'];
+/* Parameter per pair. spread = estimasi spread; minTgt = spread / 15% (target minimum);
+   slBuf = buffer SL di luar level; step = kelipatan level bulat; bin = simbol cadangan Binance (null = tak ada).
+   Angka spread/slBuf pair non-emas adalah estimasi — sesuaikan dengan broker kamu. */
+var PAIRS = {
+  XAU_USD: { label: 'XAUUSD', tag: 'XAU', dec: 2, pip: 0.10,   spread: 0.50,    minTgt: 3.30,   slBuf: 2,       step: 25,    bin: 'PAXGUSDT', openMon: 3576.22 },
+  XAG_USD: { label: 'XAGUSD', tag: 'XAG', dec: 3, pip: 0.01,   spread: 0.03,    minTgt: 0.20,   slBuf: 0.05,    step: 0.5,   bin: null,       openMon: null },
+  EUR_USD: { label: 'EURUSD', tag: 'EUR', dec: 5, pip: 0.0001, spread: 0.00012, minTgt: 0.0008, slBuf: 0.0002,  step: 0.005, bin: 'EURUSDT',  openMon: null },
+  GBP_USD: { label: 'GBPUSD', tag: 'GBP', dec: 5, pip: 0.0001, spread: 0.00015, minTgt: 0.0010, slBuf: 0.00025, step: 0.005, bin: 'GBPUSDT',  openMon: null },
+  USD_JPY: { label: 'USDJPY', tag: 'JPY', dec: 3, pip: 0.01,   spread: 0.012,   minTgt: 0.08,   slBuf: 0.02,    step: 0.5,   bin: null,       openMon: null },
+  AUD_USD: { label: 'AUDUSD', tag: 'AUD', dec: 5, pip: 0.0001, spread: 0.00012, minTgt: 0.0008, slBuf: 0.0002,  step: 0.005, bin: 'AUDUSDT',  openMon: null },
+  USD_CAD: { label: 'USDCAD', tag: 'CAD', dec: 5, pip: 0.0001, spread: 0.00015, minTgt: 0.0010, slBuf: 0.00025, step: 0.005, bin: null,       openMon: null }
+};
+var PC = PAIRS.XAU_USD, INS = 'XAU_USD', BIN_SYM = 'PAXGUSDT', OPEN_MON = 3576.22;   /* open Senin 05:00 WIB 23 Nov 2026 (hanya XAU) */
+function applyPair(k) { if (!PAIRS[k]) k = 'XAU_USD'; PC = PAIRS[k]; INS = k; BIN_SYM = PC.bin; OPEN_MON = PC.openMon; }
+applyPair((function () { try { return localStorage.getItem('dts_pair'); } catch (e) { return null; } })());
+var TFCFG = { M5: 140, M15: 140, M30: 140, H1: 140, H4: 140, D: 90, W: 60 };
+var BIN_INT = { M5: '5m', M15: '15m', M30: '30m', H1: '1h', H4: '4h', D: '1d', W: '1w' };
+var TF_MS = { M5: 300000, M15: 900000, M30: 1800000, H1: 3600000, H4: 14400000, D: 86400000, W: 604800000 };
+var TFS = ['M5', 'M15', 'M30', 'H1', 'H4', 'D', 'W'];
+var TF_KEY = { M5: 'M5', M15: 'M15', M30: 'M30', H1: 'H1', H4: 'H4', D1: 'D' };   /* D1 tampil, candle key 'D' */
+
+/* ── STATE ──────────────────────────────────────────────── */
+var S = {
+  running: true, gen: 0,
+  tier: localStorage.getItem('dts_tier') || 'oanda_worker',
+  tfSel: localStorage.getItem('dts_tf') || 'M5',   /* pemilih TF (Dody 25 Nov 11:28): AUTO/M5/M15/M30/H1/H4/D1, default M5 */
+  tfNote: '',
+  env: localStorage.getItem('dts_env') || 'practice',
+  acc: localStorage.getItem('dts_acc') || '',
+  tok: localStorage.getItem('dts_tok') || '',
+  candles: {},            /* gran -> {asc:[{t,o,h,l,c,v}], src, fetchedAt} */
+  cacheT: {},             /* gran -> ms terakhir fetch */
+  live: null, bid: null, ask: null, liveT: 0, priceHost: '—', stale: null,
+  conn: { worker: { st: 'idle', msg: '' }, api: { st: 'idle', msg: '' }, binance: { st: 'idle', msg: '' }, proxy: { st: 'idle', msg: '' } },
+  wcFail: 0, _wcOk: false, oaOff: 0, _offKey: null, _offVal: null,
+  paxg: null, paxgT: 0,           /* candle PAXG M15 mentah (untuk VP + offset) */
+  lastBasicT: 0, lastBasicClose: null,
+  analysis: null, ping: []
+};
+try { S.ping = JSON.parse(localStorage.getItem('dts_ping') || '[]'); } catch (e) { S.ping = []; }
+
+/* ── UTIL ───────────────────────────────────────────────── */
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function f2(x, d) { if (x == null || !isFinite(x)) return '—'; return x.toLocaleString('id-ID', { useGrouping: false, minimumFractionDigits: (d == null ? PC.dec : d), maximumFractionDigits: (d == null ? PC.dec : d) }); }
+function sgn(x, d) { if (x == null || !isFinite(x)) return '—'; return (x >= 0 ? '+' : '') + f2(x, d); }
+function wib(d) { var t = d ? new Date(d) : new Date(); return new Date(t.getTime() + 7 * 3600e3).toISOString().substr(11, 8); }
+function wibHM(d) { return wib(d).substr(0, 5); }
+function ageStr(ms) { if (!ms) return '—'; var s = Math.max(0, Math.round((Date.now() - ms) / 1000)); return s < 60 ? s + ' dtk' : Math.round(s / 60) + ' mnt'; }
+function last(a) { return a && a.length ? a[a.length - 1] : null; }
+function sum(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i] || 0; return s; }
+function avg(a) { return a.length ? sum(a) / a.length : null; }
+function maxA(a) { var m = -Infinity; for (var i = 0; i < a.length; i++) if (a[i] > m) m = a[i]; return m; }
+function minA(a) { var m = Infinity; for (var i = 0; i < a.length; i++) if (a[i] < m) m = a[i]; return m; }
+
+/* ── KONEKSI #1: tFetch + workerFetch (persis Watchdog) ─── */
+function tFetch(u, ms, o) {
+  return Promise.race([fetch(u, Object.assign({ cache: 'no-store' }, o || {})),
+    new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout ' + ms + 'ms')); }, ms); })]);
+}
+async function workerFetch(u, ms) {   /* langsung dulu; diblokir origin → proxy server-side */
+  var r = null, err = '';
+  try { r = await tFetch(u, ms); } catch (e) { err = e.message || 'jaringan gagal'; }
+  if (r && r.ok) return r;
+  if (r && r.status !== 403) throw new Error('Worker HTTP ' + r.status);
+  var last = r ? 'Worker menolak origin (403)' : 'Worker tak terjangkau (' + err + ')';
+  for (var i = 0; i < PROXIES.length; i++) {
+    try {
+      var rp = await tFetch(PROXIES[i].indexOf('quest=') > 0 ? PROXIES[i] + encodeURIComponent(u) : PROXIES[i] + u, ms);
+      if (rp.ok) { rp.viaProxy = true; S.conn.proxy = { st: 'ok', msg: 'via ' + PROXIES[i].replace('https://', '').split('/')[0] }; return rp; }
+      last += ' · proxy HTTP ' + rp.status;
+    } catch (e) { last += ' · proxy gagal'; }
+  }
+  throw new Error(last);
+}
+
+/* ── KONEKSI #2: tier helpers (persis Watchdog) ─────────── */
+function oandaTier() { if (S.tier === 'oanda_api') return 'api'; if (S.tier === 'oanda_worker') return 'worker'; if (S.tier === 'oanda') return 'hybrid'; return null; }
+function oaNeed() { var t = oandaTier(); if (t === 'api') return false; if (t === 'worker') return true; if (t === 'hybrid') return !(S.tok && S.acc); return false; }
+function livePx() { return S.live; }
+function oaDelta(ref, key) {   /* selisih ke OANDA; dikunci per bar (key = waktu bar) */
+  if (key != null && S._offKey === key && S._offVal != null) { S.oaOff = S._offVal; return S.oaOff; }
+  var l = livePx(); if (l == null || !(ref > 0)) return S.oaOff || 0;
+  var d = l - ref; S.oaOff = Math.abs(d) < ref * 0.05 ? d : 0;
+  if (key != null) { S._offKey = key; S._offVal = S.oaOff; }
+  return S.oaOff;
+}
+
+/* ── KONEKSI #3: poll harga live tiap 5 dtk (persis Watchdog) */
+async function pollOanda() {
+  var ins = INS;
+  if (oandaTier() === 'api' && !(S.tok && S.acc)) { S.conn.api = { st: 'bad', msg: 'ELITE · OANDA API butuh Account ID + API token.' }; return; }
+  if (S.tok && S.acc) {
+    try {
+      var base = S.env === 'live' ? 'https://api-fxtrade.oanda.com' : 'https://api-fxpractice.oanda.com';
+      var r = await fetch(base + '/v3/accounts/' + encodeURIComponent(S.acc) + '/pricing?instruments=' + encodeURIComponent(INS), { headers: { Authorization: 'Bearer ' + S.tok } });
+      if (!r.ok) throw new Error(r.status);
+      var j = await r.json(), p = j.prices && j.prices[0];
+      if (ins !== INS) return;
+      if (p && p.bids && p.asks) {
+        var br = p.bids[0].price, ar = p.asks[0].price;
+        S.bid = +br; S.ask = +ar; S.live = (S.bid + S.ask) / 2; S.liveT = Date.now(); S.priceHost = 'OANDA API';
+        S.conn.api = { st: 'ok', msg: 'pricing OK' }; return;
+      }
+    } catch (e) { S.conn.api = { st: 'bad', msg: 'OANDA API: ' + e.message + ' → pakai Worker' }; }
+  }
+  try {
+    var w = await workerFetch(OANDA_WORKER + '?instrument=' + encodeURIComponent(INS) + '&t=' + Date.now(), 4000), d = await w.json();
+    if (ins !== INS) return;
+    var di = d && d.instrument ? String(d.instrument).toUpperCase().replace('/', '_') : '';
+    if (di && di !== INS) throw new Error('Worker mengirim ' + di + ' bukan ' + INS);
+    if (!di && INS !== 'XAU_USD') throw new Error(INS + ' butuh Worker V2 atau kredensial OANDA');
+    var bidRaw = d.bid, askRaw = d.ask, bid = +bidRaw, ask = +askRaw,
+        mid = (bid > 0 && ask >= bid) ? (bid + ask) / 2 : +(d.mid != null ? d.mid : d.price != null ? d.price : d.close);
+    if (!(mid > 0)) throw new Error('harga Worker tidak valid');
+    S.bid = (bid > 0 && ask >= bid) ? bid : null; S.ask = (bid > 0 && ask >= bid) ? ask : null;
+    S.live = mid; S.liveT = Date.now(); S.stale = !!d.stale; S.priceHost = 'Worker' + (w.viaProxy ? '+proxy' : '');
+    S.conn.worker = { st: d.stale ? 'warn' : 'ok', msg: 'quote OK' + (d.stale ? ' (STALE)' : '') + (w.viaProxy ? ' via proxy' : '') };
+  } catch (e) { S.conn.worker = { st: 'bad', msg: 'Worker OANDA: ' + e.message }; }
+}
+
+/* ── KONEKSI #4: candle Worker / API / Binance (persis Watchdog) */
+async function workerCandles(ins, gran, limit) {
+  if (S.wcFail && Date.now() - S.wcFail < 300000) return null;
+  try {
+    var r = await workerFetch(OANDA_WORKER + '?instrument=' + encodeURIComponent(ins) + '&granularity=' + gran + '&count=' + limit + '&price=M&candles=1&t=' + Date.now(), 8000), d = await r.json();
+    var arr = Array.isArray(d) ? d : (d && Array.isArray(d.candles) ? d.candles : null);
+    if (!arr || arr.length < 12) throw new Error('Worker belum menyediakan candle (hanya harga)');
+    var out = arr.filter(function (x) { return !!x; }).map(function (x) {
+      var m = x.mid || x, t = x.time != null ? Date.parse(x.time) : (+x.t > 1e12 ? +x.t : +x.t * 1000);
+      return { t: t, o: +m.o, h: +m.h, l: +m.l, c: +m.c, v: +(x.volume != null ? x.volume : x.v || 0), complete: x.complete };
+    }).filter(function (c) { return isFinite(c.t) && c.o > 0 && c.h >= c.l && c.c > 0; });
+    if (out.length < 12) throw new Error('format candle Worker tidak valid');
+    var di2 = (d && !Array.isArray(d) && d.instrument) ? String(d.instrument).toUpperCase().replace('/', '_') : '';
+    if (di2 && di2 !== ins) throw new Error('Worker mengirim ' + di2 + ' bukan ' + ins);
+    var newest = out.reduce(function (m, x) { return x.t > m.t ? x : m; }, out[0]);
+    if (S.live > 0 && Math.abs(newest.c - S.live) / S.live > 0.05) throw new Error('candle Worker tidak cocok dengan harga ' + ins);
+    out.sort(function (a, b) { return b.t - a.t; });   /* terbaru di [0] */
+    S._wcOk = true; return out;
+  } catch (e) { S._wcOk = false; S.wcFail = Date.now(); S.conn.worker = { st: 'bad', msg: 'Candle Worker: ' + e.message + ' → Binance' }; return null; }
+}
+async function oandaApiCandles(gran, limit) {
+  var base = S.env === 'live' ? 'https://api-fxtrade.oanda.com' : 'https://api-fxpractice.oanda.com';
+  var r = await fetch(base + '/v3/instruments/' + encodeURIComponent(INS) + '/candles?price=M&granularity=' + gran + '&count=' + limit, { headers: { Authorization: 'Bearer ' + S.tok } });
+  if (!r.ok) throw new Error('OANDA ' + r.status);
+  var j = await r.json();
+  return (j.candles || []).filter(function (x) { return x.complete !== false; }).map(function (x) {
+    return { t: Date.parse(x.time), o: +x.mid.o, h: +x.mid.h, l: +x.mid.l, c: +x.mid.c, v: +(x.volume || 0), complete: true };
+  }).reverse();   /* terbaru di [0] */
+}
+async function binRest(path) {
+  var last = 'jaringan';
+  for (var i = 0; i < BIN_HOSTS.length; i++) {
+    try { var r = await tFetch(BIN_HOSTS[i] + path, 6500); if (r.ok) { S.conn.binance = { st: 'ok', msg: BIN_HOSTS[i].replace('https://', '') }; return r; } last = BIN_HOSTS[i] + ' HTTP ' + r.status; }
+    catch (e) { last = BIN_HOSTS[i] + ': ' + e.message; }
+  }
+  throw new Error('Binance/Mirror gagal (' + last + ')');
+}
+async function binanceKlines(gran, limit) {
+  var kk = await (await binRest('/api/v3/klines?symbol=' + encodeURIComponent(BIN_SYM) + '&interval=' + BIN_INT[gran] + '&limit=' + limit)).json();
+  return kk.map(function (x) { return { t: +x[0], o: +x[1], h: +x[2], l: +x[3], c: +x[4], v: +(x[5] || 0), complete: true }; }).reverse(); /* terbaru di [0] */
+}
+/* normalisasi: terima format Worker maupun array; buang bar belum complete; kembalikan kronologis (terlama→terbaru) */
+function normCandles(desc) {
+  var arr = desc.filter(function (c) { return c.complete !== false; });
+  arr.sort(function (a, b) { return a.t - b.t; });
+  return arr;
+}
+/* fetch satu TF mengikuti tier; Binance digeser offset OANDA (persis Watchdog tfLoadOne) */
+async function loadTF(gran, force) {
+  var limit = TFCFG[gran];
+  var now = Date.now();
+  if (!force && S.cacheT[gran] && now - S.cacheT[gran] < 60000 && S.candles[gran]) return S.candles[gran];
+  var out = null, src = '—', pk = INS;
+  if (S.tok && S.acc && oandaTier() !== 'worker') {
+    try { out = normCandles(await oandaApiCandles(gran, limit)); src = 'OANDA API'; S.conn.api = { st: 'ok', msg: 'candle OK' }; }
+    catch (e) { S.conn.api = { st: 'bad', msg: 'OANDA API candle: ' + e.message }; }
+  }
+  if (!out && oandaTier() !== 'api') {
+    var wc = await workerCandles(INS, gran, limit);
+    if (wc) { out = normCandles(wc); src = 'Worker'; }
+  }
+  if (!out) {
+    if (oandaTier() === 'api') throw new Error('ELITE · OANDA API butuh Account ID + API token.');
+    if (!BIN_SYM) throw new Error(PC.label + ' tanpa cadangan Binance — butuh Worker V2 atau OANDA API');
+    var kb = await binanceKlines(gran, limit);   /* PAXG → geser ke harga OANDA */
+    out = normCandles(kb);
+    var ref = out.length ? last(out) : null;
+    var off = oaDelta(ref ? ref.c : null, ref ? ref.t : null) || 0;
+    if (off) out = out.map(function (q) { return { t: q.t, o: q.o + off, h: q.h + off, l: q.l + off, c: q.c + off, v: q.v, complete: true }; });
+    src = 'Binance PAXG (offset ' + sgn(off) + ')';
+  }
+  if (pk !== INS) return null;
+  S.candles[gran] = { asc: out, src: src, fetchedAt: Date.now() };
+  S.cacheT[gran] = Date.now();
+  return S.candles[gran];
+}
+async function fetchPaxgM15() {
+  if (!BIN_SYM) { S.paxg = null; return null; }
+  var pk = INS;
+  if (S.paxg && Date.now() - S.paxgT < 60000) return S.paxg;
+  try {
+    var kb = await binanceKlines('M15', 140);
+    if (pk !== INS) return null;
+    S.paxg = normCandles(kb); S.paxgT = Date.now();
+    /* ukur offset dari harga Worker terakhir vs close PAXG terakhir */
+    if (S.live != null && S.paxg.length) oaDelta(last(S.paxg).c, last(S.paxg).t);
+  } catch (e) { /* VP proxy boleh kosong — fail-open */ }
+  return S.paxg;
+}
+async function fetchAllCandles(force) {
+  for (var i = 0; i < TFS.length; i++) {
+    try { await loadTF(TFS[i], force); } catch (e) { /* satu TF gagal = MISSING, TF lain tetap jalan */ }
+  }
+  await fetchPaxgM15();
+}
+
+/* ── INDIKATOR (port persis ind-retail.py) ──────────────── */
+function closes(cs) { return cs.map(function (c) { return c.c; }); }
+function highs(cs) { return cs.map(function (c) { return c.h; }); }
+function lows(cs) { return cs.map(function (c) { return c.l; }); }
+function vols(cs) { return cs.map(function (c) { return c.v || 0; }); }
+function medP(cs) { return cs.map(function (c) { return (c.h + c.l) / 2; }); }
+function tpP(cs) { return cs.map(function (c) { return (c.h + c.l + c.c) / 3; }); }
+function sma(vals, n) {
+  var out = new Array(vals.length).fill(null);
+  for (var i = n - 1; i < vals.length; i++) {
+    var ok = true, s = 0;
+    for (var j = i - n + 1; j <= i; j++) { if (vals[j] == null) { ok = false; break; } s += vals[j]; }
+    if (ok) out[i] = s / n;
+  }
+  return out;
+}
+function ema(vals, n) {   /* seed = nilai pertama; output mulai i >= n-1 (persis Python) */
+  var out = new Array(vals.length).fill(null), k = 2 / (n + 1), prev = null;
+  for (var i = 0; i < vals.length; i++) {
+    var v = vals[i]; if (v == null) continue;
+    prev = (prev == null) ? v : v * k + prev * (1 - k);
+    if (i >= n - 1) out[i] = prev;
+  }
+  return out;
+}
+function atrArr(cs, n) {
+  n = n || 14; var tr = [];
+  for (var i = 0; i < cs.length; i++) {
+    if (i === 0) tr.push(cs[i].h - cs[i].l);
+    else tr.push(Math.max(cs[i].h - cs[i].l, Math.abs(cs[i].h - cs[i - 1].c), Math.abs(cs[i].l - cs[i - 1].c)));
+  }
+  return ema(tr, n);
+}
+function rsiW(vals, n) {   /* Wilder: avg pertama SMA-14, lalu smoothing (prev*(n-1)+curr)/n */
+  n = n || 14; var out = new Array(vals.length).fill(null);
+  if (vals.length <= n) return out;
+  var gains = [], losses = [];
+  for (var i = 1; i < vals.length; i++) { gains.push(Math.max(vals[i] - vals[i - 1], 0)); losses.push(Math.max(vals[i - 1] - vals[i], 0)); }
+  var ag = sum(gains.slice(0, n)) / n, al = sum(losses.slice(0, n)) / n;
+  for (var j = n; j < vals.length; j++) {
+    if (j > n) { ag = (ag * (n - 1) + gains[j - 1]) / n; al = (al * (n - 1) + losses[j - 1]) / n; }
+    out[j] = (al === 0) ? 100 : 100 - 100 / (1 + ag / al);
+  }
+  return out;
+}
+function macd(vals, fast, slow, sig) {
+  fast = fast || 12; slow = slow || 26; sig = sig || 9;
+  var ef = ema(vals, fast), es = ema(vals, slow);
+  var line = ef.map(function (a, i) { return (a == null || es[i] == null) ? null : a - es[i]; });
+  var sigl = ema(line, sig);
+  var hist = line.map(function (a, i) { return (a == null || sigl[i] == null) ? null : a - sigl[i]; });
+  return { line: line, signal: sigl, hist: hist };
+}
+function bb(vals, n, mult) {   /* Bollinger 30, SMA ± 2σ (SD populasi), %B, bandwidth % */
+  n = n || 30; mult = mult || 2;
+  var mid = sma(vals, n), up = new Array(vals.length).fill(null), lo = new Array(vals.length).fill(null),
+      pctb = new Array(vals.length).fill(null), bw = new Array(vals.length).fill(null);
+  for (var i = 0; i < vals.length; i++) {
+    if (mid[i] == null) continue;
+    var s = 0; for (var j = i - n + 1; j <= i; j++) s += Math.pow(vals[j] - mid[i], 2);
+    var sd = Math.sqrt(s / n);
+    up[i] = mid[i] + mult * sd; lo[i] = mid[i] - mult * sd;
+    pctb[i] = (up[i] !== lo[i]) ? (vals[i] - lo[i]) / (up[i] - lo[i]) : 0.5;
+    bw[i] = mid[i] ? (up[i] - lo[i]) / mid[i] * 100 : 0;
+  }
+  return { up: up, mid: mid, lo: lo, pctb: pctb, bw: bw };
+}
+function stoch(cs, n, sk, sd) {
+  n = n || 14; sk = sk || 3; sd = sd || 3;
+  var hs = highs(cs), ls = lows(cs), cl = closes(cs), k = new Array(cs.length).fill(null);
+  for (var i = n - 1; i < cs.length; i++) {
+    var hh = maxA(hs.slice(i - n + 1, i + 1)), ll = minA(ls.slice(i - n + 1, i + 1));
+    k[i] = (hh !== ll) ? 100 * (cl[i] - ll) / (hh - ll) : 50;
+  }
+  var kS = sma(k, sk);
+  return { k: kS, d: sma(kS, sd) };
+}
+function cci(cs, n) {
+  n = n || 20; var t = tpP(cs), m = sma(t, n), out = new Array(cs.length).fill(null);
+  for (var i = 0; i < cs.length; i++) {
+    if (m[i] == null) continue;
+    var md = 0; for (var j = i - n + 1; j <= i; j++) md += Math.abs(t[j] - m[i]);
+    md /= n; out[i] = md ? (t[i] - m[i]) / (0.015 * md) : 0;
+  }
+  return out;
+}
+function williamsR(cs, n) {
+  n = n || 14; var hs = highs(cs), ls = lows(cs), cl = closes(cs), out = new Array(cs.length).fill(null);
+  for (var i = n - 1; i < cs.length; i++) {
+    var hh = maxA(hs.slice(i - n + 1, i + 1)), ll = minA(ls.slice(i - n + 1, i + 1));
+    out[i] = (hh !== ll) ? -100 * (hh - cl[i]) / (hh - ll) : -50;
+  }
+  return out;
+}
+function adx(cs, n) {
+  n = n || 14; var hs = highs(cs), ls = lows(cs), cl = closes(cs), tr = [], pdm = [], mdm = [];
+  for (var i = 0; i < cs.length; i++) {
+    if (i === 0) { tr.push(hs[0] - ls[0]); pdm.push(0); mdm.push(0); }
+    else {
+      tr.push(Math.max(hs[i] - ls[i], Math.abs(hs[i] - cl[i - 1]), Math.abs(ls[i] - cl[i - 1])));
+      var up = hs[i] - hs[i - 1], dn = ls[i - 1] - ls[i];
+      pdm.push((up > dn && up > 0) ? up : 0); mdm.push((dn > up && dn > 0) ? dn : 0);
+    }
+  }
+  var atrv = ema(tr, n), pdiE = ema(pdm, n), mdiE = ema(mdm, n),
+      pdi = new Array(cs.length).fill(null), mdi = new Array(cs.length).fill(null), dx = new Array(cs.length).fill(null);
+  for (var i = 0; i < cs.length; i++) {
+    if (atrv[i] == null || atrv[i] === 0) continue;
+    pdi[i] = 100 * pdiE[i] / atrv[i]; mdi[i] = 100 * mdiE[i] / atrv[i];
+    var s = pdi[i] + mdi[i]; dx[i] = s ? 100 * Math.abs(pdi[i] - mdi[i]) / s : 0;
+  }
+  return { adx: ema(dx, n), pdi: pdi, mdi: mdi };
+}
+function supertrend(cs, n, mult) {
+  n = n || 10; mult = mult || 3;
+  var a = atrArr(cs, n), m = medP(cs), cl = closes(cs),
+      up = new Array(cs.length).fill(null), dn = new Array(cs.length).fill(null),
+      st = new Array(cs.length).fill(null), bull = new Array(cs.length).fill(false);
+  for (var i = 0; i < cs.length; i++) {
+    if (a[i] == null) continue;
+    var ub = m[i] + mult * a[i], lb = m[i] - mult * a[i];
+    if (i > 0 && up[i - 1] != null) {
+      if (cl[i - 1] > up[i - 1]) ub = Math.min(ub, up[i - 1]);
+      if (cl[i - 1] < dn[i - 1]) lb = Math.max(lb, dn[i - 1]);
+    }
+    up[i] = ub; dn[i] = lb;
+    if (i === 0) { bull[i] = true; st[i] = lb; }
+    else if (st[i - 1] === up[i - 1]) { bull[i] = cl[i] > up[i]; st[i] = bull[i] ? dn[i] : up[i]; }
+    else { bull[i] = cl[i] > dn[i]; st[i] = bull[i] ? dn[i] : up[i]; }
+  }
+  return { st: st, bull: bull };
+}
+function psar(cs, step, maxaf) {
+  step = step || 0.02; maxaf = maxaf || 0.20;
+  var hs = highs(cs), ls = lows(cs), out = new Array(cs.length).fill(null),
+      bull = true, af = step, ep = hs[0], sar = ls[0];
+  for (var i = 1; i < cs.length; i++) {
+    sar = sar + af * (ep - sar);
+    if (bull) {
+      if (ls[i] < sar) { bull = false; sar = ep; ep = ls[i]; af = step; }
+      else { if (hs[i] > ep) { ep = hs[i]; af = Math.min(af + step, maxaf); } sar = Math.min(sar, ls[i - 1], i > 1 ? ls[i] : ls[i - 1]); }
+    } else {
+      if (hs[i] > sar) { bull = true; sar = ep; ep = hs[i]; af = step; }
+      else { if (ls[i] < ep) { ep = ls[i]; af = Math.min(af + step, maxaf); } sar = Math.max(sar, hs[i - 1], i > 1 ? hs[i] : hs[i - 1]); }
+    }
+    out[i] = sar;
+  }
+  return { sar: out, bull: bull };
+}
+function ichimoku(cs) {
+  var hs = highs(cs), ls = lows(cs), cl = closes(cs);
+  function donchMid(n) {
+    var o = new Array(cs.length).fill(null);
+    for (var i = n - 1; i < cs.length; i++) o[i] = (maxA(hs.slice(i - n + 1, i + 1)) + minA(ls.slice(i - n + 1, i + 1))) / 2;
+    return o;
+  }
+  var tenkan = donchMid(9), kijun = donchMid(26),
+      sa = tenkan.map(function (a, i) { return (a == null || kijun[i] == null) ? null : (a + kijun[i]) / 2; }),
+      sb = donchMid(52), price = cl[cl.length - 1],
+      ct = (sa[sa.length - 1] != null && sb[sb.length - 1] != null) ? Math.max(sa[sa.length - 1], sb[sb.length - 1]) : null,
+      cb = (sa[sa.length - 1] != null && sb[sb.length - 1] != null) ? Math.min(sa[sa.length - 1], sb[sb.length - 1]) : null;
+  return { tenkan: tenkan, kijun: kijun, sa: sa, sb: sb, cloudTop: ct, cloudBot: cb };
+}
+function halfTrend(cs, n, mult) {
+  n = n || 20; mult = mult || 2;
+  var a = atrArr(cs, n), hs = highs(cs), ls = lows(cs), cl = closes(cs),
+      out = new Array(cs.length).fill(null), bull = new Array(cs.length).fill(true),
+      hi = new Array(cs.length).fill(null), lo = new Array(cs.length).fill(null);
+  for (var i = 0; i < cs.length; i++) {
+    if (a[i] == null) continue;
+    hi[i] = (i >= n - 1) ? maxA(hs.slice(i - n + 1, i + 1)) : hs[i];
+    lo[i] = (i >= n - 1) ? minA(ls.slice(i - n + 1, i + 1)) : ls[i];
+    if (i === 0 || out[i - 1] == null) { out[i] = lo[i]; bull[i] = true; continue; }
+    var prev = out[i - 1]; bull[i] = bull[i - 1];
+    if (bull[i - 1]) {
+      var cand = Math.max(prev, lo[i] - mult * a[i]);
+      if (cl[i] < cand) { bull[i] = false; out[i] = hi[i] + mult * a[i]; } else out[i] = cand;
+    } else {
+      var cand2 = Math.min(prev, hi[i] + mult * a[i]);
+      if (cl[i] > cand2) { bull[i] = true; out[i] = lo[i] - mult * a[i]; } else out[i] = cand2;
+    }
+  }
+  return { line: out, bull: bull };
+}
+function sslChannel(cs, n) {
+  n = n || 10; var hs = highs(cs), ls = lows(cs), cl = closes(cs),
+      up = sma(hs, n), dn = sma(ls, n),
+      bull = (up[up.length - 1] != null) ? cl[cl.length - 1] > up[up.length - 1] : true;
+  return { up: up, dn: dn, bull: bull };
+}
+function obv(cs) {
+  var cl = closes(cs), v = vols(cs), out = new Array(cs.length).fill(0);
+  for (var i = 1; i < cs.length; i++) out[i] = out[i - 1] + (cl[i] > cl[i - 1] ? v[i] : (cl[i] < cl[i - 1] ? -v[i] : 0));
+  return out;
+}
+function mfi(cs, n) {
+  n = n || 14; var t = tpP(cs), v = vols(cs), mf = t.map(function (x, i) { return x * v[i]; }), out = new Array(cs.length).fill(null);
+  for (var i = n; i < cs.length; i++) {
+    var pos = 0, neg = 0;
+    for (var j = i - n + 1; j <= i; j++) { if (t[j] > t[j - 1]) pos += mf[j]; else if (t[j] < t[j - 1]) neg += mf[j]; }
+    out[i] = neg ? 100 - 100 / (1 + pos / neg) : 100;
+  }
+  return out;
+}
+function cmf(cs, n) {
+  n = n || 20; var hs = highs(cs), ls = lows(cs), cl = closes(cs), v = vols(cs), out = new Array(cs.length).fill(null);
+  for (var i = n - 1; i < cs.length; i++) {
+    var num = 0, den = 0;
+    for (var j = i - n + 1; j <= i; j++) {
+      var rng = hs[j] - ls[j], mfm = rng ? ((cl[j] - ls[j]) - (hs[j] - cl[j])) / rng : 0;
+      num += mfm * v[j]; den += v[j];
+    }
+    out[i] = den ? num / den : 0;
+  }
+  return out;
+}
+function rvol(cs, n) {
+  n = n || 20; var v = vols(cs), m = sma(v, n);
+  return v.map(function (a, i) { return (a == null || m[i] == null || m[i] === 0) ? null : a / m[i]; });
+}
+function awesomeOsc(cs) {
+  var m = medP(cs), a = sma(m, 5), b = sma(m, 34);
+  return a.map(function (x, i) { return (x == null || b[i] == null) ? null : x - b[i]; });
+}
+
+/* ── STRUKTUR: ZigZag, divergensi, pola candle/chart, drift, level ── */
+function zigzag(cs, thr) {   /* persis structure.py/patterns.py; terakhir = ekstrem berjalan */
+  var swings = [], extHi = cs[0].h, extHiI = 0, extLo = cs[0].l, extLoI = 0, mode = 0;
+  for (var i = 1; i < cs.length; i++) {
+    var b = cs[i];
+    if (mode === 0) {
+      if (b.h > extHi) { extHi = b.h; extHiI = i; }
+      if (b.l < extLo) { extLo = b.l; extLoI = i; }
+      if (b.h - extLo >= thr) { swings.push([extLoI, extLo, 'L']); mode = 1; extHi = b.h; extHiI = i; }
+      else if (extHi - b.l >= thr) { swings.push([extHiI, extHi, 'H']); mode = -1; extLo = b.l; extLoI = i; }
+      continue;
+    }
+    if (mode === 1) {
+      if (b.h > extHi) { extHi = b.h; extHiI = i; }
+      else if (extHi - b.l >= thr) { swings.push([extHiI, extHi, 'H']); mode = -1; extLo = b.l; extLoI = i; }
+    } else {
+      if (b.l < extLo) { extLo = b.l; extLoI = i; }
+      else if (b.h - extLo >= thr) { swings.push([extLoI, extLo, 'L']); mode = 1; extHi = b.h; extHiI = i; }
+    }
+  }
+  if (mode === 1) swings.push([extHiI, extHi, 'H']);
+  else if (mode === -1) swings.push([extLoI, extLo, 'L']);
+  return swings;
+}
+function zzThr(price, atr) { return Math.max(0.003 * price, 0.5 * atr); }
+/* divergensi: 2 pivot harga terakhir vs 2 pivot indikator terakhir (pivot = swing ZigZag) */
+function divergence(cs, ind, swings) {
+  var res = [], conf = swings.length > 1 ? swings.slice(0, -1) : swings; /* buang ekstrem berjalan */
+  var hs = conf.filter(function (s) { return s[2] === 'H'; }), ls = conf.filter(function (s) { return s[2] === 'L'; });
+  function at(i) { return (i < ind.length) ? ind[i] : null; }
+  if (hs.length >= 2) {
+    var a = hs[hs.length - 2], b = hs[hs.length - 1], v1 = at(a[0]), v2 = at(b[0]);
+    if (v1 != null && v2 != null) {
+      if (b[1] > a[1] && v2 < v1) res.push('Regular BEARISH');
+      if (b[1] < a[1] && v2 > v1) res.push('Hidden BULLISH');
+    }
+  }
+  if (ls.length >= 2) {
+    var c = ls[ls.length - 2], d = ls[ls.length - 1], w1 = at(c[0]), w2 = at(d[0]);
+    if (w1 != null && w2 != null) {
+      if (d[1] < c[1] && w2 > w1) res.push('Regular BULLISH');
+      if (d[1] > c[1] && w2 < w1) res.push('Hidden BEARISH');
+    }
+  }
+  return res;
+}
+function candlePatterns(cs) {   /* persis ind-retail.candle_patterns — bar tutup terakhir */
+  var i = cs.length - 1, c = cs[i], p = i ? cs[i - 1] : c, p2 = i > 1 ? cs[i - 2] : c,
+      o = c.o, h = c.h, l = c.l, cl = c.c,
+      body = Math.abs(cl - o), rng = (h - l) || 1e-9,
+      upW = h - Math.max(o, cl), loW = Math.min(o, cl) - l, res = [];
+  if (body / rng < 0.1) res.push('Doji');
+  if (loW > 2 * body && upW < 0.3 * body && cl > o) res.push('Hammer');
+  if (loW > 2 * body && upW < 0.3 * body && cl < o) res.push('Hanging Man');
+  if (upW > 2 * body && loW < 0.3 * body && cl < o) res.push('Shooting Star');
+  if (upW > 2 * body && loW < 0.3 * body && cl > o) res.push('Inverted Hammer');
+  if (loW > 3 * body && upW < 0.1 * body) res.push('Dragonfly Doji');
+  if (upW > 3 * body && loW < 0.1 * body) res.push('Gravestone Doji');
+  if (body / rng > 0.7 && upW < 0.1 * body && loW < 0.1 * body) res.push('Marubozu');
+  if (cl > o && p.c < p.o && cl >= p.o && o <= p.c) res.push('Bullish Engulfing');
+  if (cl < o && p.c > p.o && cl <= p.o && o >= p.c) res.push('Bearish Engulfing');
+  if (Math.abs(cl - o) < Math.abs(p.c - p.o) * 0.5 && Math.max(o, cl) < Math.max(p.o, p.c) && Math.min(o, cl) > Math.min(p.o, p.c)) res.push('Harami');
+  if (p2.c < p2.o && Math.abs(p.c - p.o) < Math.abs(p2.c - p2.o) * 0.5 && cl > o && cl > (p2.o + p2.c) / 2) res.push('Morning Star');
+  if (p2.c > p2.o && Math.abs(p.c - p.o) < Math.abs(p2.c - p2.o) * 0.5 && cl < o && cl < (p2.o + p2.c) / 2) res.push('Evening Star');
+  if (cl > o && p.c > p.o && p2.c > p2.o && cl > p.c && p.c > p2.c) res.push('Three White Soldiers');
+  if (cl < o && p.c < p.o && p2.c < p2.o && cl < p.c && p.c < p2.c) res.push('Three Black Crows');
+  if (h <= p.h && l >= p.l) res.push('Inside Bar');
+  if (h >= p.h && l <= p.l && body > Math.abs(p.c - p.o)) res.push('Outside Bar');
+  if (Math.abs(h - p.h) < PC.slBuf / 4 && Math.abs(l - p.l) < PC.slBuf / 4) res.push('Tweezer');
+  if (loW > 2 * body && upW < body) res.push(cl > o ? 'Pin Bar (bullish)' : 'Pin Bar (bearish)');
+  return res;
+}
+/* ── POLA CHART dari swing ZigZag (persis patterns.py — hanya pola TERBARU) ── */
+function P(name, dir, status, conf, detail, target, neck) { return { name: name, dir: dir, status: status, conf: conf, detail: detail, target: target || null, neck: neck || null }; }
+function detectDouble(S, atrv, close) {
+  var out = [], tol = Math.max(0.0015 * close, 0.3 * atrv);
+  for (var k = Math.max(0, S.length - 8); k < S.length - 2; k++) {
+    var a = S[k], b = S[k + 1], c = S[k + 2];
+    if (a[2] === 'H' && b[2] === 'L' && c[2] === 'H') {
+      var h1 = a[1], lo = b[1], h2 = c[1];
+      if (Math.abs(h2 - h1) <= tol && Math.min(h1, h2) - lo >= 0.5 * atrv) {
+        var neck = lo, tgt = lo - (Math.max(h1, h2) - lo), st = close < neck ? 'TERKONFIRMASI' : 'membentuk';
+        var conf = st === 'TERKONFIRMASI' ? 78 : 62; if (Math.abs(h2 - h1) <= tol / 2) conf += 6;
+        out.push(P('M / Double Top', 'BEARISH', st, Math.min(95, conf), 'puncak ' + f2(h1) + ' & ' + f2(h2) + ' | neckline ' + f2(neck) + ' | target ' + f2(tgt), tgt, neck));
+      }
+    }
+    if (a[2] === 'L' && b[2] === 'H' && c[2] === 'L') {
+      var l1 = a[1], hi = b[1], l2 = c[1];
+      if (Math.abs(l2 - l1) <= tol && hi - Math.max(l1, l2) >= 0.5 * atrv) {
+        var neck2 = hi, tgt2 = hi + (hi - Math.max(l1, l2)), st2 = close > neck2 ? 'TERKONFIRMASI' : 'membentuk';
+        var conf2 = st2 === 'TERKONFIRMASI' ? 78 : 62; if (Math.abs(l2 - l1) <= tol / 2) conf2 += 6;
+        out.push(P('W / Double Bottom', 'BULLISH', st2, Math.min(95, conf2), 'dasar ' + f2(l1) + ' & ' + f2(l2) + ' | neckline ' + f2(neck2) + ' | target ' + f2(tgt2), tgt2, neck2));
+      }
+    }
+  }
+  return out;
+}
+function detectV(S, cs, atrv, close) {
+  var out = [], n = cs.length;
+  for (var k = Math.max(0, S.length - 3); k < S.length; k++) {
+    if (S[k][2] !== 'L' || k === 0) continue;
+    var loI = S[k][0], lo = S[k][1], hi = S[k - 1][1], hiI = S[k - 1][0], drop = hi - lo;
+    if (drop < 1.2 * atrv || loI - hiI > 10) continue;
+    var rec, bars;
+    if (k + 1 < S.length && S[k + 1][2] === 'H') { rec = (S[k + 1][1] - lo) / drop; bars = S[k + 1][0] - loI; if (bars > 20) continue; }
+    else { rec = (close - lo) / drop; bars = n - 1 - loI; if (bars > 12) continue; }
+    if (rec >= 0.618) {
+      var conf = bars <= 8 ? 70 + Math.min(20, Math.floor(rec * 20)) : 58;
+      out.push(P('V (reversal tajam)', 'BULLISH', 'TERKONFIRMASI', Math.min(92, conf),
+        'dasar ' + f2(lo) + ' | jatuh $' + f2(drop) + ' (' + f2(drop / atrv, 1) + ' ATR) | pulih ' + Math.round(rec * 100) + '% dalam ' + bars + ' bar | target ext 127.2% = ' + f2(lo + 1.272 * drop), lo + 1.272 * drop));
+    }
+  }
+  for (var m = Math.max(0, S.length - 3); m < S.length; m++) {
+    if (S[m][2] !== 'H' || m === 0) continue;
+    var hiI2 = S[m][0], hi2 = S[m][1], lo2 = S[m - 1][1], loI2 = S[m - 1][0], rise = hi2 - lo2;
+    if (rise < 1.2 * atrv || hiI2 - loI2 > 10) continue;
+    var rec2, bars2;
+    if (m + 1 < S.length && S[m + 1][2] === 'L') { rec2 = (hi2 - S[m + 1][1]) / rise; bars2 = S[m + 1][0] - hiI2; if (bars2 > 20) continue; }
+    else { rec2 = (hi2 - close) / rise; bars2 = n - 1 - hiI2; if (bars2 > 12) continue; }
+    if (rec2 >= 0.618) {
+      var conf2 = bars2 <= 8 ? 70 + Math.min(20, Math.floor(rec2 * 20)) : 58;
+      out.push(P('V terbalik (reversal tajam)', 'BEARISH', 'TERKONFIRMASI', Math.min(92, conf2),
+        'puncak ' + f2(hi2) + ' | naik $' + f2(rise) + ' (' + f2(rise / atrv, 1) + ' ATR) | turun ' + Math.round(rec2 * 100) + '% dalam ' + bars2 + ' bar | target ' + f2(hi2 - 1.272 * rise), hi2 - 1.272 * rise));
+    }
+  }
+  return out;
+}
+function detectQM(S, atrv, close) {
+  var out = [];
+  for (var k = Math.max(0, S.length - 7); k < S.length - 4; k++) {
+    var w = S.slice(k, k + 5), seq = w.map(function (s) { return s[2]; }).join('');
+    if (seq === 'LHLHL') {
+      var l0 = w[0][1], h1 = w[1][1], l1 = w[2][1], h2 = w[3][1], l2 = w[4][1];
+      if (l1 > l0 && h2 > h1 && l2 < l1 && h2 - h1 >= 0.5 * atrv && l1 - l2 >= 0.3 * atrv)
+        out.push(P('QM Bearish (Quasimodo)', 'BEARISH', 'TERKONFIRMASI', 80, 'HH ' + f2(h1) + '→' + f2(h2) + ' lalu LL jebol HL ' + f2(l1) + ' | QML ' + f2(l1) + ' (retest = supply) | target ' + f2(l2 - (h2 - l1)), l2 - (h2 - l1), l1));
+    }
+    if (seq === 'HLHLH') {
+      var h0 = w[0][1], l1b = w[1][1], h1b = w[2][1], l2b = w[3][1], h2b = w[4][1];
+      if (h1b < h0 && l2b < l1b && h2b > h1b && l1b - l2b >= 0.5 * atrv && h2b - h1b >= 0.3 * atrv)
+        out.push(P('QM Bullish (Quasimodo)', 'BULLISH', 'TERKONFIRMASI', 80, 'LL ' + f2(l1b) + '→' + f2(l2b) + ' lalu HH jebol LH ' + f2(h1b) + ' | QML ' + f2(h1b) + ' (retest = demand) | target ' + f2(h2b + (h1b - l2b)), h2b + (h1b - l2b), h1b));
+    }
+  }
+  if (S.length >= 4) {
+    var w4 = S.slice(-4), seq4 = w4.map(function (s) { return s[2]; }).join('');
+    if (seq4 === 'LHLH') {
+      var l0c = w4[0][1], h1c = w4[1][1], l1c = w4[2][1], h2c = w4[3][1];
+      if (l1c > l0c && h2c > h1c && close < h2c && close - l1c < 1.0 * atrv)
+        out.push(P('QM Bearish (Quasimodo)', 'BEARISH', 'membentuk — awasi jebol HL', 55, 'HH ' + f2(h1c) + '→' + f2(h2c) + ' | HL ' + f2(l1c) + ' | jebol ' + f2(l1c) + ' = QM lengkap, QML ' + f2(l1c), null, l1c));
+    }
+    if (seq4 === 'HLHL') {
+      var h0d = w4[0][1], l1d = w4[1][1], h1d = w4[2][1], l2d = w4[3][1];
+      if (h1d < h0d && l2d < l1d && close > l2d) {
+        if (close > h1d) out.push(P('QM Bullish (Quasimodo)', 'BULLISH', 'LH SUDAH DIJEBOL — tunggu close di atasnya', 68, 'LL ' + f2(l1d) + '→' + f2(l2d) + ' | LH ' + f2(h1d) + ' sudah ditembus (harga ' + f2(close) + ') | close di atas ' + f2(h1d) + ' = QM lengkap, QML ' + f2(h1d), null, h1d));
+        else if (h1d - close < 1.0 * atrv) out.push(P('QM Bullish (Quasimodo)', 'BULLISH', 'membentuk — awasi jebol LH', 55, 'LL ' + f2(l1d) + '→' + f2(l2d) + ' | LH ' + f2(h1d) + ' | jebol ' + f2(h1d) + ' = QM lengkap, QML ' + f2(h1d), null, h1d));
+      }
+    }
+  }
+  return out;
+}
+function detectHNS(S, atrv, close) {
+  var out = [], tol = Math.max(0.002 * close, 0.4 * atrv);
+  for (var k = Math.max(0, S.length - 8); k < S.length - 6; k++) {
+    var w = S.slice(k, k + 7), seq = w.map(function (s) { return s[2]; }).join('');
+    if (seq === 'LHLHLHL') {
+      var ls = w[0][1], hs = w[1][1], v1 = w[2][1], head = w[3][1], v2 = w[4][1], rs = w[5][1];
+      if (head > hs + 0.8 * atrv && Math.abs(rs - hs) <= tol && rs < head) {
+        var neck = Math.min(v1, v2), tgt = neck - (head - neck), st = close < neck ? 'TERKONFIRMASI' : 'membentuk';
+        out.push(P('HNS (Head & Shoulders)', 'BEARISH', st, st === 'TERKONFIRMASI' ? 82 : 66, 'bahu ' + f2(hs) + ' | kepala ' + f2(head) + ' | bahu kanan ' + f2(rs) + ' | neckline ' + f2(neck) + ' | target ' + f2(tgt), tgt, neck));
+      }
+    }
+    if (seq === 'HLHLHLH') {
+      var hs2 = w[0][1], ls2 = w[1][1], v1b = w[2][1], head2 = w[3][1], v2b = w[4][1], rs2 = w[5][1];
+      if (head2 < ls2 - 0.8 * atrv && Math.abs(rs2 - ls2) <= tol && rs2 > head2) {
+        var neck2 = Math.max(v1b, v2b), tgt2 = neck2 + (neck2 - head2), st2 = close > neck2 ? 'TERKONFIRMASI' : 'membentuk';
+        out.push(P('Inverse HNS', 'BULLISH', st2, st2 === 'TERKONFIRMASI' ? 82 : 66, 'bahu ' + f2(ls2) + ' | kepala ' + f2(head2) + ' | bahu kanan ' + f2(rs2) + ' | neckline ' + f2(neck2) + ' | target ' + f2(tgt2), tgt2, neck2));
+      }
+    }
+  }
+  return out;
+}
+function detect123(S, atrv, close) {
+  var out = [];
+  if (S.length < 3) return out;
+  var w = S.slice(-3), seq = w.map(function (s) { return s[2]; }).join('');
+  if (seq === 'LHL') {
+    var l1 = w[0][1], h1 = w[1][1], l2 = w[2][1];
+    if (l2 > l1 && h1 - l1 >= 1.0 * atrv) {
+      var st = close > h1 ? 'TERKONFIRMASI' : 'membentuk';
+      out.push(P('123 Bullish', 'BULLISH', st, st === 'TERKONFIRMASI' ? 76 : 60, '1:' + f2(l1) + ' 2:' + f2(h1) + ' 3:' + f2(l2) + ' (HL) | break ' + f2(h1) + ' = 123 lengkap | target ' + f2(h1 + (h1 - l1)), h1 + (h1 - l1), h1));
+    }
+  }
+  if (seq === 'HLH') {
+    var h1b = w[0][1], l1b = w[1][1], h2b = w[2][1];
+    if (h2b < h1b && h1b - l1b >= 1.0 * atrv) {
+      var st2 = close < l1b ? 'TERKONFIRMASI' : 'membentuk';
+      out.push(P('123 Bearish', 'BEARISH', st2, st2 === 'TERKONFIRMASI' ? 76 : 60, '1:' + f2(h1b) + ' 2:' + f2(l1b) + ' 3:' + f2(h2b) + ' (LH) | break ' + f2(l1b) + ' = 123 lengkap | target ' + f2(l1b - (h1b - l1b)), l1b - (h1b - l1b), l1b));
+    }
+  }
+  return out;
+}
+function detectPatterns(S, cs, atrv, close) {
+  var all = [].concat(detectDouble(S, atrv, close), detectV(S, cs, atrv, close), detectQM(S, atrv, close), detectHNS(S, atrv, close), detect123(S, atrv, close));
+  var best = {};
+  all.forEach(function (p) { var k = p.name + '|' + p.dir; if (!best[k] || p.conf > best[k].conf) best[k] = p; });
+  return Object.keys(best).map(function (k) { return best[k]; }).sort(function (a, b) { return b.conf - a.conf; });
+}
+/* ── DRIFT (persis structure.py) ── */
+function linSlope(xs, ys) {
+  var n = xs.length, mx = avg(xs), my = avg(ys), num = 0, den = 0;
+  for (var i = 0; i < n; i++) { num += (xs[i] - mx) * (ys[i] - my); den += Math.pow(xs[i] - mx, 2); }
+  return den ? num / den : 0;
+}
+function drift(S, cs, a, close) {
+  var hs = S.slice(-8).filter(function (s) { return s[2] === 'H'; }), ls = S.slice(-8).filter(function (s) { return s[2] === 'L'; });
+  if (hs.length < 2 || ls.length < 2) return { arah: '—', dir: 0, text: 'drift: data swing kurang' };
+  var hv = hs.map(function (s) { return s[1]; }), lv = ls.map(function (s) { return s[1]; }),
+      hi = hs.map(function (s) { return s[0]; }), li = ls.map(function (s) { return s[0]; });
+  function allUp(v) { for (var i = 1; i < v.length; i++) if (!(v[i] > v[i - 1])) return false; return true; }
+  function allDn(v) { for (var i = 1; i < v.length; i++) if (!(v[i] < v[i - 1])) return false; return true; }
+  var hUp = allUp(hv), hDn = allDn(hv), lUp = allUp(lv), lDn = allDn(lv), arah, dir;
+  if (hUp && lUp) { arah = 'DRIFT UP'; dir = 1; }
+  else if (hDn && lDn) { arah = 'DRIFT DOWN'; dir = -1; }
+  else if (hUp && lDn) { arah = 'MELEBAR (volatilitas naik)'; dir = 0; }
+  else if (hDn && lUp) { arah = 'MENYEMPIT (segitiga/range)'; dir = 0; }
+  else { arah = 'DRIFT DATAR / CAMPUR'; dir = 0; }
+  var sh = linSlope(hi, hv), sl = linSlope(li, lv), lag = cs.length - 1 - S[S.length - 1][0];
+  return {
+    arah: arah, dir: dir,
+    text: arah + ' | puncak ' + (hUp ? 'naik' : hDn ? 'turun' : 'campur') + ' ' + hv.slice(-3).map(function (x) { return f2(x); }).join('/') +
+      ' | dasar ' + (lUp ? 'naik' : lDn ? 'turun' : 'campur') + ' ' + lv.slice(-3).map(function (x) { return f2(x); }).join('/') +
+      ' | laju puncak ' + sgn(sh, 2) + '$/bar (' + sgn(sh * 10 / (a || 1), 2) + ' ATR/10 bar) | dasar ' + sgn(sl, 2) + '$/bar | swing terakhir ' + lag + ' bar lalu'
+  };
+}
+/* ── SKOR TREN 10 suara (persis analisa.py trend_score) ── */
+function trendScore(cs) {
+  var cl = closes(cs), price = last(cl);
+  var e20 = last(ema(cl, 20)), e50 = last(ema(cl, 50)), e200 = last(ema(cl, 200));
+  var st = supertrend(cs), sar = psar(cs), ich = ichimoku(cs), ht = halfTrend(cs), ssl = sslChannel(cs), ax = adx(cs);
+  var votes = [];
+  votes.push(price > e20 ? 1 : -1);
+  votes.push(price > e50 ? 1 : -1);
+  votes.push(price > e200 ? 1 : -1);
+  votes.push(last(st.bull) ? 1 : -1);
+  votes.push(sar.bull ? 1 : -1);
+  votes.push((last(ich.tenkan) || 0) > (last(ich.kijun) || 0) ? 1 : -1);
+  votes.push(price > (ich.cloudTop || 0) ? 1 : (price < (ich.cloudBot || 0) ? -1 : 0));
+  votes.push(last(ht.bull) ? 1 : -1);
+  votes.push(ssl.bull ? 1 : -1);
+  var axv = last(ax.adx) || 0, pd = last(ax.pdi) || 0, md = last(ax.mdi) || 0;
+  votes.push(axv >= 25 && pd > md ? 1 : (axv >= 25 && md > pd ? -1 : 0));
+  return { score: sum(votes), votes: votes };
+}
+/* ── FIB, PIVOT/CAMARILLA, LEVEL ── */
+function fibLevels(lo, hi) {
+  var d = hi - lo;
+  return { '0%': lo, '23.6%': lo + d * 0.236, '38.2%': lo + d * 0.382, '50%': lo + d * 0.5, '61.8%': lo + d * 0.618, '78.6%': lo + d * 0.786, '100%': hi, '127.2%': hi + d * 0.272, '161.8%': hi + d * 0.618 };
+}
+function pivots(dailyAsc) {   /* pivot klasik dari bar harian terakhir yang TUTUP */
+  var c = dailyAsc[dailyAsc.length - 1]; if (!c) return null;
+  var p = (c.h + c.l + c.c) / 3, r1 = 2 * p - c.l, s1 = 2 * p - c.h,
+      r2 = p + (c.h - c.l), s2 = p - (c.h - c.l), r3 = c.h + 2 * (p - c.l), s3 = c.l - 2 * (c.h - p),
+      rng = c.h - c.l, cam = {};
+  [['R4', 1.5], ['R3', 1.25], ['R2', 1.1666], ['R1', 1.0833], ['S1', 0.9166], ['S2', 0.8333], ['S3', 0.75], ['S4', 0.5]].forEach(function (kv) {
+    cam[kv[0]] = kv[0][0] === 'R' ? c.c + rng * (kv[1] - 1) : c.c - rng * (1 - kv[1]);
+  });
+  return { P: p, R1: r1, S1: s1, R2: r2, S2: s2, R3: r3, S3: s3, Camarilla: cam };
+}
+function roundStep(price) { return PC.step; }
+function prevHighsLows(dailyAsc) {   /* bar terakhir = hari kemarin (bar hari ini belum tutup & sudah dibuang) */
+  var out = {};
+  if (dailyAsc.length >= 1) { var y = dailyAsc[dailyAsc.length - 1]; out.PDH = y.h; out.PDL = y.l; }
+  if (dailyAsc.length >= 7) { var w = dailyAsc.slice(-7, -1); out.PWH = maxA(w.map(function (c) { return c.h; })); out.PWL = minA(w.map(function (c) { return c.l; })); }
+  if (dailyAsc.length >= 30) { var m = dailyAsc.slice(-30, -1); out.PMH = maxA(m.map(function (c) { return c.h; })); out.PML = minA(m.map(function (c) { return c.l; })); }
+  return out;
+}
+function monthlyFromDaily(dailyAsc) {   /* agregasi D → bulanan untuk PMH/PML bila data W kurang */
+  var out = [], cur = null;
+  dailyAsc.forEach(function (c) {
+    var d = new Date(c.t), key = d.getUTCFullYear() + '-' + d.getUTCMonth();
+    if (!cur || cur.key !== key) { cur = { key: key, t: c.t, o: c.o, h: c.h, l: c.l, c: c.c, v: c.v || 0 }; out.push(cur); }
+    else { cur.h = Math.max(cur.h, c.h); cur.l = Math.min(cur.l, c.l); cur.c = c.c; cur.v += c.v || 0; }
+  });
+  return out;
+}
+function hlinesForTF(tf, S, cs, atr, price, dailyAsc, weeklyAsc) {
+  var lvls = [], tol = Math.max(0.0015 * price, 0.25 * atr);
+  S.slice(-6).forEach(function (s) { lvls.push([s[1], (s[2] === 'H' ? 'swing high ' : 'swing low ') + f2(s[1]), tf]); });
+  var step = roundStep(price);
+  [-2, -1, 1, 2].forEach(function (k) { var r = Math.round(price / step) * step + k * step; lvls.push([r, 'round $' + f2(r), tf]); });
+  if (dailyAsc && dailyAsc.length) {
+    var ph = prevHighsLows(dailyAsc);
+    if (ph.PDH != null) { lvls.push([ph.PDH, 'PDH ' + f2(ph.PDH), 'D']); lvls.push([ph.PDL, 'PDL ' + f2(ph.PDL), 'D']); }
+    if (ph.PWH != null) { lvls.push([ph.PWH, 'PWH ' + f2(ph.PWH), 'W']); lvls.push([ph.PWL, 'PWL ' + f2(ph.PWL), 'W']); }
+    if (ph.PMH != null) { lvls.push([ph.PMH, 'PMH ' + f2(ph.PMH), 'M']); lvls.push([ph.PML, 'PML ' + f2(ph.PML), 'M']); }
+  }
+  if (weeklyAsc && weeklyAsc.length >= 2) {   /* PW dari candle W: bar terakhir yang tutup */
+    var w = weeklyAsc[weeklyAsc.length - 1]; lvls.push([w.h, 'PWH ' + f2(w.h), 'W']); lvls.push([w.l, 'PWL ' + f2(w.l), 'W']); }
+  if (S.length >= 2) {   /* Fib kaki berjalan (2 swing terakhir) */
+    var lastS = S[S.length - 1], prevS = S[S.length - 2];
+    if (lastS[2] === 'H' && prevS[2] === 'L') {
+      var lo = prevS[1], hi = lastS[1];
+      [0.236, 0.382, 0.5, 0.618, 0.786].forEach(function (r) { lvls.push([hi - (hi - lo) * r, 'Fib ' + (r * 100).toFixed(1) + '% kaki ' + f2(lo) + '→' + f2(hi), tf]); });
+      [1.272, 1.618].forEach(function (r) { lvls.push([lo + (hi - lo) * r, 'Fib ext ' + r + ' kaki ' + f2(lo) + '→' + f2(hi), tf]); });
+    } else if (lastS[2] === 'L' && prevS[2] === 'H') {
+      var hi2 = prevS[1], lo2 = lastS[1];
+      [0.236, 0.382, 0.5, 0.618, 0.786].forEach(function (r) { lvls.push([lo2 + (hi2 - lo2) * r, 'Fib ' + (r * 100).toFixed(1) + '% kaki ' + f2(hi2) + '→' + f2(lo2), tf]); });
+      [1.272, 1.618].forEach(function (r) { lvls.push([hi2 - (hi2 - lo2) * r, 'Fib ext ' + r + ' kaki ' + f2(hi2) + '→' + f2(lo2), tf]); });
+    }
+  }
+  return lvls;
+}
+function mergedLevels(summaries, price, atr15) {
+  var items = [];
+  summaries.forEach(function (s) {
+    (s.lvls || []).forEach(function (lv) { items.push([lv[0], lv[1], lv[2]]); });
+    (s.patterns || []).forEach(function (p) {
+      if (p.target != null) items.push([p.target, 'target ' + p.name + ' ' + p.dir, s.tf]);
+      if (p.neck != null) items.push([p.neck, 'neckline ' + p.name, s.tf]);
+    });
+  });
+  var tol = Math.max(0.0015 * price, 0.3 * atr15);
+  items.sort(function (a, b) { return a[0] - b[0]; });
+  var groups = [];
+  items.forEach(function (it) {
+    if (groups.length && Math.abs(it[0] - groups[groups.length - 1][0]) <= tol) groups[groups.length - 1][1].push(it);
+    else groups.push([it[0], [it]]);
+  });
+  var out = groups.map(function (g) {
+    var members = g[1], tfs = [], labs = [];
+    members.forEach(function (m) { if (tfs.indexOf(m[2]) < 0) tfs.push(m[2]); if (labs.indexOf(m[1]) < 0) labs.push(m[1]); });
+    return { level: avg(members.map(function (m) { return m[0]; })), ntf: tfs.length, labs: labs.slice(0, 3), tfs: tfs };
+  });
+  return out.sort(function (a, b) { return a.level - b.level; });
+}
+/* ── VOLUME PROFILE dari PAXG M15 (proxy; digeser offset OANDA) ── */
+function volumeProfile(paxgAsc, offset) {
+  if (!paxgAsc || paxgAsc.length < 30) return null;
+  var lo = minA(paxgAsc.map(function (c) { return c.l; })), hi = maxA(paxgAsc.map(function (c) { return c.h; }));
+  var bins = 24, bw = (hi - lo) / bins || 1, vol = new Array(bins).fill(0), tot = 0;
+  paxgAsc.forEach(function (c) {
+    var idx = Math.min(bins - 1, Math.max(0, Math.floor((c.c - lo) / bw)));
+    vol[idx] += c.v || 0; tot += c.v || 0;
+  });
+  if (!tot) return null;
+  var pocI = 0; for (var i = 1; i < bins; i++) if (vol[i] > vol[pocI]) pocI = i;
+  var need = tot * 0.70, acc = vol[pocI], u = pocI, d = pocI;
+  while (acc < need && (u < bins - 1 || d > 0)) {
+    var upV = u < bins - 1 ? vol[u + 1] : -1, dnV = d > 0 ? vol[d - 1] : -1;
+    if (upV >= dnV) { u++; acc += vol[u]; } else { d--; acc += vol[d]; }
+  }
+  var off = offset || 0;
+  return {
+    poc: lo + (pocI + 0.5) * bw + off, vah: lo + (u + 1) * bw + off, val: lo + d * bw + off,
+    pocRaw: lo + (pocI + 0.5) * bw, vahRaw: lo + (u + 1) * bw, valRaw: lo + d * bw, totVol: tot
+  };
+}
+
+/* ── ANALISA: ringkasan 6 lapis per TF ───────────────────── */
+function atrSMA(cs, n) {   /* ind-calc.py: rata-rata TR 14 terakhir (bukan Wilder) */
+  n = n || 14; var trs = [];
+  for (var i = 1; i < cs.length; i++) trs.push(Math.max(cs[i].h - cs[i].l, Math.abs(cs[i].h - cs[i - 1].c), Math.abs(cs[i].l - cs[i - 1].c)));
+  var w = trs.slice(-n); return w.length ? sum(w) / w.length : null;
+}
+function bbPos(pctb) {
+  if (pctb >= 1) return 'DI ATAS band atas';
+  if (pctb <= 0) return 'DI BAWAH band bawah';
+  if (pctb > 0.8) return 'dekat band atas';
+  if (pctb < 0.2) return 'dekat band bawah';
+  return 'tengah band';
+}
+function emaAlign(price, e20, e50, e200) {
+  if (price > e20 && e20 > e50 && e50 > e200) return 'NAIK PENUH';
+  if (price < e20 && e20 < e50 && e50 < e200) return 'TURUN PENUH';
+  if (price > e200) return 'di atas EMA200 (tren panjang naik)';
+  return 'di bawah EMA200 (tren panjang turun)';
+}
+function leanStr(v, up, dn) { if (v == null) return 'MISSING'; return v >= up ? 'BULLISH' : (v <= dn ? 'BEARISH' : 'NETRAL'); }
+var DIV_NAMES = ['RSI', 'MACD-hist', 'Stoch', 'CCI', 'OBV', 'MFI', 'AO'];
+function tfSummary(tf, flowDir) {
+  var rec = S.candles[tf]; if (!rec || !rec.asc || rec.asc.length < 40) return null;
+  var cs = rec.asc, cl = closes(cs), price = last(cl);
+  var atrW = last(atrArr(cs, 14)) || 0, atr = atrW;
+  var e20 = last(ema(cl, 20)), e50 = last(ema(cl, 50)), e200 = last(ema(cl, 200));
+  var ts = trendScore(cs);
+  var sw = zigzag(cs, zzThr(price, atr));
+  var dr = drift(sw, cs, atr, price);
+  var align = emaAlign(price, e20, e50, e200);
+  var alV = align === 'NAIK PENUH' ? 1 : (align === 'TURUN PENUH' ? -1 : 0);
+  var l1v = Math.floor((ts.score || 0) / 3) + dr.dir + alV;
+  /* L2 momentum */
+  var rsiA = rsiW(cl), rsiV = last(rsiA), mc = macd(cl), mhV = last(mc.hist), mlV = last(mc.line);
+  var st = stoch(cs), kV = last(st.k), dV = last(st.d), cciV = last(cci(cs)), wrV = last(williamsR(cs));
+  var indSeries = { 'RSI': rsiA, 'MACD-hist': mc.hist, 'Stoch': st.k, 'CCI': cci(cs), 'OBV': obv(cs), 'MFI': mfi(cs), 'AO': awesomeOsc(cs) };
+  var divs = [];
+  DIV_NAMES.forEach(function (nm) { divergence(cs, indSeries[nm], sw).forEach(function (d) { divs.push(nm + ' ' + d); }); });
+  var bullDiv = divs.filter(function (x) { return x.indexOf('BULLISH') >= 0; }).length;
+  var bearDiv = divs.filter(function (x) { return x.indexOf('BEARISH') >= 0; }).length;
+  var l2v = (mhV > 0 ? 1 : mhV < 0 ? -1 : 0) + (rsiV > 50 ? 1 : rsiV < 50 ? -1 : 0) + (bullDiv > bearDiv ? 1 : bearDiv > bullDiv ? -1 : 0);
+  var heat = (rsiV > 70 || kV > 90) ? 'PANAS (overbought)' : ((rsiV < 30 || kV < 10) ? 'DINGIN (oversold)' : '');
+  /* L3 volatilitas */
+  var b = bb(cl, 30, 2), pbV = last(b.pctb), bwV = last(b.bw);
+  /* L4 volume */
+  var mfiV = last(mfi(cs)), cmfV = last(cmf(cs)), ob = obv(cs), obvD = ob.length > 21 ? ob[ob.length - 1] - ob[ob.length - 22] : null, rvV = last(rvol(cs));
+  var l4v = (cmfV > 0 ? 1 : cmfV < 0 ? -1 : 0) + (obvD > 0 ? 1 : obvD < 0 ? -1 : 0) + (mfiV > 50 ? 1 : mfiV < 50 ? -1 : 0);
+  /* L5 timing */
+  var cpats = candlePatterns(cs), pats = detectPatterns(sw, cs, atr, price);
+  var bullP = pats.filter(function (p) { return p.dir === 'BULLISH'; }).length, bearP = pats.filter(function (p) { return p.dir === 'BEARISH'; }).length;
+  var dailyAsc = S.candles.D ? S.candles.D.asc : null, weeklyAsc = S.candles.W ? S.candles.W.asc : null;
+  var lvls = hlinesForTF(tf, sw, cs, atr, price, dailyAsc, weeklyAsc);
+  return {
+    tf: tf, price: price, atr: atr, atrSMA: atrSMA(cs, 14), src: rec.src, fetchedAt: rec.fetchedAt,
+    ts: ts.score, drift: dr, align: align, swings: sw,
+    rsi: rsiV, macdHist: mhV, macdLine: mlV, stochK: kV, stochD: dV, cci: cciV, wr: wrV,
+    divs: divs, bullDiv: bullDiv, bearDiv: bearDiv,
+    pctB: pbV, bw: bwV, bbPos: bbPos(pbV == null ? 0.5 : pbV),
+    mfi: mfiV, cmf: cmfV, obvD: obvD, rvol: rvV,
+    candlePats: cpats, patterns: pats, lvls: lvls,
+    layers: {
+      1: { lean: leanStr(l1v, 2, -2), txt: 'skor tren ' + (ts.score >= 0 ? '+' : '') + ts.score + '/10 | ' + align + ' | drift ' + (dr.dir > 0 ? 'UP' : dr.dir < 0 ? 'DOWN' : 'datar/campur') },
+      2: { lean: leanStr(l2v, 2, -2), txt: 'RSI ' + f2(rsiV, 1) + ' | MACD hist ' + f2(mhV) + ' | Stoch %K ' + f2(kV, 1) + ' %D ' + f2(dV, 1) + ' | CCI ' + f2(cciV, 0) + ' | Williams ' + f2(wrV, 1) + (heat ? ' | ' + heat : '') + (divs.length ? ' | divergensi: ' + divs.slice(0, 4).join('; ') : ' | divergensi: tidak ada') },
+      3: { lean: (pbV > 1.0 ? 'PANAS' : pbV < 0 ? 'DINGIN' : 'NETRAL'), txt: '%B ' + f2(pbV) + ' (' + bbPos(pbV == null ? 0.5 : pbV) + ') | BW ' + f2(bwV) + '% | ATR ' + f2(atr) + ' | EMA20 ' + f2(e20) + ' EMA50 ' + f2(e50) + ' EMA200 ' + f2(e200) },
+      4: { lean: leanStr(l4v, 2, -2), txt: 'MFI ' + f2(mfiV, 1) + ' | CMF ' + f2(cmfV) + ' | OBV Δ21 ' + f2(obvD, 0) + ' | RVOL ' + f2(rvV) + 'x' + (flowDir != null ? ' | PAXG proxy ' + (flowDir > 0 ? 'beli' : flowDir < 0 ? 'jual' : 'netral') : '') },
+      5: { lean: bullP > bearP ? 'BULLISH' : bearP > bullP ? 'BEARISH' : 'NETRAL', txt: (cpats.length ? 'candle: ' + cpats.join(', ') + ' | ' : '') + 'pola: ' + (pats.length ? pats.slice(0, 3).map(function (p) { return p.name + ' ' + p.dir + ' (konf ' + p.conf + ', ' + p.status + ')'; }).join('; ') : 'tidak ada pola lengkap') }
+    }
+  };
+}
+/* ── BASIC TF (Dody 24 Nov 08:48; pemilih TF 25 Nov 11:28) ──
+   Pilihan manual (M5/M15/M30/H1/H4/D1) mengalahkan aturan auto.
+   AUTO = aturan pakem: range 10 bar M5 < 3× ATR M15 → SEMPIT → M5,
+   kalau tidak M15. Bila candle TF pilihan belum tersedia, jatuh ke
+   auto (baris tetap tampil, footer mencatatnya di S.tfNote). */
+function baseTFKey() {
+  if (S.tfSel && S.tfSel !== 'AUTO') return TF_KEY[S.tfSel] || 'M5';
+  return baseTF().base;
+}
+function baseTF() {
+  var rec5 = S.candles.M5, rec15 = S.candles.M15;
+  S.tfNote = '';
+  if (S.tfSel && S.tfSel !== 'AUTO') {
+    var key = TF_KEY[S.tfSel] || 'M5';
+    var rec = S.candles[key];
+    var atr15m = (rec15 && rec15.asc && rec15.asc.length >= 14) ? atrSMA(rec15.asc, 14) : null;
+    if (rec && rec.asc && rec.asc.length >= 2) return { base: key, label: S.tfSel, R: null, atr15: atr15m, sempit: false, manual: true };
+    S.tfNote = 'TF ' + S.tfSel + ' belum tersedia — pakai auto';
+  }
+  if (!rec5 || rec5.asc.length < 10 || !rec15) return { base: 'M15', label: 'M15', R: null, atr15: null, sempit: false };
+  var w = rec5.asc.slice(-10), R = maxA(w.map(function (c) { return c.h; })) - minA(w.map(function (c) { return c.l; }));
+  var atr15 = atrSMA(rec15.asc, 14);
+  var sempit = R < 3 * atr15;
+  return { base: sempit ? 'M5' : 'M15', label: sempit ? 'M5' : 'M15', R: R, atr15: atr15, sempit: sempit, hi10: maxA(w.map(function (c) { return c.h; })), lo10: minA(w.map(function (c) { return c.l; })) };
+}
+/* ── GATE 6 LAPIS ──
+   TF yang dipilih = TF PEMICU: dianalisa penuh (momentum, volatilitas, volume,
+   timing/level, SL & TP). Filter tren = 1 anak tangga di atasnya:
+   M5→M15 · M15→H1 · M30→H1 · H1→H4 · H4→D1 · D1→W.
+   TF di atas filter = konteks (lawan kuat → scalp saja).
+   Level pakem digabung dari TF pemicu + TF-TF di atasnya. */
+var TF_PROFILE = {
+  M5:  { trend: 'M15', hi: ['H1', 'H4'], lvl: ['M5', 'M15', 'H1', 'H4'],  sw: 'H1' },
+  M15: { trend: 'H1',  hi: ['H4', 'D'],  lvl: ['M15', 'H1', 'H4', 'D'],  sw: 'H1' },
+  M30: { trend: 'H1',  hi: ['H4', 'D'],  lvl: ['M30', 'H1', 'H4', 'D'],  sw: 'H1' },
+  H1:  { trend: 'H4',  hi: ['D', 'W'],   lvl: ['H1', 'H4', 'D', 'W'],    sw: 'H4' },
+  H4:  { trend: 'D',   hi: ['W'],        lvl: ['H4', 'D', 'W'],          sw: 'D' },
+  D:   { trend: 'W',   hi: [],           lvl: ['D', 'W'],                sw: 'W' }
+};
+function tfLbl(k) { return k === 'D' ? 'D1' : k; }
+function nearestLevels(merged, price) {
+  var above = merged.filter(function (x) { return x.level > price; }).sort(function (a, b) { return a.level - b.level; });
+  var below = merged.filter(function (x) { return x.level < price; }).sort(function (a, b) { return b.level - a.level; });
+  return { above: above, below: below };
+}
+function evalGate(dir, ctx) {   /* dir: +1 BUY, -1 SELL */
+  var sT = ctx.T, sQ = ctx.Q, price = ctx.price, merged = ctx.merged, atrQ = ctx.atrQ, tl = ctx.tl, ql = ctx.ql;
+  var L = {}, scalpOnly = false, notes = [];
+  var tsQ = sQ.ts, tsT = sT.ts;
+  var l1ok = dir > 0 ? (tsQ >= 3 && tsT > 0) : (tsQ <= -3 && tsT < 0);
+  var hiOpp = ctx.Hi.some(function (s) { return dir > 0 ? s.ts <= -4 : s.ts >= 4; });
+  if (hiOpp) { scalpOnly = true; notes.push(ctx.hiLbl + ' berlawanan kuat → hanya scalp'); }
+  L[1] = { ok: l1ok, note: ql + ' ' + sgn(tsQ, 0) + '/10, ' + tl + ' ' + sgn(tsT, 0) + '/10' + (hiOpp ? ' — ' + ctx.hiLbl + ' lawan' : '') };
+  var rsiQ = sQ.rsi, mhQ = sQ.macdHist, mcA = macd(closes(S.candles[ctx.qKey].asc)),
+      mhQp = mcA.hist.length > 1 ? mcA.hist[mcA.hist.length - 2] : null;
+  var rsiOk = dir > 0 ? !(rsiQ > 70) : !(rsiQ < 30);
+  var macdOk = dir > 0 ? (mhQ > 0 || (mhQp != null && mhQp < 0 && mhQ >= 0)) : (mhQ < 0 || (mhQp != null && mhQp > 0 && mhQ <= 0));
+  var oppDiv = sQ.divs.filter(function (d) { return dir > 0 ? d.indexOf('BEARISH') >= 0 : d.indexOf('BULLISH') >= 0; });
+  var l2ok = rsiOk && macdOk && oppDiv.length === 0;
+  L[2] = { ok: l2ok, note: 'RSI ' + ql + ' ' + f2(rsiQ, 1) + (rsiOk ? '' : ' (OVER' + (dir > 0 ? 'BOUGHT' : 'SOLD') + ')') + ' | MACD hist ' + f2(mhQ) + (macdOk ? '' : ' (berlawanan)') + (oppDiv.length ? ' | divergensi berlawanan: ' + oppDiv.join('; ') : ' | tanpa divergensi berlawanan') };
+  var pbT = sT.pctB;
+  var pbOk = dir > 0 ? !(pbT > 1.2) : !(pbT < -0.2);
+  var nl = nearestLevels(merged, price), broken = dir > 0 ? (nl.below[0] || null) : (nl.above[0] || null);
+  var distOk = true, distTxt = '';
+  if (broken) { var d = Math.abs(price - broken.level); distOk = d <= 2 * atrQ; distTxt = ' | jarak dari level dijebol ' + f2(broken.level) + ' = ' + f2(d) + ' (batas 2 ATR ' + ql + ' = ' + f2(2 * atrQ) + ')'; }
+  var l3ok = pbOk && distOk;
+  L[3] = { ok: l3ok, note: '%B ' + tl + ' ' + f2(pbT) + (pbOk ? '' : ' (kejar di luar band)') + distTxt };
+  var mfiT = sT.mfi, cmfT = sT.cmf, obvT = sT.obvD, rvT = sT.rvol;
+  var volOk = dir > 0 ? (mfiT > 50 || cmfT > 0 || obvT > 0 || rvT >= 1) : (mfiT < 50 || cmfT < 0 || obvT < 0 || rvT >= 1);
+  var flowOpp = ctx.flowDir != null && ((dir > 0 && ctx.flowDir < 0) || (dir < 0 && ctx.flowDir > 0));
+  if (flowOpp) { scalpOnly = true; notes.push('flow proxy Binance berlawanan kuat → scalp saja/tunggu'); }
+  L[4] = { ok: volOk, note: 'MFI ' + f2(mfiT, 1) + ' | CMF ' + f2(cmfT) + ' | OBV Δ21 ' + f2(obvT, 0) + ' | RVOL ' + f2(rvT) + 'x' + (flowOpp ? ' | flow proxy BERLAWANAN' : '') };
+  var sameLevel = dir > 0 ? (nl.below[0] || null) : (nl.above[0] || null);
+  var atrT = sT.atr, nearLvl = sameLevel ? Math.abs(price - sameLevel.level) <= 0.5 * atrT : false;
+  var cdir = dir > 0 ? ['Bullish Engulfing', 'Hammer', 'Pin Bar (bullish)', 'Morning Star'] : ['Bearish Engulfing', 'Shooting Star', 'Hanging Man', 'Pin Bar (bearish)', 'Evening Star'];
+  var candleConf = sT.candlePats.some(function (p) { return cdir.indexOf(p) >= 0; });
+  var divSame = sQ.divs.some(function (d) { return dir > 0 ? d.indexOf('BULLISH') >= 0 : d.indexOf('BEARISH') >= 0; });
+  var l5ok = nearLvl && (candleConf || divSame);
+  L[5] = { ok: l5ok, note: (sameLevel ? 'level terdekat ' + f2(sameLevel.level) + ' (' + sgn(price - sameLevel.level) + ')' : 'tanpa level') + (nearLvl ? ' — DI LEVEL' : ' — jauh dari level') + (candleConf ? ' + konfirmasi candle (' + sT.candlePats.join(', ') + ')' : '') + (divSame ? ' + divergensi searah ' + ql : '') };
+  var entry = price, sl, tp1, tp2;
+  if (dir > 0) { sl = nl.below[0] ? nl.below[0].level - PC.slBuf : entry - 2 * atrQ; tp1 = nl.above[0] ? nl.above[0].level : entry + 2 * atrQ; tp2 = nl.above[1] ? nl.above[1].level : tp1 + (tp1 - entry); }
+  else { sl = nl.above[0] ? nl.above[0].level + PC.slBuf : entry + 2 * atrQ; tp1 = nl.below[0] ? nl.below[0].level : entry - 2 * atrQ; tp2 = nl.below[1] ? nl.below[1].level : tp1 - (entry - tp1); }
+  var rr = Math.abs(tp1 - entry) / Math.abs(entry - sl);
+  L[6] = { ok: rr >= 2.0, note: 'entry ' + f2(entry) + ' SL ' + f2(sl) + ' TP1 ' + f2(tp1) + ' TP2 ' + f2(tp2) + ' RR ' + f2(rr, 2) };
+  var pass = [1, 2, 3, 4, 5, 6].every(function (k) { return L[k].ok; });
+  return { dir: dir, pass: pass, scalpOnly: scalpOnly, L: L, entry: entry, sl: sl, tp1: tp1, tp2: tp2, rr: rr, notes: notes };
+}
+/* ── JALUR SCALP REVERSAL (gantikan L1) — dihitung di TF pemicu ── */
+function evalScalpReversal(dir, ctx) {
+  var sT = ctx.T, sQ = ctx.Q, price = ctx.price, merged = ctx.merged, tl = ctx.tl, ql = ctx.ql;
+  var bars = S.candles[ctx.tKey].asc.slice(-2);
+  var nl = nearestLevels(merged, price), atrT = sT.atr, bodyMin = PC.slBuf / 200;
+  var rej = null;
+  bars.forEach(function (b) {
+    var body = Math.abs(b.c - b.o), upW = b.h - Math.max(b.o, b.c), loW = Math.min(b.o, b.c) - b.l;
+    if (dir < 0) {
+      var nearR = nl.above.some(function (x) { return Math.abs(b.h - x.level) <= 0.5 * atrT; }) || nl.below.some(function (x) { return Math.abs(b.h - x.level) <= 0.5 * atrT; });
+      if (nearR && upW >= 1.5 * Math.max(body, bodyMin) && b.c < b.o) rej = { bar: b, high: b.h, low: b.l };
+    } else {
+      var nearS = nl.below.some(function (x) { return Math.abs(b.l - x.level) <= 0.5 * atrT; }) || nl.above.some(function (x) { return Math.abs(b.l - x.level) <= 0.5 * atrT; });
+      if (nearS && loW >= 1.5 * Math.max(body, bodyMin) && b.c > b.o) rej = { bar: b, high: b.h, low: b.l };
+    }
+  });
+  var divSame = sT.divs.filter(function (d) { return dir > 0 ? d.indexOf('BULLISH') >= 0 : d.indexOf('BEARISH') >= 0; });
+  var patSame = sT.patterns.filter(function (p) { return dir > 0 ? p.dir === 'BULLISH' : p.dir === 'BEARISH'; });
+  var rsiQ = sQ.rsi, rsiOk = dir > 0 ? !(rsiQ > 70) : !(rsiQ < 30);
+  var ok = !!rej && divSame.length >= 2 && patSame.length > 0 && rsiOk;
+  var entry = price, sl, tp1, tp2, rr = 0, skip = null;
+  if (ok) {
+    sl = dir < 0 ? rej.high + PC.slBuf / 2 : rej.low - PC.slBuf / 2;
+    if (dir < 0) { tp1 = nl.below[0] ? nl.below[0].level : entry - 2 * atrT; tp2 = nl.below[1] ? nl.below[1].level : tp1 - (entry - tp1); }
+    else { tp1 = nl.above[0] ? nl.above[0].level : entry + 2 * atrT; tp2 = nl.above[1] ? nl.above[1].level : tp1 + (tp1 - entry); }
+    rr = Math.abs(tp1 - entry) / Math.abs(entry - sl);
+    if (Math.abs(tp1 - entry) < PC.minTgt) skip = 'TP1−entry ' + f2(Math.abs(tp1 - entry)) + ' < ' + f2(PC.minTgt) + ' (spread ' + f2(PC.spread) + ' > 15% target)';
+    if (rr < 2.0) skip = 'RR ' + f2(rr, 2) + ' < 2,0';
+  }
+  var reason = [];
+  if (!rej) reason.push('tanpa rejection di level pakem (2 bar ' + tl + ' terakhir)');
+  if (divSame.length < 2) reason.push('divergensi ' + (dir > 0 ? 'bullish' : 'bearish') + ' ' + tl + ' cuma ' + divSame.length + ' (butuh ≥2)');
+  if (!patSame.length) reason.push('tanpa pola chart ' + (dir > 0 ? 'bullish' : 'bearish') + ' ' + tl);
+  if (!rsiOk) reason.push('RSI ' + ql + ' ' + f2(rsiQ, 1) + ' sudah ' + (dir > 0 ? 'overbought' : 'oversold'));
+  return {
+    dir: dir, pass: ok && !skip, rej: rej, divSame: divSame, patSame: patSame, rsiOk: rsiOk,
+    entry: entry, sl: sl, tp1: tp1, tp2: tp2, rr: rr, skip: skip, reason: reason.join('; ')
+  };
+}
+/* ── JALUR BREAK (Dody 25 Nov 10:31 + 10:57: "lanjut" = arah trade) ──
+   Close basic-TF MENEMBUS level pakem terdekat — penentunya STRADDLE:
+   close bar sebelumnya di satu sisi level, close bar tutup terakhir di
+   sisi lain — + RR ≥ 2,0 (SL = level dijebol ± buffer, TP1 = level "lanjut")
+   + TP1−entry ≥ target minimum + RSI TF filter tidak <30 (SELL) / >70 (BUY) → CALL.
+   Divergensi TF filter berlawanan BUKAN veto: call tetap jalan gaya SCALP
+   dengan catatan "(divergensi lawan)". Gaya Intraday bila break searah
+   tren TF filter (skor ≤ −3 SELL / ≥ +3 BUY) dan tanpa divergensi lawan. */
+function evalBreak(dir, ctx) {
+  var sQ = ctx.Q, price = ctx.price, merged = ctx.merged, atrQ = ctx.atrQ, ql = ctx.ql;
+  var baseRec = S.candles[ctx.bt.base];
+  var res = { dir: dir, pass: false, entry: price, sl: null, tp1: null, rr: 0, level: null, nxt: null, style: 'Scalp', divOpp: false, rsiOk: true, reason: '' };
+  if (!baseRec || !baseRec.asc || baseRec.asc.length < 2) { res.reason = 'candle basic TF kurang'; return res; }
+  var cur = last(baseRec.asc), prev = baseRec.asc[baseRec.asc.length - 2];
+  var broken = null;
+  merged.forEach(function (x) {
+    if (dir < 0 && prev.c >= x.level && cur.c < x.level) { if (!broken || x.level > broken.level) broken = x; }
+    if (dir > 0 && prev.c <= x.level && cur.c > x.level) { if (!broken || x.level < broken.level) broken = x; }
+  });
+  if (!broken) { res.reason = 'tanpa break baru'; return res; }
+  res.level = broken.level;
+  var nl = nearestLevels(merged, price), tp1;
+  if (dir < 0) { res.sl = broken.level + PC.slBuf; tp1 = nl.below[0] ? nl.below[0].level : price - 2 * atrQ; }
+  else { res.sl = broken.level - PC.slBuf; tp1 = nl.above[0] ? nl.above[0].level : price + 2 * atrQ; }
+  res.tp1 = tp1; res.nxt = tp1;
+  res.rr = Math.abs(tp1 - price) / Math.abs(price - res.sl);
+  var rsiQ = sQ ? sQ.rsi : null;
+  res.rsiOk = dir < 0 ? !(rsiQ < 30) : !(rsiQ > 70);
+  res.divOpp = sQ ? sQ.divs.some(function (d) { return dir < 0 ? d.indexOf('BULLISH') >= 0 : d.indexOf('BEARISH') >= 0; }) : false;
+  var tsQ = sQ ? sQ.ts : 0;
+  var trendOk = dir < 0 ? tsQ <= -3 : tsQ >= 3;
+  res.style = (trendOk && !res.divOpp) ? 'Intraday' : 'Scalp';
+  var tgt = Math.abs(tp1 - price);
+  if (res.rr < 2.0) res.reason = 'RR gagal';
+  else if (tgt < PC.minTgt) res.reason = 'target terlalu dekat';
+  else if (!res.rsiOk) res.reason = 'RSI ' + ql + (dir < 0 ? ' oversold' : ' overbought');
+  res.pass = res.rr >= 2.0 && tgt >= PC.minTgt && res.rsiOk;
+  return res;
+}
+/* ── SWING: pullback Fib 50–61,8% di TF swing (H1 untuk M5–M30; H4 untuk H1; D1 untuk H4; W untuk D1) ── */
+function evalSwing(ctx) {
+  var sW = ctx.SW, price = ctx.price, wl = ctx.swl;
+  if (!sW || sW.swings.length < 2) return { dir: 0, pass: false, reason: tfLbl(wl) + ' MISSING / swing kurang' };
+  var lastS = sW.swings[sW.swings.length - 1], prevS = sW.swings[sW.swings.length - 2];
+  var dir = 0, lo, hi;
+  if (lastS[2] === 'H' && prevS[2] === 'L') { dir = 1; lo = prevS[1]; hi = lastS[1]; }
+  else if (lastS[2] === 'L' && prevS[2] === 'H') { dir = -1; hi = prevS[1]; lo = lastS[1]; }
+  else return { dir: 0, pass: false, reason: 'kaki ' + tfLbl(wl) + ' belum jelas (2 swing terakhir searah)' };
+  var fl = fibLevels(lo, hi), zoneLo, zoneHi, tp1, tp2, sl;
+  if (dir > 0) { zoneLo = fl['61.8%']; zoneHi = fl['50%']; sl = lo - PC.slBuf; tp1 = fl['127.2%']; tp2 = fl['161.8%']; }
+  else { zoneLo = fl['50%']; zoneHi = fl['61.8%']; sl = hi + PC.slBuf; tp1 = fl['127.2%']; tp2 = fl['161.8%']; }
+  var inZone = price >= Math.min(zoneLo, zoneHi) && price <= Math.max(zoneLo, zoneHi);
+  var tsW = sW.ts, trendOk = dir > 0 ? tsW >= 3 : tsW <= -3;
+  var rsiW2 = sW.rsi, rsiOk = dir > 0 ? !(rsiW2 > 70) : !(rsiW2 < 30);
+  var rr = Math.abs(tp1 - price) / Math.abs(price - sl);
+  var ok = inZone && trendOk && rsiOk && rr >= 2.0;
+  var reason = [];
+  if (!inZone) reason.push('harga ' + f2(price) + ' di luar zona pullback Fib 50–61,8% (' + f2(Math.min(zoneLo, zoneHi)) + '–' + f2(Math.max(zoneLo, zoneHi)) + ')');
+  if (!trendOk) reason.push('skor tren ' + tfLbl(wl) + ' ' + sgn(tsW, 0) + ' (butuh ' + (dir > 0 ? '≥+3' : '≤−3') + ')');
+  if (!rsiOk) reason.push('RSI ' + tfLbl(wl) + ' ' + f2(rsiW2, 1));
+  if (rr < 2.0) reason.push('RR ' + f2(rr, 2) + ' < 2,0');
+  return { dir: dir, pass: ok, entry: price, sl: sl, tp1: tp1, tp2: tp2, rr: rr, fib: fl, reason: reason.join('; ') };
+}
+
+/* ── ORKESTRATOR ────────────────────────────────────────── */
+function analyze() {
+  var bt = baseTF(), tKey = bt.base, prof = TF_PROFILE[tKey] || TF_PROFILE.M5, qKey = prof.trend;
+  var need = [tKey, qKey];
+  for (var i = 0; i < need.length; i++) if (!S.candles[need[i]] || !S.candles[need[i]].asc || S.candles[need[i]].asc.length < 40) return null;
+  var flowDir = null, flowTxt = '';
+  if (S.paxg && S.paxg.length >= 6) {
+    var pc = closes(S.paxg), mv = pc[pc.length - 1] - pc[pc.length - 6];
+    var atr15p = last(atrArr(S.paxg, 14)) || 0;
+    flowTxt = 'Binance M15 5 bar ' + sgn(mv) + ' (ATR ' + f2(atr15p) + ')';
+    if (Math.abs(mv) > atr15p) flowDir = mv > 0 ? 1 : -1;
+  }
+  var sums = {}, order = ['M5', 'M15', 'M30', 'H1', 'H4', 'D', 'W'];
+  order.forEach(function (tf) { var s = tfSummary(tf, flowDir); if (s) sums[tf] = s; });
+  var sT = sums[tKey], sQ = sums[qKey];
+  if (!sT || !sQ) return null;
+  var baseRec = S.candles[tKey];
+  var price = last(baseRec.asc).c;
+  var atrQ = sQ.atrSMA || sQ.atr;
+  var merged = mergedLevels(prof.lvl.map(function (k) { return sums[k]; }).filter(Boolean), price, atrQ);
+  var nl = nearestLevels(merged, price);
+  var tl = tfLbl(tKey), ql = tfLbl(qKey);
+  var ctx = {
+    T: sT, Q: sQ, tKey: tKey, qKey: qKey, tl: tl, ql: ql,
+    Hi: prof.hi.map(function (k) { return sums[k]; }).filter(Boolean), hiLbl: prof.hi.map(tfLbl).join('/'),
+    SW: sums[prof.sw], swl: prof.sw, bt: bt, price: price, merged: merged, atrQ: atrQ, flowDir: flowDir
+  };
+  var gBuy = evalGate(1, ctx), gSell = evalGate(-1, ctx);
+  var rBuy = evalScalpReversal(1, ctx), rSell = evalScalpReversal(-1, ctx);
+  var sw = evalSwing(ctx);
+  var bBuy = evalBreak(1, ctx), bSell = evalBreak(-1, ctx);
+  var verdict = { dir: 0, style: 'NO TRADE', entry: null, sl: null, tp1: null, tp2: null, rr: null, why: '', src: null };
+  function failLayers(g) { var f = []; [1, 2, 3, 4, 5, 6].forEach(function (k) { if (!g.L[k].ok) f.push('L' + k + ' ' + g.L[k].note); }); return f; }
+  if (gBuy.pass) { verdict = { dir: 1, style: gBuy.scalpOnly ? 'Scalp' : 'Intraday', entry: gBuy.entry, sl: gBuy.sl, tp1: gBuy.tp1, tp2: gBuy.tp2, rr: gBuy.rr, why: '6 lapis lolos' + (gBuy.scalpOnly ? ' (TF atas lawan → scalp saja)' : ''), src: 'gate' }; }
+  else if (gSell.pass) { verdict = { dir: -1, style: gSell.scalpOnly ? 'Scalp' : 'Intraday', entry: gSell.entry, sl: gSell.sl, tp1: gSell.tp1, tp2: gSell.tp2, rr: gSell.rr, why: '6 lapis lolos' + (gSell.scalpOnly ? ' (TF atas lawan → scalp saja)' : ''), src: 'gate' }; }
+  else if (rBuy.pass) { verdict = { dir: 1, style: 'Scalp', entry: rBuy.entry, sl: rBuy.sl, tp1: rBuy.tp1, tp2: rBuy.tp2, rr: rBuy.rr, why: 'SCALP REVERSAL: rejection + ' + rBuy.divSame.length + ' divergensi bullish ' + tl + ' + pola ' + rBuy.patSame[0].name, src: 'reversal' }; }
+  else if (rSell.pass) { verdict = { dir: -1, style: 'Scalp', entry: rSell.entry, sl: rSell.sl, tp1: rSell.tp1, tp2: rSell.tp2, rr: rSell.rr, why: 'SCALP REVERSAL: rejection + ' + rSell.divSame.length + ' divergensi bearish ' + tl + ' + pola ' + rSell.patSame[0].name, src: 'reversal' }; }
+  else if (bBuy.pass) { verdict = { dir: 1, style: bBuy.style, entry: bBuy.entry, sl: bBuy.sl, tp1: bBuy.tp1, tp2: null, rr: bBuy.rr, why: 'JALUR BREAK: close ' + tl + ' jebol ' + f2(bBuy.level) + ' → lanjut ' + f2(bBuy.tp1) + (bBuy.divOpp ? ' (divergensi lawan)' : ''), src: 'break', divOpp: bBuy.divOpp }; }
+  else if (bSell.pass) { verdict = { dir: -1, style: bSell.style, entry: bSell.entry, sl: bSell.sl, tp1: bSell.tp1, tp2: null, rr: bSell.rr, why: 'JALUR BREAK: close ' + tl + ' jebol ' + f2(bSell.level) + ' → lanjut ' + f2(bSell.tp1) + (bSell.divOpp ? ' (divergensi lawan)' : ''), src: 'break', divOpp: bSell.divOpp }; }
+  else if (sw.pass) { verdict = { dir: sw.dir, style: 'Swing', entry: sw.entry, sl: sw.sl, tp1: sw.tp1, tp2: sw.tp2, rr: sw.rr, why: 'pullback Fib 50–61,8% ' + tfLbl(prof.sw) + ' + tren ' + tfLbl(prof.sw) + ' searah', src: 'swing' }; }
+  else {
+    var whys = [];
+    whys.push('BUY gate gagal: ' + failLayers(gBuy).join(' · '));
+    whys.push('SELL gate gagal: ' + failLayers(gSell).join(' · '));
+    if (rBuy.skip) whys.push('Reversal BUY: ' + rBuy.skip);
+    if (rSell.skip) whys.push('Reversal SELL: ' + rSell.skip);
+    if (sw.dir !== 0) whys.push('Swing ' + (sw.dir > 0 ? 'BUY' : 'SELL') + ': ' + sw.reason);
+    verdict.why = whys.join('\n');
+  }
+  function refFor(dir) {
+    var trig = dir > 0 ? (nl.above[0] || null) : (nl.below[0] || null);
+    if (!trig) return { trigger: null };
+    var belowT = merged.filter(function (x) { return x.level < trig.level; }).sort(function (a, b) { return b.level - a.level; });
+    var aboveT = merged.filter(function (x) { return x.level > trig.level; }).sort(function (a, b) { return a.level - b.level; });
+    var entry = trig.level, sl, tp1;
+    if (dir > 0) { sl = belowT[0] ? belowT[0].level - PC.slBuf : entry - 2 * atrQ; tp1 = aboveT[0] ? aboveT[0].level : entry + 2 * atrQ; }
+    else { sl = aboveT[0] ? aboveT[0].level + PC.slBuf : entry + 2 * atrQ; tp1 = belowT[0] ? belowT[0].level : entry - 2 * atrQ; }
+    var rr = Math.abs(tp1 - entry) / Math.abs(entry - sl);
+    var lastBar = last(baseRec.asc), trigHit = dir > 0 ? price > trig.level : price < trig.level;
+    var confOk = dir > 0 ? lastBar.c > lastBar.o : lastBar.c < lastBar.o;
+    var valid = trigHit && confOk && rr >= 2.0;
+    var kurang = '';
+    if (!valid) {
+      if (!trigHit) kurang = 'harga masih ' + f2(Math.abs(trig.level - price)) + (dir > 0 ? ' di bawah' : ' di atas') + ' trigger ' + f2(trig.level);
+      else if (!confOk) kurang = 'sudah melewati trigger, belum ada candle ' + (dir > 0 ? 'hijau' : 'merah') + ' konfirmasi';
+      else if (rr < 2.0) kurang = 'RR ' + f2(rr, 2) + ' < 2,0';
+    }
+    return { trigger: trig.level, entry: entry, sl: sl, tp1: tp1, rr: rr, valid: valid, kurang: kurang,
+      validator: dir > 0 ? 'close ' + tl + ' di atas trigger + candle hijau konfirmasi' : 'close ' + tl + ' di bawah trigger + candle merah konfirmasi' };
+  }
+  var refBuy = refFor(1), refSell = refFor(-1);
+  function scenFor(dir) {
+    var trig = dir > 0 ? (nl.above[0] || null) : (nl.below[0] || null);
+    if (!trig) return null;
+    var entry = trig.level, sl, tp1, tp2;
+    var bT = merged.filter(function (x) { return x.level < trig.level; }).sort(function (a, b) { return b.level - a.level; });
+    var aT = merged.filter(function (x) { return x.level > trig.level; }).sort(function (a, b) { return a.level - b.level; });
+    if (dir > 0) { sl = bT[0] ? bT[0].level - PC.slBuf : entry - 2 * atrQ; tp1 = aT[0] ? aT[0].level : entry + 2 * atrQ; tp2 = aT[1] ? aT[1].level : tp1 + (tp1 - entry); }
+    else { sl = aT[0] ? aT[0].level + PC.slBuf : entry + 2 * atrQ; tp1 = bT[0] ? bT[0].level : entry - 2 * atrQ; tp2 = bT[1] ? bT[1].level : tp1 - (entry - tp1); }
+    var rr = Math.abs(tp1 - entry) / Math.abs(entry - sl);
+    return { dir: dir, trigger: trig.level, entry: entry, sl: sl, tp1: tp1, tp2: tp2, rr: rr };
+  }
+  var A = { sums: sums, bt: bt, prof: prof, tKey: tKey, qKey: qKey, tl: tl, ql: ql, price: price, atrQ: atrQ, merged: merged, nl: nl, verdict: verdict,
+    gBuy: gBuy, gSell: gSell, rBuy: rBuy, rSell: rSell, sw: sw, refBuy: refBuy, refSell: refSell,
+    scenBull: scenFor(1), scenBear: scenFor(-1), flowDir: flowDir, flowTxt: flowTxt, time: Date.now(), bBuy: bBuy, bSell: bSell };
+  S.analysis = A;
+  pingCheck(A);
+  render(A);
+  return A;
+}
+/* ── PING LOG ── */
+var pingKeys = {};
+try { pingKeys = JSON.parse(localStorage.getItem('dts_pingkeys') || '{}'); } catch (e) { pingKeys = {}; }
+/* ── PING: deteksi crossing + dedup (catatan localStorage) ──
+   Tampilan hanya satu baris (lineFor); fungsi ini mencatat crossing
+   baru ke riwayat agar tidak diulang, dan reset saat reclaim. */
+function pingCheck(A) {
+  var bt = A.bt, baseRec = S.candles[bt.base]; if (!baseRec || !baseRec.asc.length) return;
+  var bar = last(baseRec.asc), close = bar.c;
+  if (S.lastBasicClose == null) { S.lastBasicClose = close; S.lastBasicT = bar.t; return; }
+  if (bar.t === S.lastBasicT) return;   /* bar belum tutup baru */
+  var prev = S.lastBasicClose, key = null;
+  var R = A.nl.above[0], S1 = A.nl.below[0];
+  if (R && prev <= R.level && close > R.level) key = 'up>' + R.level.toFixed(2);
+  else if (S1 && prev >= S1.level && close < S1.level) key = 'dn<' + S1.level.toFixed(2);
+  /* reclaim: close balik melewati level → hapus kunci supaya crossing berikutnya tercatat lagi */
+  Object.keys(pingKeys).forEach(function (k) {
+    var lv = parseFloat(k.slice(3));
+    if (k.indexOf('up>') === 0 && close < lv) delete pingKeys[k];
+    if (k.indexOf('dn<') === 0 && close > lv) delete pingKeys[k];
+  });
+  if (key && !pingKeys[key]) {
+    pingKeys[key] = 1;
+    S.ping.unshift(lineFor(A)); if (S.ping.length > 50) S.ping.length = 50;
+    try { localStorage.setItem('dts_ping', JSON.stringify(S.ping)); localStorage.setItem('dts_pingkeys', JSON.stringify(pingKeys)); } catch (e) {}
+  }
+  S.lastBasicClose = close; S.lastBasicT = bar.t;
+}
+/* ── SATU BARIS OUTPUT (Dody 25 Nov 10:56 + 10:57) ──
+   Format persis live-call chat. "Lanjut" = arah trade: lanjut ke bawah
+   = SELL, lanjut ke atas = BUY. Jam baris = jam TUTUP bar (bar.t +
+   durasi TF), sama seperti ping live-call — bukan jam buka bar. */
+function closeT(A) {
+  var baseRec = S.candles[A.bt.base], bar = baseRec ? last(baseRec.asc) : null;
+  return bar ? bar.t + (TF_MS[A.bt.base] || 0) : A.time;
+}
+function callLine(v, barT) {
+  var s = PC.tag + ' ' + wibHM(barT) + ': ' + (v.dir > 0 ? 'BUY' : 'SELL') + ' NOW ' + f2(v.entry) + ' · SL ' + f2(v.sl) + ' · TP ' + f2(v.tp1) + ' — ' + v.style;
+  if (v.divOpp) s += ' (divergensi lawan)';
+  return s;
+}
+function stateLine(A, t) {
+  var bt = A.bt, close = A.price, merged = A.merged;
+  var ref = null;
+  merged.forEach(function (x) { if (!ref || Math.abs(x.level - close) < Math.abs(ref.level - close)) ref = x; });
+  if (!ref) return PC.tag + ' ' + wibHM(t) + ': ' + (bt.label || bt.base) + ' close ' + f2(close) + ' · NO TRADE (tanpa level)';
+  var dir, nxt, arrow;
+  if (ref.level > close) {
+    dir = -1; arrow = '<';
+    var bel = merged.filter(function (x) { return x.level < ref.level; }).sort(function (a, b) { return b.level - a.level; });
+    nxt = bel[0] ? bel[0].level : ref.level - 20;
+  } else {
+    dir = 1; arrow = '>';
+    var abv = merged.filter(function (x) { return x.level > ref.level; }).sort(function (a, b) { return a.level - b.level; });
+    nxt = abv[0] ? abv[0].level : ref.level + 20;
+  }
+  var br = dir < 0 ? A.bSell : A.bBuy, reason;
+  if (br && (br.reason === 'RR gagal' || br.reason === 'target terlalu dekat' || (br.reason && br.reason.indexOf('RSI ') === 0))) reason = br.reason;
+  else if (Math.abs(ref.level - close) <= 0.5 * (A.sums[A.bt.base] ? A.sums[A.bt.base].atr : 0)) reason = 'di level, tanpa setup';
+  else reason = 'tengah range';
+  return PC.tag + ' ' + wibHM(t) + ': ' + (bt.label || bt.base) + ' close ' + f2(close) + ' ' + arrow + ' ' + f2(ref.level) + ' → lanjut ' + f2(nxt) + ' · NO TRADE (' + reason + ')';
+}
+function lineFor(A) {
+  var t = closeT(A);
+  if (A.verdict.dir !== 0) return callLine(A.verdict, t);
+  return stateLine(A, t);
+}
+function render(A) {
+  var line = lineFor(A);
+  if (line !== S.lineShown) {
+    var el = $('outLine');
+    el.textContent = line;
+    el.className = 'outline' + (A.verdict.dir > 0 ? ' buy' : A.verdict.dir < 0 ? ' sell' : '');
+    S.lineShown = line;
+  }
+  var price = A.price, pip = (price - OPEN_MON) / 0.10;
+  $('livePx').textContent = S.live != null ? f2(S.live) : f2(price);
+  $('liveBidAsk').textContent = S.bid != null ? 'bid ' + f2(S.bid) + ' / ask ' + f2(S.ask) + (S.stale ? ' · STALE' : '') : '· ' + S.priceHost;
+  $('pipOpen').textContent = pipTxt(price);
+  renderConn();
+}
+function renderConn() {
+  function dot(c) { return '<span class="dot ' + (c.st === 'ok' ? 'ok' : c.st === 'warn' ? 'warn' : c.st === 'bad' ? 'bad' : 'idle') + '"></span>'; }
+  $('connStatus').innerHTML =
+    dot(S.conn.worker) + 'Worker ' + esc(S.conn.worker.msg || '—') +
+    ' · ' + dot(S.conn.api) + 'API ' + esc(S.conn.api.msg || '—') +
+    ' · ' + dot(S.conn.binance) + 'Binance ' + esc(S.conn.binance.msg || '—') +
+    ' · harga: ' + esc(S.priceHost) + ' (' + ageStr(S.liveT) + ')';
+  var abt = S.analysis ? S.analysis.bt : null;   /* TF yang benar-benar dipakai (bisa fallback dari pilihan) */
+  var lbl = abt ? (abt.label || abt.base) : (S.tfSel || 'M5');
+  var brec = abt ? S.candles[abt.base] : null;
+  $('dataAge').textContent = 'Candle ' + lbl + ' ' + (brec ? brec.src + ' · ' + ageStr(brec.fetchedAt) : '—') + (S.tfNote ? ' · ' + S.tfNote : '');
+}
+/* ── HELPER PAIR ── */
+function pipTxt(px) {
+  if (PC.openMon == null || px == null) return '';
+  return sgn((px - PC.openMon) / PC.pip, 0) + ' pip dari open Senin ' + PC.openMon.toLocaleString('id-ID', { minimumFractionDigits: PC.dec, maximumFractionDigits: PC.dec });
+}
+function setPairUI() {
+  document.title = 'DTS Pakem Live — ' + PC.label;
+  $('hTitle').textContent = PC.label + ' · Pakem Live';
+}
+function resetMarket() {   /* ganti pair: buang semua data pair lama */
+  S.candles = {}; S.cacheT = {}; S.paxg = null; S.paxgT = 0;
+  S.live = null; S.bid = null; S.ask = null; S.liveT = 0; S.stale = null; S.priceHost = '—';
+  S.wcFail = 0; S._wcOk = false; S.oaOff = 0; S._offKey = null; S._offVal = null;
+  S.lastBasicT = 0; S.lastBasicClose = null; S.analysis = null; S.lineShown = null; lastBaseT = 0;
+  S.ping = []; pingKeys = {};
+  try { localStorage.removeItem('dts_ping'); localStorage.removeItem('dts_pingkeys'); } catch (e) {}
+  var el = $('outLine'); el.textContent = 'Memuat ' + PC.label + '…'; el.className = 'outline';
+  $('livePx').textContent = '—'; $('liveBidAsk').textContent = ''; $('pipOpen').textContent = '';
+}
+function showWaiting() {
+  var bt = baseTF(), q = (TF_PROFILE[bt.base] || TF_PROFILE.M5).trend, el = $('outLine');
+  el.textContent = 'Data candle ' + PC.label + ' ' + tfLbl(bt.base) + ' / ' + tfLbl(q) + ' belum cukup (butuh ≥40 bar) — cek status koneksi di bawah.';
+  el.className = 'outline'; S.lineShown = null;
+}
+/* ── TIMER & INIT ── */
+var lastBaseT = 0;
+async function tickPrice() {
+  if (!S.running) return;
+  await pollOanda();
+  $('clock').textContent = wib() + ' WIB';
+  if (S.live != null) {
+    $('livePx').textContent = f2(S.live);
+    $('liveBidAsk').textContent = S.bid != null ? 'bid ' + f2(S.bid) + ' / ask ' + f2(S.ask) + (S.stale ? ' · STALE' : '') : '· ' + S.priceHost;
+    $('pipOpen').textContent = pipTxt(S.live);
+  }
+  renderConn();
+  /* bar basic TF baru → refresh candle + analisa */
+  var brec = S.candles[baseTFKey()];
+  if (brec && brec.asc.length) {
+    var t = last(brec.asc).t;
+    if (lastBaseT && t !== lastBaseT) { await refreshCandles(false); }
+    lastBaseT = t;
+  }
+}
+async function refreshCandles(force) {
+  if (!S.running && !force) return;
+  var pk0 = INS;
+  await fetchAllCandles(force);
+  if (pk0 !== INS) return;
+  if (!analyze()) showWaiting();
+  var brec2 = S.candles[baseTFKey()]; if (brec2 && brec2.asc.length) lastBaseT = last(brec2.asc).t;
+}
+function setTierHint() {
+  var t = oandaTier();
+  var cr = $('credRow'); if (cr) cr.style.display = t === 'api' ? '' : 'none';
+  $('tierHint').innerHTML = t === 'api' ? '<b>ELITE · OANDA API</b> — harga &amp; candle langsung dari API OANDA. Wajib isi <b>Account ID + API token</b> (token hanya disimpan di localStorage, tidak di file).' :
+    t === 'worker' ? '<b>PREMIUM · OANDA Worker</b> — tanpa token. Harga &amp; candle dari Worker OANDA.' :
+    '<b>REGULER · OANDA + Binance</b> — API bila ada kredensial, kalau tidak Worker; bila Worker gagal → Binance PAXGUSDT digeser offset OANDA.';
+}
+function init() {
+  $('tier').value = S.tier; $('env').value = S.env; $('acc').value = S.acc; $('tok').value = S.tok;
+  $('tf').value = S.tfSel; $('pair').value = INS; setPairUI();
+  var th = localStorage.getItem('dts_theme') || 'brain';
+  document.documentElement.dataset.theme = th;
+  setTierHint();
+  $('btnTheme').addEventListener('click', function () {
+    var cur = document.documentElement.dataset.theme === 'brain' ? 'light' : 'brain';
+    document.documentElement.dataset.theme = cur; try { localStorage.setItem('dts_theme', cur); } catch (e) {}
+  });
+  $('tier').addEventListener('change', function () {
+    S.tier = $('tier').value; try { localStorage.setItem('dts_tier', S.tier); } catch (e) {}
+    setTierHint(); S.cacheT = {}; refreshCandles(true);
+  });
+  $('tf').addEventListener('change', function () {
+    S.tfSel = $('tf').value; try { localStorage.setItem('dts_tf', S.tfSel); } catch (e) {}
+    S.lastBasicClose = null; S.lastBasicT = 0;   /* reset dedup: jangan bandingkan close antar-TF */
+    analyze(); refreshCandles(true);
+  });
+  $('env').addEventListener('change', function () { S.env = $('env').value; try { localStorage.setItem('dts_env', S.env); } catch (e) {} S.cacheT = {}; refreshCandles(true); });
+  $('pair').addEventListener('change', function () {
+    applyPair($('pair').value); try { localStorage.setItem('dts_pair', INS); } catch (e) {}
+    resetMarket(); setPairUI();
+    pollOanda().then(function () { return refreshCandles(true); });
+  });
+  $('btnSave').addEventListener('click', function () {
+    S.acc = $('acc').value.trim(); S.tok = $('tok').value.trim();
+    try { localStorage.setItem('dts_acc', S.acc); localStorage.setItem('dts_tok', S.tok); } catch (e) {}
+    S.cacheT = {}; refreshCandles(true);
+  });
+  $('btnStart').addEventListener('click', function () {
+    S.running = !S.running; S.gen++;
+    $('btnStart').textContent = S.running ? '■ BERHENTI' : '▶ MULAI';
+    if (S.running) refreshCandles(true);
+  });
+  $('btnRefresh').addEventListener('click', function () { refreshCandles(true); });
+  /* jalan */
+  (async function () { await pollOanda(); await refreshCandles(true); })();
+  setInterval(tickPrice, 5000);
+  setInterval(function () { if (S.running) refreshCandles(false); }, 30000);
+  setInterval(function () { $('clock').textContent = wib() + ' WIB'; }, 1000);
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+<script>
+(function(){
+var g=function(i){return document.getElementById(i)},DX={cfg:{},J:[],NEWS:[],al:[],A:null,files:[],hist:[],usage:null},NEWS_DONE={},NT={};
+var IDS=['nxUrl','nxModel','nxKey','nxPrompt','nxTgTok','nxTgChat','nxDc','nxWh'],CK=['nxAiOn','nxAiGate','nxBValid','nxBHasil','dxNews','dxSnd'];
+try{DX.cfg=JSON.parse(localStorage.getItem('nx_cfg')||'{}')}catch(e){}
+try{DX.J=JSON.parse(localStorage.getItem('dts_pakem_jr')||'[]')}catch(e){}
+try{DX.usage=JSON.parse(localStorage.getItem('nx_usage')||'null')}catch(e){}
+IDS.forEach(function(i){if(DX.cfg[i]!=null)g(i).value=DX.cfg[i]});
+CK.forEach(function(i){g(i).checked=DX.cfg[i]!=null?!!DX.cfg[i]:(i!=='nxAiOn'&&i!=='nxAiGate')});
+function save(){IDS.forEach(function(i){DX.cfg[i]=g(i).value.trim()});CK.forEach(function(i){DX.cfg[i]=g(i).checked});stIcons();try{localStorage.setItem('nx_cfg',JSON.stringify(DX.cfg))}catch(e){}}
+var IC_AI='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><circle cx="9" cy="14" r="1.2" fill="currentColor"/><circle cx="15" cy="14" r="1.2" fill="currentColor"/><path d="M12 8V4"/><circle cx="12" cy="3.5" r="1" fill="currentColor"/></svg>',
+IC_BC='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+function aiProv(){var c=DX.cfg,u=String(c.nxUrl||'').toLowerCase(),s=u+' '+String(c.nxModel||'').toLowerCase();
+if(/openrouter/.test(u))return'OpenRouter';if(/anthropic|claude/.test(s))return'Claude';if(/openai|gpt/.test(s))return'GPT';if(/googleapis|gemini/.test(s))return'Gemini';if(/deepseek/.test(s))return'DeepSeek';if(/x\.ai|grok/.test(s))return'Grok';if(/mistral/.test(s))return'Mistral';if(/groq/.test(u))return'Groq';
+try{return new URL(c.nxUrl).hostname.replace(/^(api|www)\./,'').split('.')[0]}catch(e){return'AI'}}
+function stIcons(){var c=DX.cfg,ai=!!(c.nxAiOn&&c.nxUrl&&c.nxKey&&c.nxModel),a=g('stAi'),b=g('stBc'),p=ai?aiProv():'';
+a.className='st '+(ai?'on':'off');a.innerHTML=IC_AI+(ai?'<small>'+esc(p)+'</small>':'');
+a.title=ai?'AI aktif: '+p+' · '+c.nxModel+(c.nxAiGate?' · broadcast hanya jika AI menjawab ENTRY':''):(c.nxAiOn?'AI dicentang tapi URL/model/key belum lengkap':'AI tidak aktif');
+var d=[];if(c.nxTgTok&&c.nxTgChat)d.push('TG');if(c.nxDc)d.push('DC');if(c.nxWh)d.push('WH');var bc=d.length>0&&!!(c.nxBValid||c.nxBHasil);
+b.className='st '+(bc?'on':'off');b.innerHTML=IC_BC+(bc?'<small>'+d.join('·')+'</small>':'');
+b.title=bc?'Broadcast aktif: '+d.join(', ')+(c.nxBValid?' · entry valid':'')+(c.nxBHasil?' · hasil TP/SL':''):(d.length?'Tujuan ada, tapi opsi kirim entry & hasil keduanya mati':'Broadcast tidak aktif (belum ada tujuan)')}
+function jsave(){try{localStorage.setItem('dts_pakem_jr',JSON.stringify(DX.J.slice(0,500)))}catch(e){}}
+IDS.forEach(function(i){g(i).addEventListener('input',save)});CK.forEach(function(i){g(i).addEventListener('change',save)});
+function st(id,t,c){var e=g(id);e.textContent=t;e.className='small '+(c||'mut')}
+function pad(n){return('0'+n).slice(-2)}
+function wibDT(t){var d=new Date(t+252e5);return pad(d.getUTCDate())+'/'+pad(d.getUTCMonth()+1)+' '+pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())}
+/* ── alert + bunyi ── */
+var AC=null;function unl(){try{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+document.addEventListener('click',unl);
+function beep(seq,type){if(!g('dxSnd').checked)return;unl();if(!AC)return;var t0=AC.currentTime;seq.forEach(function(hz,i){var o=AC.createOscillator(),v=AC.createGain(),a=t0+i*.22;o.type=type||'sine';o.frequency.value=hz;v.gain.setValueAtTime(.0001,a);v.gain.exponentialRampToValueAtTime(.3,a+.02);v.gain.exponentialRampToValueAtTime(.0001,a+.2);o.connect(v);v.connect(AC.destination);o.start(a);o.stop(a+.21)})}
+function alertP(txt,c,snd){DX.al.unshift({t:Date.now(),x:txt,c:c||''});if(DX.al.length>8)DX.al.length=8;g('dxAlerts').innerHTML=DX.al.map(function(a){return'<div class="al '+a.c+'">'+wib(a.t)+' '+esc(a.x)+'</div>'}).join('');if(snd)beep(snd[0],snd[1])}
+/* ── jurnal ── */
+function stat(){var w=0,l=0,o=0,r=0;DX.J.forEach(function(x){if(!x.res)o++;else if(x.res==='TP'){w++;r+=x.R}else if(x.res==='SL'){l++;r+=x.R}});var n=w+l;return{w:w,l:l,o:o,n:n,wr:n?Math.round(w/n*1000)/10:null,r:Math.round(r*100)/100}}
+function statTxt(){var s=stat();return'Winrate '+(s.wr==null?'—':s.wr+'%')+' ('+s.w+' TP / '+s.l+' SL) · net '+(s.r>=0?'+':'')+s.r+'R'}
+function jrRender(){var s=stat();g('dxStat').innerHTML='📓 '+statTxt()+' · open '+s.o;g('dxJS').innerHTML='<b>'+statTxt()+'</b> · open '+s.o+' · total '+DX.J.length;
+g('dxJT').innerHTML='<table class="jt"><tr><th>WIB</th><th>Arah</th><th>Entry</th><th>SL</th><th>TP</th><th>Hasil</th><th>R</th></tr>'+DX.J.map(function(x,i){return'<tr><td>'+wibDT(x.t)+' '+esc(x.pl||'XAUUSD')+' '+esc(x.tf)+'</td><td class="'+(x.dir>0?'g':'r')+'">'+(x.dir>0?'BUY':'SELL')+'</td><td>'+f2(x.entry,x.dec||2)+'</td><td>'+f2(x.sl,x.dec||2)+'</td><td>'+f2(x.tp,x.dec||2)+'</td><td>'+(x.res?'<b class="'+(x.res==='TP'?'g':x.res==='SL'?'r':'y')+'">'+x.res+'</b>':'<a data-c="'+i+':TP">TP</a><a data-c="'+i+':SL">SL</a><a data-c="'+i+':BE">BE</a>')+'</td><td>'+(x.res?(x.R>=0?'+':'')+x.R.toFixed(2):'…')+'</td></tr>'}).join('')+'</table>'}
+g('dxJT').onclick=function(e){var c=e.target.getAttribute&&e.target.getAttribute('data-c');if(!c)return;var p=c.split(':'),tr=DX.J[+p[0]];if(tr&&!tr.res)closeTr(tr,p[1])};
+g('dxCsv').onclick=function(){var h='waktu_wib,pair,tf,arah,style,entry,sl,tp,hasil,exit,R\n',b=DX.J.map(function(x){return[wibDT(x.t),x.pl||'XAUUSD',x.tf,x.dir>0?'BUY':'SELL',x.style,x.entry,x.sl,x.tp,x.res||'OPEN',x.exit||'',x.R!=null?x.R:''].join(',')}).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h+b],{type:'text/csv'}));a.download='jurnal_pakem.csv';a.click()};
+g('dxClr').onclick=function(){if(confirm('Hapus seluruh jurnal?')){DX.J=[];jsave();jrRender()}};
+function closeTr(tr,res){var rr=Math.abs(tr.tp-tr.entry)/Math.abs(tr.entry-tr.sl);tr.res=res;tr.tc=Date.now();tr.exit=res==='TP'?tr.tp:res==='SL'?tr.sl:(S.live!=null&&(tr.pair||'XAU_USD')===INS?S.live:tr.entry);tr.R=res==='TP'?rr:res==='SL'?-1:0;jsave();jrRender();
+alertP((res==='TP'?'🎯 TP HIT ':res==='SL'?'🛑 SL HIT ':'⏹ BE ')+(tr.dir>0?'BUY ':'SELL ')+f2(tr.entry,tr.dec||2)+' → '+f2(tr.exit,tr.dec||2)+' ('+(tr.R>=0?'+':'')+tr.R.toFixed(2)+'R) · '+statTxt(),res==='TP'?'g':res==='SL'?'r':'y',res==='TP'?[[880,1180,1480],'sine']:res==='SL'?[[500,380],'square']:null);
+if(res!=='BE'&&DX.cfg.nxBHasil)bsend(msg(tr,'H')).catch(function(e){alertP('Broadcast gagal: '+e.message,'r')})}
+function check(){var op=DX.J.filter(function(x){return!x.res&&(x.pair||'XAU_USD')===INS});if(!op.length)return;var p=S.live!=null?S.live:(DX.A?DX.A.price:null),m5=(S.candles.M5&&S.candles.M5.asc)||[];
+op.forEach(function(tr){var hi=-1e9,lo=1e9;m5.forEach(function(c){if(c.t>=tr.t){hi=Math.max(hi,c.h);lo=Math.min(lo,c.l)}});if(p!=null){hi=Math.max(hi,p);lo=Math.min(lo,p)}
+var b=tr.dir>0,tp=b?hi>=tr.tp:lo<=tr.tp,sl=b?lo<=tr.sl:hi>=tr.sl;if(tp||sl)closeTr(tr,sl?'SL':'TP')})}
+/* ── broadcast ── */
+async function bsend(text){var c=DX.cfg,j=[];if(c.nxTgTok&&c.nxTgChat)j.push(fetch('https://api.telegram.org/bot'+c.nxTgTok+'/sendMessage',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({chat_id:c.nxTgChat,text:text})}));if(c.nxDc)j.push(fetch(c.nxDc,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({content:text})}));if(c.nxWh)j.push(fetch(c.nxWh,{method:'POST',mode:'no-cors',headers:{'content-type':'text/plain'},body:JSON.stringify({text:text,content:text,message:text})}));if(!j.length)throw new Error('belum ada tujuan broadcast');var rs=await Promise.allSettled(j),bad=rs.filter(function(r){return r.status==='rejected'||(r.value&&r.value.type!=='opaque'&&!r.value.ok)}).length;if(bad)throw new Error(bad+' tujuan gagal')}
+function msg(tr,k,ai){var b=tr.dir>0,rr=Math.abs(tr.tp-tr.entry)/Math.abs(tr.entry-tr.sl),s;
+if(k==='V')s=(b?'🟢':'🔴')+' ENTRY VALID [Pakem] · '+(b?'BUY':'SELL')+' '+(tr.pl||'XAUUSD')+' ('+tr.tf+')\nEntry '+f2(tr.entry,tr.dec||2)+' | SL '+f2(tr.sl,tr.dec||2)+' | TP '+f2(tr.tp,tr.dec||2)+' | RR 1:'+rr.toFixed(1)+'\n'+tr.style;
+else s=(tr.res==='TP'?'🎯 TP HIT':'🛑 SL HIT')+' · '+(b?'BUY':'SELL')+' '+(tr.pl||'XAUUSD')+' ('+tr.tf+')\nEntry '+f2(tr.entry,tr.dec||2)+' | SL '+f2(tr.sl,tr.dec||2)+' | TP '+f2(tr.tp,tr.dec||2)+'\nKeluar '+f2(tr.exit,tr.dec||2)+' | '+(tr.R>=0?'+':'')+tr.R.toFixed(2)+'R\n'+statTxt();
+if(ai)s+='\n🤖 Opini AI: '+ai.aksi+' · '+ai.yakin+'/100 — '+ai.alasan;return s+'\n⚠ Bukan nasihat keuangan. Patuhi SL.'}
+g('dxTest').onclick=async function(){save();st('dxBSt','Mengirim…');try{await bsend('✅ Tes broadcast DTS Pakem Live berhasil.');st('dxBSt','Terkirim ✓','g')}catch(e){st('dxBSt','Gagal: '+e.message,'r')}};
+/* ── AI ── */
+function uShow(){var u=DX.usage;g('dxUse').textContent=u&&u.calls?'Pemakaian token sesi ini: '+u.total.toLocaleString('id-ID')+' ('+u.calls+' panggilan · terakhir '+u.last.toLocaleString('id-ID')+'). Kuota akun tidak bisa dibaca dari API.':'Pemakaian token: belum ada panggilan AI.'}
+async function aiCall(sys,hist,parts){var c=DX.cfg,url=(c.nxUrl||'').replace(/\/+$/,''),key=c.nxKey;if(!url||!key||!c.nxModel)throw new Error('isi URL, model & key AI dulu');var an=/anthropic\.com/.test(url),res;
+if(an){var ct=parts.map(function(p){return p.k==='img'?{type:'image',source:{type:'base64',media_type:p.mime,data:p.b64}}:p.k==='pdf'?{type:'document',source:{type:'base64',media_type:'application/pdf',data:p.b64}}:{type:'text',text:p.v}});
+res=await fetch(url.replace(/\/v1$/,'')+'/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:c.nxModel,max_tokens:1200,system:sys,messages:hist.concat([{role:'user',content:ct}])})})}
+else{var c2=parts.map(function(p){return p.k==='img'?{type:'image_url',image_url:{url:'data:'+p.mime+';base64,'+p.b64}}:p.k==='pdf'?{type:'file',file:{filename:p.name,file_data:'data:application/pdf;base64,'+p.b64}}:{type:'text',text:p.v}});
+res=await fetch(url+'/chat/completions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+key},body:JSON.stringify({model:c.nxModel,temperature:.2,messages:[{role:'system',content:sys}].concat(hist,[{role:'user',content:c2}])})})}
+if(!res.ok){var et='';try{et=(await res.text()).slice(0,160)}catch(e){}throw new Error('HTTP '+res.status+(et?' '+et:''))}
+var j=await res.json(),u=j.usage;if(u){var pt=+(u.prompt_tokens!=null?u.prompt_tokens:u.input_tokens||0),ot=+(u.completion_tokens!=null?u.completion_tokens:u.output_tokens||0),tt=+(u.total_tokens||pt+ot),x=DX.usage||{total:0,calls:0,last:0};x.total+=tt;x.calls++;x.last=tt;DX.usage=x;try{localStorage.setItem('nx_usage',JSON.stringify(x))}catch(e){}uShow()}
+return an?j.content.map(function(x){return x.text||''}).join(''):j.choices[0].message.content}
+function snap(){var A=DX.A;if(!A)return{};var v=A.verdict,s=A.sums,n=DX.NEWS.filter(function(x){return x.date.getTime()>Date.now()&&x.impact!=='LOW'}).slice(0,3).map(function(x){return x.country+' '+x.title+' '+wibHM(x.date.getTime())+' WIB'});
+return{pair:PC.label,tf:A.bt.label||A.bt.base,harga:A.price,call:v.dir?{arah:v.dir>0?'BUY':'SELL',style:v.style,entry:v.entry,sl:v.sl,tp1:v.tp1,rr:v.rr}:'NO TRADE',alasan:(v.why||'').slice(0,400),skor_tren:Object.keys(s).reduce(function(o,k){o[k]=s[k].ts;return o},{}),tf_tren:A.qKey,rsi_tf_tren:s[A.qKey]&&s[A.qKey].rsi,level_atas:A.nl.above[0]&&A.nl.above[0].level,level_bawah:A.nl.below[0]&&A.nl.below[0].level,berita:n,jurnal:stat()}}
+async function aiAsk(tr){var c=DX.cfg;if(!c.nxAiOn||!c.nxUrl||!c.nxKey||!c.nxModel)return null;var sys=(c.nxPrompt||'Kamu analis trading disiplin.')+'\nBalas HANYA JSON: {"aksi":"ENTRY|TUNGGU|SKIP","yakin":0-100,"alasan":"maks 2 kalimat, bahasa Indonesia"}. Jangan memberi jaminan profit.',o=snap();o.sinyal={arah:tr.dir>0?'BUY':'SELL',entry:tr.entry,sl:tr.sl,tp:tr.tp};
+var m=String(await aiCall(sys,[],[{k:'t',v:JSON.stringify(o)}])).match(/\{[\s\S]*\}/);if(!m)throw new Error('balasan bukan JSON');var r=JSON.parse(m[0]);r.aksi=String(r.aksi||'TUNGGU').toUpperCase();r.yakin=Math.round(+r.yakin||0);r.alasan=String(r.alasan||'');return r}
+async function onValid(tr){var ai=null;try{ai=await aiAsk(tr)}catch(e){alertP('AI: '+e.message,'r')}
+if(ai)g('dxAi').innerHTML='🤖 Opini AI ('+(tr.dir>0?'BUY':'SELL')+'): <b class="'+(ai.aksi==='ENTRY'?'g':ai.aksi==='SKIP'?'r':'y')+'">'+esc(ai.aksi)+'</b> · '+ai.yakin+'/100 — '+esc(ai.alasan);
+if(!DX.cfg.nxBValid||(DX.cfg.nxAiGate&&!(ai&&ai.aksi==='ENTRY')))return;try{await bsend(msg(tr,'V',ai))}catch(e){alertP('Broadcast gagal: '+e.message,'r')}}
+g('dxTestAi').onclick=async function(){save();st('dxAiSt','Menguji…');try{var t=await aiCall('Balas satu kata: OK',[],[{k:'t',v:'ping'}]);st('dxAiSt','AI OK: '+String(t).slice(0,60),'g')}catch(e){st('dxAiSt','Gagal: '+e.message,'r')}};
+/* ── chat + lampiran ── */
+function logAdd(c,t){var d=document.createElement('div');d.className='cm '+c;d.textContent=t;g('dxLog').appendChild(d);g('dxLog').scrollTop=1e9}
+function chips(){g('dxFiles').innerHTML=DX.files.map(function(f,i){return'<span class="chip">'+esc(f.name)+' <a data-i="'+i+'">✕</a></span>'}).join('')}
+g('dxFiles').onclick=function(e){var i=e.target.getAttribute&&e.target.getAttribute('data-i');if(i!=null){DX.files.splice(+i,1);chips()}};
+function rd(f,m){return new Promise(function(ok,no){var r=new FileReader();r.onload=function(){ok(r.result)};r.onerror=function(){no(r.error)};m==='t'?r.readAsText(f):r.readAsDataURL(f)})}
+function shrink(u){return new Promise(function(ok){var im=new Image();im.onload=function(){var s=Math.min(1,1600/Math.max(im.width,im.height));if(s===1&&u.length<3e6)return ok(u);var c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',.85))};im.onerror=function(){ok(u)};im.src=u})}
+async function addFile(f){var n=f.name,ty=f.type||'';
+if(/^image\//.test(ty)){var u=await shrink(await rd(f,'d'));DX.files.push({k:'img',name:n,mime:u.slice(5,u.indexOf(';')),b64:u.split(',')[1]})}
+else if(ty==='application/pdf'||/\.pdf$/i.test(n)){if(f.size>9e6)throw new Error('PDF >9 MB');DX.files.push({k:'pdf',name:n,b64:(await rd(f,'d')).split(',')[1]})}
+else{var tx=await rd(f,'t');if(tx.slice(0,2000).indexOf('\u0000')>=0)throw new Error('format tidak didukung');DX.files.push({k:'t',name:n,v:'[FILE '+n+']\n'+tx.slice(0,60000)})}}
+g('dxFile').onchange=async function(){var fs=Array.prototype.slice.call(this.files);this.value='';for(var i=0;i<fs.length;i++){try{await addFile(fs[i])}catch(e){alertP('Lampiran '+fs[i].name+': '+e.message,'r')}}chips()};
+g('dxSend').onclick=async function(){var q=g('dxQ').value.trim();if(!q&&!DX.files.length)return;save();var c=DX.cfg,fl=DX.files.slice(),nm=fl.length?' [lampiran: '+fl.map(function(f){return f.name}).join(', ')+']':'';DX.files=[];chips();g('dxQ').value='';logAdd('u',(q||'(lampiran)')+nm);
+var sys=(c.nxPrompt||'Kamu analis trading disiplin.')+'\nKamu asisten DTS Pakem Live '+PC.label+'. Jawab ringkas, bahasa Indonesia, jangan menjamin profit. Data live (JSON): '+JSON.stringify(snap());
+st('dxAiSt','AI berpikir…');try{var a=await aiCall(sys,DX.hist.slice(-8),[{k:'t',v:q||'Tolong analisa lampiran ini.'}].concat(fl));DX.hist.push({role:'user',content:(q||'(lampiran)')+nm},{role:'assistant',content:a});logAdd('a',a);st('dxAiSt','OK','g')}catch(e){logAdd('a','⚠ '+e.message);st('dxAiSt','Gagal: '+e.message,'r')}};
+/* ── berita (port DTS) ── */
+function impI(i){return i==='HIGH'?'High impact':i==='MEDIUM'?'Medium impact':'Low impact'}
+async function fetchNews(){if(!g('dxNews').checked){DX.NEWS=[];renderTicker();return}var all=[],i,r,d,L=['./news.json','./news_next.json'];
+for(i=0;i<L.length;i++){try{r=await tFetch(L[i]+'?t='+Date.now(),6000);if(r.ok){d=await r.json();if(Array.isArray(d))all=all.concat(d)}}catch(e){}}
+if(!all.length){var W=['https://nfs.faireconomy.media/ff_calendar_thisweek.json','https://nfs.faireconomy.media/ff_calendar_nextweek.json'];for(i=0;i<W.length;i++){try{r=await workerFetch(W[i],8000);d=(r&&typeof r.json==='function')?await r.json():r;if(Array.isArray(d))all=all.concat(d)}catch(e){}}}
+if(!all.length){g('ticker').innerHTML='<span class="r small">⚠ kalender berita tidak terbaca (news.json / faireconomy)</span>';return}
+DX.NEWS=all.map(function(n){return{title:n.title||'-',country:n.country||'-',date:new Date(n.date),impact:String(n.impact||'Low').toUpperCase(),forecast:n.forecast||'',previous:n.previous||''}}).filter(function(n){return!isNaN(n.date.getTime())&&/^(HIGH|MEDIUM|LOW)$/.test(n.impact)}).sort(function(a,b){return a.date-b.date});checkNews()}
+function renderTicker(){var el=g('ticker'),now=Date.now();if(!g('dxNews').checked){el.innerHTML='';return}var fut=DX.NEWS.filter(function(n){return n.date.getTime()>now-72e5}),up=fut.filter(function(n){return n.impact!=='LOW'}).concat(fut.filter(function(n){return n.impact==='LOW'})).slice(0,4).sort(function(a,b){return a.date-b.date});
+if(!up.length){el.innerHTML='<span class="mut small">📰 Tidak ada berita dalam waktu dekat.</span>';return}var tx=el.scrollLeft;
+el.innerHTML=up.map(function(n){var m=(n.date.getTime()-now)/6e4,lv=m<0,w=lv?'LIVE':m<60?'T-'+Math.round(m)+'m':m<1440?'T-'+(m/60).toFixed(1)+'h':'T-'+(m/1440).toFixed(1)+'d',k=n.impact==='HIGH'?'nh':n.impact==='MEDIUM'?'nm':'nl';return'<div class="nw '+k+'" title="'+impI(n.impact)+'"><div class="t"><b>'+esc(n.country)+'</b> '+esc(n.title)+'</div><div class="s"><span>'+wibHM(n.date.getTime())+'</span><b class="'+(lv?'r':m<60?'y':'')+'">'+w+'</b></div></div>'}).join('');if(tx>0)el.scrollLeft=tx}
+function stopAl(){clearInterval(NT.alarm);clearTimeout(NT.stop)}
+function closePop(){g('newspop').style.display='none';stopAl();clearTimeout(NT.hide);clearInterval(NT.cd)}
+function showNews(n){var hi=n.impact==='HIGH',lo=n.impact==='LOW',sq=hi?[[1000,700,1000,700],'square']:lo?[[600],'sine']:[[800,800],'sine'];closePop();g('newspop').style.display='block';
+g('npTitle').textContent='⚠ '+n.impact+' · '+n.country;g('npTitle').className=hi?'r':lo?'mut':'y';
+g('npMeta').innerHTML='<b>'+esc(n.title)+'</b><br><span class="mut">Forecast:</span> '+esc(n.forecast||'-')+' &nbsp; <span class="mut">Prev:</span> '+esc(n.previous||'-')+'<br><span class="mut">Rilis:</span> '+wibDT(n.date.getTime())+' WIB';
+var u=function(){var l=(n.date.getTime()-Date.now())/1e3;g('npCd').textContent=l<=0?'🔴 SEDANG RILIS':'⏳ dalam '+Math.floor(l/60)+'m '+Math.floor(l%60)+'s'};u();NT.cd=setInterval(u,1000);
+alertP('📰 '+n.impact+' '+n.country+' · '+n.title+' · '+wibHM(n.date.getTime())+' WIB',hi?'r':'y');beep(sq[0],sq[1]);NT.alarm=setInterval(function(){beep(sq[0],sq[1])},3000);NT.stop=setTimeout(stopAl,lo?6e3:6e4);NT.hide=setTimeout(closePop,6e4)}
+function checkNews(){if(!g('dxNews').checked){renderTicker();return}var now=Date.now();for(var i=0;i<DX.NEWS.length;i++){var n=DX.NEWS[i],d=(n.date.getTime()-now)/1e3,k=n.country+'|'+n.title+'|'+n.date.getTime();if(d>0&&d<=300&&!NEWS_DONE[k]){NEWS_DONE[k]=1;showNews(n);break}}renderTicker()}
+g('npClose').onclick=closePop;g('dxNews').addEventListener('change',fetchNews);
+/* ── call baru dari Pakem → jurnal + alert + broadcast ── */
+function onRender(A){DX.A=A;var v=A.verdict;if(v.dir===0||v.entry==null||v.sl==null||v.tp1==null){check();return}
+var t=closeT(A),key=[INS,v.dir,v.entry.toFixed(PC.dec),v.sl.toFixed(PC.dec),v.tp1.toFixed(PC.dec),t].join('|');if(DX.J.some(function(x){return x.key===key})){check();return}
+if(Date.now()-t>Math.max(6e5,2*(TF_MS[A.bt.base]||3e5))){check();return}
+var tr={key:key,pair:INS,pl:PC.label,dec:PC.dec,t:t,dir:v.dir,entry:v.entry,sl:v.sl,tp:v.tp1,style:v.style,tf:A.bt.label||A.bt.base,res:null};DX.J.unshift(tr);jsave();jrRender();
+alertP('🔔 CALL '+(v.dir>0?'BUY':'SELL')+' NOW '+f2(v.entry)+' · SL '+f2(v.sl)+' · TP '+f2(v.tp1)+' — '+v.style,v.dir>0?'g':'r',[v.dir>0?[800,1100]:[1100,800],'sine']);onValid(tr)}
+var _r=render;render=function(A){_r(A);try{onRender(A)}catch(e){console.error(e)}};
+/* ── UI ── */
+g('dxGear').onclick=function(){g('dxPanel').classList.toggle('on');jrRender()};g('dxX').onclick=function(){g('dxPanel').classList.remove('on')};
+Array.prototype.forEach.call(document.querySelectorAll('.dxt button'),function(b){b.onclick=function(){Array.prototype.forEach.call(document.querySelectorAll('.dxt button,.dxb'),function(e){e.classList.remove('on')});b.classList.add('on');g('dx-'+b.getAttribute('data-t')).classList.add('on');jrRender()}});
+g('stAi').onclick=function(){g('dxPanel').classList.add('on');document.querySelector('.dxt button[data-t="ai"]').click()};
+g('stBc').onclick=function(){g('dxPanel').classList.add('on');document.querySelector('.dxt button[data-t="bc"]').click()};
+uShow();stIcons();jrRender();fetchNews();setInterval(fetchNews,18e5);setInterval(checkNews,1e4);setInterval(check,4e3);
+})();
+</script>
+</body>
+</html>
